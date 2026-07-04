@@ -61,6 +61,18 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-04 — Adopción oficial del NADF Meta Model v1.0
+
+**Contexto:** El framework contaba con documentación del meta model en `docs/meta-model/` sin estatus normativo formal. Se requería unificar el lenguaje conceptual de agentes, workflows y artefactos bajo una especificación central adoptada.
+
+**Decisión:** Adoptar oficialmente el NADF Meta Model v1.0 como especificación central del framework. Establecer documentos normativos (specification, governance, versioning, architecture-principles) y reglas obligatorias de lectura previa en CLAUDE.md y los 19 agentes.
+
+**Rationale:** Eliminar fragmentación semántica, formalizar el flujo Intent → Knowledge y preparar la base conceptual para M1 (Contract & Schema Layer).
+
+**ADR:** ADR-0004-nadf-meta-model
+
+---
+
 ## Template para nuevas entradas
 
 ```

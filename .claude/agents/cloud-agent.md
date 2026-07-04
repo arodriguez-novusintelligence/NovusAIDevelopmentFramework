@@ -9,6 +9,13 @@
 | Capa | Execution Layer |
 | Patrón | Executor Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Generar propuestas de infraestructura como código (IaC), configuraciones cloud y artefactos Terraform/Serverless según plan aprobado, **sin desplegar**.

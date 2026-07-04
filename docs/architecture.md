@@ -199,6 +199,76 @@ Design Source → Planning (análisis, plan)
              → PR → Cursor Review → Deployment (aprobado)
 ```
 
+## Architecture Layers (Meta Model)
+
+Las capas del Meta Model reconcilian las **7 capas de ADR-0002** en **6 capas semánticas** conectadas por entidades oficiales. No contradicen la arquitectura existente; la refinan desde la perspectiva del dominio conceptual.
+
+| Capa Meta Model | Capas ADR-0002 equivalentes | Entidades principales | Agentes / componentes |
+|-----------------|----------------------------|----------------------|----------------------|
+| **Intent Layer** | Design Source | Context, Intent, Domain | Lovable Analyzer, fuentes externas |
+| **Planning Layer** | Planning | Plan, Workflow, Task | Planner, Architect, Workflow, Backend Impact |
+| **Execution Layer** | Execution | Agent, Execution, Artifact | Frontend, Backend, Database, Cloud, DevOps |
+| **Validation Layer** | Validation | Validation, Quality Gate | QA, Security, Reviewer |
+| **Knowledge Layer** | Knowledge | Knowledge, Memory, Decision, Metric | Documentation, Metrics, KB, ADR, Reflection |
+| **Infrastructure Layer** | Tooling + Runtime | Tool, MCP Server, Provider, Deployment, Environment | MCP servers, AWS/cloud, hosting |
+
+### Conexión entre capas vía Meta Model
+
+```mermaid
+flowchart TB
+    subgraph IL["Intent Layer"]
+        CTX["Context"]
+        INT["Intent"]
+    end
+
+    subgraph PL["Planning Layer"]
+        PLN["Plan"]
+        WF["Workflow"]
+    end
+
+    subgraph EL["Execution Layer"]
+        EXE["Execution"]
+        ART["Artifact"]
+    end
+
+    subgraph VL["Validation Layer"]
+        VAL["Validation"]
+        QG["Quality Gate"]
+    end
+
+    subgraph KL["Knowledge Layer"]
+        KNO["Knowledge"]
+        DEC["Decision / ADR"]
+    end
+
+    subgraph INF["Infrastructure Layer"]
+        MCP["MCP Server"]
+        DEP["Deployment"]
+    end
+
+    CTX --> INT
+    INT --> PLN
+    PLN --> WF
+    WF --> EXE
+    EXE --> ART
+    ART --> VAL
+    VAL --> QG
+    QG --> KNO
+    KNO --> DEC
+    EXE --> MCP
+    EXE --> DEP
+
+    style INT fill:#e1f5fe
+    style KNO fill:#f3e5f5
+    style VAL fill:#fff3e0
+```
+
+**Regla transversal:** Todo contexto se transforma en Intent; Planner opera sobre Intent; Execution sobre Plan aprobado; Validation sobre Execution y Artifact; Reflection genera Knowledge.
+
+Ver [meta-model/specification.md](meta-model/specification.md) y [architecture-principles.md](meta-model/architecture-principles.md).
+
+---
+
 ## Principios de diseño
 
 1. **Separación planificación / ejecución / validación** — Permisos distintos por capa.
@@ -219,3 +289,5 @@ Design Source → Planning (análisis, plan)
 - [Integración MCP](mcp-integration.md)
 - [ADR-0001](../.nadf/global/decision-history/adr/ADR-0001-nadf-foundation.md)
 - [ADR-0002](../.nadf/global/decision-history/adr/ADR-0002-multiagent-patterns.md)
+- [ADR-0004](../.nadf/global/decision-history/adr/ADR-0004-nadf-meta-model.md)
+- [NADF Meta Model — Especificación](meta-model/specification.md)

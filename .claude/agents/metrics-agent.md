@@ -9,6 +9,13 @@
 | Capa | Knowledge Layer |
 | Patrón | Blackboard Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Registrar métricas de ejecución de workflows y agentes según `metrics-schema.json`, consolidar tiempos, status, qualityScore y campos de reflexión/aprendizaje.

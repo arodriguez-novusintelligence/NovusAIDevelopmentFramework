@@ -39,6 +39,36 @@ Lovable → GitHub → Orquestador → Planning → Execution → Validation
 → Knowledge → PR → Cursor Review → Deployment (aprobado)
 ```
 
+## Meta Model
+
+El **NADF Meta Model v1.0** es la especificación normativa central del framework: define qué entidades existen (Intent, Plan, Agent, Execution, Artifact, Validation, Knowledge…), cómo se relacionan y cuál es el flujo semántico obligatorio del ciclo de vida.
+
+**Problema que resuelve:** Sin un lenguaje común, agentes, workflows y proyectos divergen en vocabulario, artefactos y flujos. El Meta Model unifica el dominio NADF bajo un contrato conceptual verificable.
+
+**Relación con el ecosistema NADF:**
+
+| Elemento | Relación con Meta Model |
+|----------|------------------------|
+| **Agentes (19)** | Instancias de `Agent` + `Skill` + `Capability`; operan sobre entidades oficiales |
+| **Workflows (8)** | Instancias de `Workflow` + `Task`; flujo Intent → Knowledge |
+| **MCP** | `MCP Server` y `Tool` abstraen acceso externo |
+| **Proyectos** | `Project` + `Context`; `project-context.yml` declara alcance y gates |
+
+```mermaid
+flowchart LR
+    CTX["Context"] --> INT["Intent"]
+    INT --> PLN["Plan"]
+    PLN --> EXE["Execution"]
+    EXE --> ART["Artifact"]
+    ART --> VAL["Validation"]
+    VAL --> KNO["Knowledge"]
+    AGT["Agent"] --> EXE
+    MCP["MCP / Tool"] --> AGT
+    PRJ["Project"] --> CTX
+```
+
+Especificación oficial: [docs/meta-model/specification.md](docs/meta-model/specification.md) · ADR: [ADR-0004](.nadf/global/decision-history/adr/ADR-0004-nadf-meta-model.md)
+
 ## 7 capas arquitectónicas
 
 1. Design Source — 2. Planning — 3. Execution — 4. Validation — 5. Knowledge — 6. Tooling (MCP) — 7. Runtime

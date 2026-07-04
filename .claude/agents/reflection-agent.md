@@ -9,6 +9,13 @@
 | Capa | Knowledge Layer |
 | Patrón | Reflection Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Generar reflexión post-ejecución documentando qué se hizo, qué falló, qué se aprendió y qué actualizaciones recomienda para Knowledge Base y ADR.

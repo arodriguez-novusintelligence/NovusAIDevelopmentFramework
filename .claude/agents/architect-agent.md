@@ -11,6 +11,13 @@
 
 > **Distinción:** Este agente valida arquitectura de **proyectos productivos**. El **Framework Architect Agent** evoluciona la estructura de NADF.
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Validar el impacto arquitectónico de planes de implementación, asegurar alineación con ADRs, stack del proyecto y principios NADF, y aprobar o rechazar planes **sin modificar código productivo**.

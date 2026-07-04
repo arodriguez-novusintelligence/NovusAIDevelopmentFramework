@@ -9,6 +9,13 @@
 | Capa | Planning Layer |
 | Patrón | Planner Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Evaluar si un cambio requiere modificaciones backend (API, DB, storage, email, infra) y generar evaluación y especificación **sin implementar código backend** (implementación: Backend Agent).

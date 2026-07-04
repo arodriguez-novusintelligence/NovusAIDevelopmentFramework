@@ -9,6 +9,13 @@
 | Capa | Execution Layer |
 | Patrón | Executor Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Implementar cambios en `NovusIntelligenceWEB` según plan aprobado y artefactos de impacto, traduciendo intención Lovable al stack productivo **sin copiar código de Lovable**.

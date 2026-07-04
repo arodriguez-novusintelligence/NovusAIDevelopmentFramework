@@ -9,6 +9,13 @@
 | Capa | Knowledge Layer |
 | Patrón | Blackboard Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Actualizar documentación del proyecto, memoria, decision-log y generar resumen-ejecucion.md tras la fase de validación. Los ADRs formales los registra el ADR Agent.

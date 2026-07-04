@@ -155,8 +155,8 @@ Este roadmap define **15 módulos independientes** (M0–M14) con interfaces cla
 | **Prioridad** | P0 (mantenimiento continuo) |
 | **Complejidad** | Media |
 | **Agentes involucrados** | Framework Architect, ADR Agent, Workflow Agent, Documentation Agent |
-| **Entregables** | `CLAUDE.md`, `docs/*`, `.nadf/global/rules/`, skill registry (19 YAML), workflow library (8 YAML), ADRs, comandos `.claude/commands/` |
-| **Criterios de finalización** | ✅ 19 agentes alineados MD↔YAML; ✅ workflow canónico 18 pasos; ✅ ADR-0003 aplicado; ✅ project-context piloto completo; mantenimiento: zero drift entre docs y YAML verificado por M7 |
+| **Entregables** | `CLAUDE.md`, `docs/*`, `.nadf/global/rules/`, skill registry (19 YAML), workflow library (8 YAML), ADRs, comandos `.claude/commands/`, **NADF Meta Model v1.0 normativo** (ADR-0004) |
+| **Criterios de finalización** | ✅ 19 agentes alineados MD↔YAML; ✅ workflow canónico 18 pasos; ✅ ADR-0003 aplicado; ✅ ADR-0004 Meta Model adoptado; ✅ project-context piloto completo; mantenimiento: zero drift entre docs y YAML verificado por M7 |
 
 **Trabajo pendiente en M0:** Sincronización continua con validador CI (M7); ADRs para cada módulo nuevo del roadmap.
 

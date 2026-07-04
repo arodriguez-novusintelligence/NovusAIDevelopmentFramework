@@ -9,6 +9,13 @@
 | Capa | Validation Layer |
 | Patrón | Validator Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Ejecutar validaciones de calidad sobre cambios implementados: build, lint, responsive, mocks, secrets, SEO y copia Lovable. Bloquear workflow en gates críticos fallidos.

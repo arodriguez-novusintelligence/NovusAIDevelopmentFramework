@@ -9,6 +9,13 @@
 | Capa | Design Source Layer |
 | Patrón | Event Driven Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Analizar cambios detectados en el repositorio Lovable (`novus-nexus`) y generar artefactos estructurados de impacto frontend, backend y riesgos. Punto de entrada del flujo multiagente ante eventos `lovable.commit`.

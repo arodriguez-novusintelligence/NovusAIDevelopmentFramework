@@ -9,6 +9,13 @@
 | Capa | Planning Layer |
 | Patrón | Planner Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Generar planes de implementación detallados a partir de artefactos de análisis (Lovable, bugs, features), definiendo alcance, pasos, dependencias y criterios de aceptación **sin modificar código productivo**.

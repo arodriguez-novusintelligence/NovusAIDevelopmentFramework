@@ -9,6 +9,13 @@
 | Capa | Knowledge Layer |
 | Patrón | Blackboard Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Registrar decisiones arquitectónicas relevantes como ADRs en `.nadf/global/decision-history/adr/`, manteniendo numeración secuencial, formato estándar y coherencia con decision-log del proyecto.

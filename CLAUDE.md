@@ -2,6 +2,26 @@
 
 Este archivo define las reglas obligatorias que **todo agente** del NovusAIDevelopmentFramework debe seguir en cada sesión de trabajo.
 
+## NADF Meta Model
+
+El **NADF Meta Model v1.0** es el **lenguaje oficial** del framework — la especificación normativa de entidades, relaciones, eventos y flujos semánticos. Referencia: [docs/meta-model/specification.md](docs/meta-model/specification.md) y ADR-0004.
+
+### Reglas del Meta Model
+
+- **Ningún agente crea entidades nuevas** sin extender el Meta Model primero (ver [governance.md](docs/meta-model/governance.md)).
+- **Todos los workflows** operan sobre entidades oficiales (Intent, Plan, Workflow, Task, Execution, Artifact, Validation, Knowledge).
+- **Todos los artefactos** se mapean a entidades del Meta Model ([artifact-model.md](docs/meta-model/artifact-model.md)).
+- **Todo contexto** se transforma en **Intent** antes de planificar o ejecutar.
+- **Planner** opera sobre Intent; **Execution** sobre Plan; **Validation** sobre Execution; **Reflection** genera Knowledge.
+
+### Lectura obligatoria antes de implementar
+
+Antes de implementar cualquier funcionalidad:
+
+1. Leer este archivo (`CLAUDE.md`)
+2. Leer [docs/meta-model/meta-model-overview.md](docs/meta-model/meta-model-overview.md)
+3. Leer `project-context.yml` del proyecto activo
+
 ## Contexto obligatorio
 
 1. **Siempre leer `project-context.yml`** del proyecto activo antes de cualquier acción.
@@ -150,7 +170,10 @@ Los agentes NADF **no deben**:
 
 ## Referencias
 
+- [NADF Meta Model — Especificación oficial](docs/meta-model/specification.md)
+- [Meta Model — Visión general](docs/meta-model/meta-model-overview.md)
 - [Arquitectura multiagente](docs/multiagent-architecture.md)
 - [Patrones de agentes](docs/agent-patterns.md)
 - [ADR-0002](.nadf/global/decision-history/adr/ADR-0002-multiagent-patterns.md)
 - [ADR-0003](.nadf/global/decision-history/adr/ADR-0003-lovable-to-web-canonicalization.md)
+- [ADR-0004](.nadf/global/decision-history/adr/ADR-0004-nadf-meta-model.md)

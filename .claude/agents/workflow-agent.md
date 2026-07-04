@@ -9,6 +9,13 @@
 | Capa | Planning Layer |
 | Patrón | Event Driven Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Clasificar eventos entrantes, seleccionar el workflow apropiado de la workflow-library, parametrizarlo según el proyecto y entregar el plan de ejecución al Orquestador.

@@ -9,6 +9,13 @@
 | Capa | Validation Layer |
 | Patrón | Validator Pattern |
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Revisar cambios implementados desde perspectiva de seguridad: secrets expuestos, permisos, vulnerabilidades conocidas, CORS, autenticación y cumplimiento de reglas de seguridad NADF.

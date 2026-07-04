@@ -11,6 +11,13 @@
 
 > **Distinción:** Evoluciona la **estructura de NADF**. El **Architect Agent** valida arquitectura de proyectos productivos.
 
+### Reglas obligatorias previas a la ejecución
+
+Antes de ejecutar cualquier tarea:
+- Leer CLAUDE.md
+- Leer Meta Model (docs/meta-model/meta-model-overview.md)
+- Leer Project Context (project-context.yml del proyecto activo)
+
 ## Responsabilidad
 
 Diseñar, evolucionar y mantener la estructura organizacional, documental y operativa del NovusAIDevelopmentFramework: agentes, workflows, reglas, skill registry, ADRs de framework y arquitectura multiagente.
