@@ -1,0 +1,87 @@
+id: qa-validation
+name: QA Validation
+version: "1.0.0"
+description: Validación QA independiente sobre cambios implementados
+project: "*"
+triggers:
+  - manual
+  - event:github.pr.opened
+  - event:github.pr.updated
+
+model:
+  phases:
+    - event_trigger
+    - planning
+    - plan_review
+    - execution
+    - validation
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - qa-agent
+  - reviewer-agent
+  - documentation-agent
+  - metrics-agent
+  - reflection-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    action: Clasificar evento de validación QA
+    outputs:
+      - artifacts/evento-clasificado.json
+
+  - id: cargar-contexto
+    phase: planning
+    agent: null
+    action: Cargar project-context y artefactos de implementación
+    outputs:
+      - contexto-cargado
+
+  - id: ejecutar-qa
+    phase: validation
+    agent: qa-agent
+    action: Ejecutar todos los quality gates
+    outputs:
+      - artifacts/informe-qa.md
+      - artifacts/qa-result.json
+
+  - id: revision-coherencia
+    phase: validation
+    agent: reviewer-agent
+    outputs:
+      - artifacts/informe-revision.md
+
+  - id: documentar
+    phase: documentation
+    agent: documentation-agent
+    outputs:
+      - artifacts/resumen-ejecucion.md
+
+  - id: metricas
+    phase: metrics
+    agent: metrics-agent
+    outputs:
+      - artifacts/metricas-ejecucion.json
+
+  - id: reflexion
+    phase: reflection
+    agent: reflection-agent
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+
+quality_gates:
+  - no_lovable_code_copy
+  - no_mock_data_in_production
+  - build_success
+  - responsive_validation
+  - seo_basic_validation
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json

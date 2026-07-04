@@ -1,0 +1,36 @@
+agent:
+  name: workflow-agent
+  pattern: Event Driven
+  layer: Planning
+  description: Clasifica eventos y selecciona workflows de la workflow-library
+  definition: .claude/agents/workflow-agent.md
+  responsibilities:
+    - Clasificar eventos entrantes
+    - Seleccionar workflow apropiado
+    - Parametrizar plan-workflow.md
+  forbidden_actions:
+    - modify_productive_repos
+    - execute_implementation
+    - deploy
+    - skip_workflow_phases
+  allowed_tools:
+    - read_workflows
+    - write_plan_artifacts
+  mcp_servers:
+    - github
+    - jira
+  required_context:
+    - .nadf/global/workflow-library/
+    - .nadf/projects/*/project-context.yml
+    - docs/event-driven-workflows.md
+  input_contract:
+    event: required
+  output_contract:
+    artifacts:
+      - plan-workflow.md
+      - evento-clasificado.json
+  quality_gates:
+    - workflow_selected
+    - preconditions_met
+  escalation_rules:
+    - unknown_event: escalate_to_human_review

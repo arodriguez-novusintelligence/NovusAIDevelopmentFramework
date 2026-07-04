@@ -1,0 +1,93 @@
+id: security-review
+name: Security Review
+version: "1.0.0"
+description: Revisión de seguridad independiente sobre cambios o PRs
+project: "*"
+triggers:
+  - manual
+  - event:github.pr.opened
+  - event:github.pr.updated
+  - event:infra.change
+
+model:
+  phases:
+    - event_trigger
+    - planning
+    - plan_review
+    - execution
+    - validation
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - security-agent
+  - reviewer-agent
+  - documentation-agent
+  - metrics-agent
+  - reflection-agent
+  - knowledge-base-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    action: Clasificar evento de revisión de seguridad
+    outputs:
+      - artifacts/evento-clasificado.json
+
+  - id: cargar-contexto
+    phase: planning
+    agent: null
+    action: Cargar project-context y diff a revisar
+    outputs:
+      - contexto-cargado
+
+  - id: escanear-seguridad
+    phase: validation
+    agent: security-agent
+    action: Ejecutar revisión de seguridad completa
+    outputs:
+      - artifacts/informe-seguridad.md
+      - artifacts/security-result.json
+
+  - id: revision-coherencia
+    phase: validation
+    agent: reviewer-agent
+    action: Revisar coherencia y preparar checklist
+    outputs:
+      - artifacts/informe-revision.md
+
+  - id: documentar
+    phase: documentation
+    agent: documentation-agent
+    outputs:
+      - artifacts/resumen-ejecucion.md
+
+  - id: metricas
+    phase: metrics
+    agent: metrics-agent
+    outputs:
+      - artifacts/metricas-ejecucion.json
+
+  - id: reflexion
+    phase: reflection
+    agent: reflection-agent
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+
+  - id: actualizar-kb
+    phase: knowledge_base_update
+    agent: knowledge-base-agent
+    outputs:
+      - artifacts/actualizacion-kb.md
+
+quality_gates:
+  - no_secrets_exposed
+  - security_pass
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json

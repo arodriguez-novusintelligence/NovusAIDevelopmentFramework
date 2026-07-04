@@ -1,0 +1,35 @@
+agent:
+  name: database-agent
+  pattern: Executor
+  layer: Execution
+  description: Diseña cambios de schema y migraciones según plan aprobado
+  definition: .claude/agents/database-agent.md
+  responsibilities:
+    - Diseñar cambios de schema
+    - Generar especificacion-database.md
+    - Proponer migraciones
+  forbidden_actions:
+    - run_remote_migrations
+    - modify_production_data
+    - create_secrets_in_artifacts
+    - change_db_engine_without_adr
+  allowed_tools:
+    - design_schema
+    - write_migration_artifacts
+  mcp_servers:
+    - database
+    - aws
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - artifacts/evaluacion-backend.md
+  input_contract:
+    requires_database: true
+    plan_status: approved
+  output_contract:
+    artifacts:
+      - especificacion-database.md
+      - resumen-database.md
+  quality_gates:
+    - schema_documented
+  escalation_rules:
+    - engine_change: require_adr

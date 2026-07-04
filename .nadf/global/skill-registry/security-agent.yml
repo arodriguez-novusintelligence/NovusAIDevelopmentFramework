@@ -1,0 +1,35 @@
+agent:
+  name: security-agent
+  pattern: Validator
+  layer: Validation
+  description: Revisa seguridad de cambios y bloquea en hallazgos críticos
+  definition: .claude/agents/security-agent.md
+  responsibilities:
+    - Escanear secrets y vulnerabilidades
+    - Revisar CORS, IAM y permisos
+    - Generar informe-seguridad.md
+  forbidden_actions:
+    - modify_code_without_authorization
+    - deploy
+    - rotate_credentials
+    - ignore_critical_findings
+  allowed_tools:
+    - security_scan
+    - write_security_reports
+  mcp_servers:
+    - github
+    - aws
+  required_context:
+    - .nadf/global/rules/security-rules.md
+    - .nadf/projects/*/project-context.yml
+  input_contract:
+    modified_repos: required
+  output_contract:
+    artifacts:
+      - informe-seguridad.md
+      - security-result.json
+  quality_gates:
+    - no_secrets_exposed
+    - cors_configured
+  escalation_rules:
+    - critical_finding: block_workflow

@@ -1,0 +1,39 @@
+agent:
+  name: backend-agent
+  pattern: Executor
+  layer: Execution
+  description: Implementa cambios backend en NovusIntelligenceBack según plan aprobado
+  definition: .claude/agents/backend-agent.md
+  responsibilities:
+    - Implementar handlers y servicios backend
+    - Actualizar serverless.yml sin desplegar
+    - Generar resumen-backend.md
+  forbidden_actions:
+    - change_architecture_without_adr
+    - deploy
+    - create_secrets
+    - modify_frontend
+    - implement_without_approved_plan
+  allowed_tools:
+    - write_backend_code
+    - run_build_lint
+  mcp_servers:
+    - github
+    - aws
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - artifacts/plan-implementacion.md
+    - artifacts/especificacion-backend.md
+  input_contract:
+    plan_status: approved
+    requires_backend: true
+  output_contract:
+    artifacts:
+      - resumen-backend.md
+    repos:
+      - NovusIntelligenceBack
+  quality_gates:
+    - build_success
+    - no_secrets_exposed
+  escalation_rules:
+    - plan_not_approved: block_execution

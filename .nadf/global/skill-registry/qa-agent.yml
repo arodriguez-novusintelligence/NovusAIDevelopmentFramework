@@ -1,0 +1,40 @@
+agent:
+  name: qa-agent
+  pattern: Validator
+  layer: Validation
+  description: Ejecuta validaciones de calidad y bloquea en gates críticos
+  definition: .claude/agents/qa-agent.md
+  responsibilities:
+    - Ejecutar build, lint, responsive, SEO
+    - Detectar mocks y secrets
+    - Generar informe-qa.md y qa-result.json
+    - Calcular qualityScore
+  forbidden_actions:
+    - modify_code_without_authorization
+    - deploy
+    - skip_quality_gates
+    - approve_with_critical_failures
+  allowed_tools:
+    - run_build
+    - run_lint
+    - scan_patterns
+  mcp_servers:
+    - github
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/rules/qa-rules.md
+    - .nadf/global/rules/no-mock-policy.md
+  input_contract:
+    implementation_artifacts: required
+  output_contract:
+    artifacts:
+      - informe-qa.md
+      - qa-result.json
+  quality_gates:
+    - no_lovable_code_copy
+    - no_mock_data_in_production
+    - build_success
+    - responsive_validation
+    - seo_basic_validation
+  escalation_rules:
+    - critical_gate_fail: block_workflow

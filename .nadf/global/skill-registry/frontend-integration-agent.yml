@@ -1,0 +1,39 @@
+agent:
+  name: frontend-integration-agent
+  pattern: Executor
+  layer: Execution
+  description: Implementa cambios en NovusIntelligenceWEB según plan aprobado
+  definition: .claude/agents/frontend-integration-agent.md
+  responsibilities:
+    - Traducir intención Lovable a React/TypeScript productivo
+    - Reutilizar componentes existentes
+    - Generar resumen-frontend.md
+  forbidden_actions:
+    - copy_lovable_code
+    - use_mock_data_in_production
+    - deploy
+    - change_architecture_without_adr
+    - implement_without_approved_plan
+  allowed_tools:
+    - write_frontend_code
+    - run_build_lint
+  mcp_servers:
+    - github
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/rules/frontend-rules.md
+    - artifacts/plan-implementacion.md
+  input_contract:
+    plan_status: approved
+    artifacts: frontend-impact.md, cambios-lovable.json
+  output_contract:
+    artifacts:
+      - resumen-frontend.md
+    repos:
+      - NovusIntelligenceWEB
+  quality_gates:
+    - build_success
+    - no_lovable_copy
+    - no_mocks_in_prod
+  escalation_rules:
+    - plan_not_approved: block_execution

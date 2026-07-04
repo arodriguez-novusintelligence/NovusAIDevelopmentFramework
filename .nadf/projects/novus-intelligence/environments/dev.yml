@@ -1,0 +1,46 @@
+environment: dev
+provider: aws
+region: us-east-1
+
+frontend:
+  hosting:
+    service: object_storage
+    provider: aws
+    bucket_name: novus-intelligence-web-dev
+    cdn_enabled: true
+  url: https://dev.novusintelligence.com
+  build_command: npm run build
+  lint_command: npm run lint
+
+backend:
+  service: serverless_api
+  provider: aws
+  stack_name: novus-intelligence-back-dev
+  api_url: https://api-dev.novusintelligence.com
+  runtime: nodejs20.x
+
+services:
+  storage:
+    provider: aws
+    service: object_storage
+    bucket_name: novus-intelligence-assets-dev
+  email:
+    provider: aws
+    service: email
+    from_address: noreply-dev@novusintelligence.com
+  database:
+    provider: aws
+    service: nosql_database
+    table_prefix: novus-intelligence-dev
+
+env_variables:
+  - name: NODE_ENV
+    description: Entorno de ejecución
+  - name: API_BASE_URL
+    description: URL base de la API backend
+  - name: CONTACT_EMAIL_TO
+    description: Email destino del formulario de contacto
+
+notes:
+  - No incluir valores reales de variables de entorno
+  - Este archivo es un template de configuración

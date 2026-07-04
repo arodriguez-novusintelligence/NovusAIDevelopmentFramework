@@ -1,0 +1,33 @@
+agent:
+  name: adr-agent
+  pattern: Blackboard
+  layer: Knowledge
+  description: Registra decisiones arquitectónicas como ADRs
+  definition: .claude/agents/adr-agent.md
+  responsibilities:
+    - Crear ADRs con formato estándar
+    - Mantener numeración secuencial
+    - Vincular ADRs con decision-log
+  forbidden_actions:
+    - modify_accepted_adrs
+    - invent_decisions
+    - modify_productive_code
+    - include_secrets
+  allowed_tools:
+    - write_adrs
+  mcp_servers: []
+  required_context:
+    - .nadf/global/decision-history/adr/
+    - artifacts/impacto-arquitectonico.md
+  input_contract:
+    architectural_decisions: required
+  output_contract:
+    artifacts:
+      - registro-adr.md
+    adrs:
+      - ADR-NNNN-*.md
+  quality_gates:
+    - adr_complete
+    - sequential_numbering
+  escalation_rules:
+    - duplicate_number: block_and_report

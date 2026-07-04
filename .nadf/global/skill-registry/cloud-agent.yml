@@ -1,0 +1,37 @@
+agent:
+  name: cloud-agent
+  pattern: Executor
+  layer: Execution
+  description: Genera propuestas IaC y configuraciones cloud sin desplegar
+  definition: .claude/agents/cloud-agent.md
+  responsibilities:
+    - Generar templates IaC
+    - Documentar propuesta-infra.md
+    - Validar sintaxis IaC
+  forbidden_actions:
+    - deploy
+    - terraform_apply
+    - hardcode_arns_or_secrets
+    - change_cloud_provider_without_adr
+  allowed_tools:
+    - write_iac
+    - validate_iac
+  mcp_servers:
+    - terraform
+    - aws
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/environments/
+    - .nadf/global/rules/provider-independence.md
+  input_contract:
+    plan_status: approved
+    requires_infra: true
+  output_contract:
+    artifacts:
+      - propuesta-infra.md
+      - resumen-cloud.md
+  quality_gates:
+    - iac_syntax_valid
+    - no_secrets_in_iac
+  escalation_rules:
+    - deploy_request: escalate_to_human

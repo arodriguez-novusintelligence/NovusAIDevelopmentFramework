@@ -1,0 +1,132 @@
+id: fix-bug
+name: Fix Bug
+version: "2.0.0"
+description: Corrige bug reportado con modelo multiagente de 9 fases
+project: "*"
+triggers:
+  - manual
+  - event:jira.bug.reported
+
+model:
+  phases:
+    - event_trigger
+    - planning
+    - plan_review
+    - execution
+    - validation
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - planner-agent
+  - architect-agent
+  - frontend-integration-agent
+  - backend-agent
+  - qa-agent
+  - security-agent
+  - reviewer-agent
+  - documentation-agent
+  - metrics-agent
+  - reflection-agent
+  - knowledge-base-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    outputs:
+      - artifacts/evento-clasificado.json
+
+  - id: cargar-contexto
+    phase: planning
+    agent: null
+    action: Leer contexto y bug report
+    outputs:
+      - contexto-cargado
+
+  - id: analizar-bug
+    phase: planning
+    agent: planner-agent
+    action: Clasificar bug y generar plan de corrección
+    outputs:
+      - artifacts/analisis-bug.md
+      - artifacts/plan-implementacion.md
+
+  - id: revisar-plan
+    phase: plan_review
+    agent: architect-agent
+    outputs:
+      - artifacts/impacto-arquitectonico.md
+
+  - id: corregir-frontend
+    phase: execution
+    agent: frontend-integration-agent
+    conditions:
+      - analisis-bug:layer == frontend
+      - plan-implementacion.md:status == approved
+    outputs:
+      - artifacts/resumen-fix-frontend.md
+
+  - id: corregir-backend
+    phase: execution
+    agent: backend-agent
+    conditions:
+      - analisis-bug:layer == backend
+      - plan-implementacion.md:status == approved
+    outputs:
+      - artifacts/resumen-backend.md
+
+  - id: ejecutar-qa
+    phase: validation
+    agent: qa-agent
+    outputs:
+      - artifacts/informe-qa.md
+
+  - id: revision-seguridad
+    phase: validation
+    agent: security-agent
+    outputs:
+      - artifacts/informe-seguridad.md
+
+  - id: revision-coherencia
+    phase: validation
+    agent: reviewer-agent
+    outputs:
+      - artifacts/informe-revision.md
+
+  - id: documentar
+    phase: documentation
+    agent: documentation-agent
+    outputs:
+      - artifacts/resumen-ejecucion.md
+
+  - id: metricas
+    phase: metrics
+    agent: metrics-agent
+    outputs:
+      - artifacts/metricas-ejecucion.json
+
+  - id: reflexion
+    phase: reflection
+    agent: reflection-agent
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+
+  - id: actualizar-kb
+    phase: knowledge_base_update
+    agent: knowledge-base-agent
+    outputs:
+      - artifacts/actualizacion-kb.md
+
+quality_gates:
+  - no_mock_data_in_production
+  - build_success
+  - no_regression
+  - plan_approved
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json

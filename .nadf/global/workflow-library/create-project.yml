@@ -1,0 +1,127 @@
+id: create-project
+name: Create Project
+version: "2.0.0"
+description: Incorpora un nuevo proyecto al framework NADF con modelo multiagente
+project: "*"
+triggers:
+  - manual
+  - command:setup-project-context
+  - event:project.onboard
+
+model:
+  phases:
+    - event_trigger
+    - planning
+    - plan_review
+    - execution
+    - validation
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - framework-architect-agent
+  - planner-agent
+  - architect-agent
+  - documentation-agent
+  - metrics-agent
+  - reflection-agent
+  - adr-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    action: Clasificar solicitud de incorporación de proyecto
+    outputs:
+      - artifacts/evento-clasificado.json
+
+  - id: validar-prerrequisitos
+    phase: planning
+    agent: null
+    action: Verificar nombre, repos y stack definidos
+    outputs:
+      - prerrequisitos-validados
+
+  - id: generar-plan
+    phase: planning
+    agent: planner-agent
+    action: Generar plan de incorporación del proyecto
+    outputs:
+      - artifacts/plan-implementacion.md
+
+  - id: revisar-plan
+    phase: plan_review
+    agent: architect-agent
+    action: Validar coherencia arquitectónica del plan de onboarding
+    outputs:
+      - artifacts/impacto-arquitectonico.md
+
+  - id: crear-estructura
+    phase: execution
+    agent: framework-architect-agent
+    action: Crear directorios y archivos base del proyecto
+    outputs:
+      - .nadf/projects/{project}/**
+
+  - id: configurar-contexto
+    phase: execution
+    agent: framework-architect-agent
+    action: Generar project-context.yml
+    outputs:
+      - .nadf/projects/{project}/project-context.yml
+
+  - id: configurar-entornos
+    phase: execution
+    agent: framework-architect-agent
+    outputs:
+      - .nadf/projects/{project}/environments/
+
+  - id: definir-reglas
+    phase: execution
+    agent: framework-architect-agent
+    outputs:
+      - .nadf/projects/{project}/rules/
+
+  - id: documentar-memoria
+    phase: documentation
+    agent: documentation-agent
+    outputs:
+      - .nadf/projects/{project}/memory/
+
+  - id: validar-setup
+    phase: validation
+    agent: null
+    action: Ejecutar checklist de incorporación
+    outputs:
+      - artifacts/setup-resumen.md
+
+  - id: metricas
+    phase: metrics
+    agent: metrics-agent
+    outputs:
+      - artifacts/metricas-ejecucion.json
+
+  - id: reflexion
+    phase: reflection
+    agent: reflection-agent
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+
+  - id: registrar-adr
+    phase: knowledge_base_update
+    agent: adr-agent
+    action: Crear ADR de incorporación del proyecto
+    outputs:
+      - .nadf/global/decision-history/adr/ADR-NNNN-{project}-onboarding.md
+
+quality_gates:
+  - project_context_complete
+  - no_secrets_in_config
+  - memory_documented
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json

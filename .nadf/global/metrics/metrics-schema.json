@@ -1,0 +1,154 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NADF Workflow Metrics",
+  "description": "Esquema de métricas para registrar ejecuciones de workflows y agentes NADF",
+  "type": "object",
+  "required": [
+    "workflowId",
+    "agentName",
+    "startTime",
+    "endTime",
+    "duration",
+    "status"
+  ],
+  "properties": {
+    "workflowId": {
+      "type": "string",
+      "description": "Identificador único del workflow ejecutado",
+      "example": "novus-intelligence-lovable-to-web"
+    },
+    "agentName": {
+      "type": "string",
+      "description": "Nombre del agente que ejecutó la tarea",
+      "example": "lovable-analyzer-agent"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp ISO-8601 de inicio de ejecución"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp ISO-8601 de fin de ejecución"
+    },
+    "duration": {
+      "type": "number",
+      "description": "Duración total en segundos",
+      "minimum": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "failure", "partial", "blocked"],
+      "description": "Estado final de la ejecución"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "event_trigger",
+        "planning",
+        "plan_review",
+        "execution",
+        "validation",
+        "documentation",
+        "metrics",
+        "reflection",
+        "knowledge_base_update"
+      ],
+      "description": "Fase del modelo multiagente en la que se ejecutó el agente"
+    },
+    "pattern": {
+      "type": "string",
+      "enum": ["Planner", "Executor", "Validator", "Mediator", "Blackboard", "Event Driven", "Reflection"],
+      "description": "Patrón arquitectónico del agente"
+    },
+    "filesChanged": {
+      "type": "array",
+      "description": "Lista de archivos creados o modificados",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "testsRun": {
+      "type": "integer",
+      "description": "Número de validaciones/tests ejecutados",
+      "minimum": 0,
+      "default": 0
+    },
+    "errors": {
+      "type": "array",
+      "description": "Lista de errores encontrados durante la ejecución",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "warning", "info"]
+          }
+        }
+      },
+      "default": []
+    },
+    "estimatedCost": {
+      "type": "number",
+      "description": "Coste estimado de la ejecución en USD (tokens IA, compute)",
+      "minimum": 0,
+      "default": 0
+    },
+    "qualityScore": {
+      "type": "number",
+      "description": "Puntuación de calidad 0-100 basada en quality gates",
+      "minimum": 0,
+      "maximum": 100,
+      "default": null
+    },
+    "reflectionSummary": {
+      "type": "string",
+      "description": "Resumen breve del aprendizaje post-ejecución generado por Reflection Agent"
+    },
+    "patternsIdentified": {
+      "type": "array",
+      "description": "Patrones exitosos o anti-patrones identificados",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "failuresDocumented": {
+      "type": "array",
+      "description": "Fallos documentados durante la reflexión",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gate": { "type": "string" },
+          "description": { "type": "string" },
+          "mitigation": { "type": "string" }
+        }
+      },
+      "default": []
+    },
+    "kbUpdatesRecommended": {
+      "type": "array",
+      "description": "Actualizaciones recomendadas para Knowledge Base",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "planApproved": {
+      "type": "boolean",
+      "description": "Indica si el plan fue aprobado por Architect Agent antes de ejecución"
+    },
+    "mcpServersUsed": {
+      "type": "array",
+      "description": "Servidores MCP utilizados durante la ejecución",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  }
+}

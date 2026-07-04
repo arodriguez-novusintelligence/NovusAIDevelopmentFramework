@@ -1,0 +1,38 @@
+agent:
+  name: lovable-analyzer-agent
+  pattern: Event Driven
+  layer: Design Source
+  description: Analiza cambios en Lovable y genera artefactos de impacto
+  definition: .claude/agents/lovable-analyzer-agent.md
+  responsibilities:
+    - Detectar y clasificar cambios en novus-nexus
+    - Generar artefactos de impacto frontend/backend
+    - Identificar riesgos de traducción
+  forbidden_actions:
+    - modify_productive_repos
+    - copy_lovable_code
+    - implement_code
+    - deploy
+  allowed_tools:
+    - analyze_diff
+    - write_artifacts
+  mcp_servers:
+    - github
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/rules/lovable-rules.md
+    - docs/lovable-integration.md
+  input_contract:
+    source: novus-nexus
+    diff_or_snapshot: required
+  output_contract:
+    artifacts:
+      - cambios-lovable.json
+      - frontend-impact.md
+      - backend-impact.md
+      - riesgos.md
+  quality_gates:
+    - all_artifacts_generated
+    - changes_classified
+  escalation_rules:
+    - high_severity_risk: escalate_to_planner_and_human

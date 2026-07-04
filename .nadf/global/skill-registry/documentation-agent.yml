@@ -1,0 +1,32 @@
+agent:
+  name: documentation-agent
+  pattern: Blackboard
+  layer: Knowledge
+  description: Actualiza documentación, memoria y resumen de ejecución
+  definition: .claude/agents/documentation-agent.md
+  responsibilities:
+    - Actualizar memory/ y docs del proyecto
+    - Generar resumen-ejecucion.md
+    - Actualizar decision-log.md
+  forbidden_actions:
+    - create_formal_adrs
+    - modify_global_rules
+    - implement_code
+    - deploy
+  allowed_tools:
+    - write_documentation
+  mcp_servers: []
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/memory/
+  input_contract:
+    workflow_artifacts: required
+  output_contract:
+    artifacts:
+      - resumen-ejecucion.md
+    memory:
+      - decision-log.md
+  quality_gates:
+    - resumen_generated
+  escalation_rules:
+    - validation_blocked: document_block_reason

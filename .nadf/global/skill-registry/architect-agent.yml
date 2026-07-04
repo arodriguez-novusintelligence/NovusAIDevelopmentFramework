@@ -1,0 +1,38 @@
+agent:
+  name: architect-agent
+  pattern: Planner
+  layer: Planning
+  description: Valida impacto arquitectónico de planes de proyecto productivo sin modificar código
+  definition: .claude/agents/architect-agent.md
+  responsibilities:
+    - Revisar plan-implementacion.md
+    - Generar impacto-arquitectonico.md
+    - Aprobar o rechazar planes
+    - Requerir ADR para cambios arquitectónicos
+  forbidden_actions:
+    - modify_productive_repos
+    - modify_framework_structure
+    - deploy
+    - implement_code
+    - approve_without_adr_on_arch_change
+  allowed_tools:
+    - read_artifacts
+    - write_review_artifacts
+  mcp_servers:
+    - github
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/global/decision-history/adr/
+    - docs/architecture.md
+  input_contract:
+    artifacts: plan-implementacion.md
+  output_contract:
+    artifacts:
+      - impacto-arquitectonico.md
+      - plan-implementacion.md
+  quality_gates:
+    - plan_review_complete
+    - adr_requirements_identified
+  escalation_rules:
+    - adr_conflict: escalate_to_human_review
+    - stack_change: require_adr

@@ -1,0 +1,39 @@
+agent:
+  name: planner-agent
+  pattern: Planner
+  layer: Planning
+  description: Genera planes de implementación detallados sin modificar código productivo
+  definition: .claude/agents/planner-agent.md
+  responsibilities:
+    - Generar plan-implementacion.md
+    - Descomponer tareas por capa (frontend, backend, DB, infra)
+    - Definir criterios de aceptación
+  forbidden_actions:
+    - modify_productive_repos
+    - deploy
+    - create_secrets
+    - copy_lovable_code
+    - implement_code
+  allowed_tools:
+    - read_artifacts
+    - write_plan_artifacts
+  mcp_servers:
+    - github
+    - jira
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/memory/technical-context.md
+    - .nadf/global/rules/general-rules.md
+  input_contract:
+    artifacts: cambios-lovable.json, frontend-impact.md, backend-impact.md
+    event_or_request: required
+  output_contract:
+    artifacts:
+      - plan-implementacion.md
+      - tareas-ejecutor.json
+  quality_gates:
+    - plan_complete
+    - backend_impact_evaluated
+  escalation_rules:
+    - conflict_with_adr: escalate_to_architect_agent
+    - high_risk: escalate_to_human_review

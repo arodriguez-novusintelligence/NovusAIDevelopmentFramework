@@ -1,0 +1,173 @@
+id: modify-feature
+name: Modify Feature
+version: "2.0.0"
+description: Modifica funcionalidad existente con modelo multiagente de 9 fases
+project: "*"
+triggers:
+  - manual
+  - event:jira.feature.requested
+
+model:
+  phases:
+    - event_trigger
+    - planning
+    - plan_review
+    - execution
+    - validation
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - lovable-analyzer-agent
+  - planner-agent
+  - architect-agent
+  - frontend-integration-agent
+  - backend-impact-agent
+  - backend-agent
+  - database-agent
+  - cloud-agent
+  - qa-agent
+  - security-agent
+  - reviewer-agent
+  - documentation-agent
+  - metrics-agent
+  - reflection-agent
+  - knowledge-base-agent
+  - adr-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    outputs:
+      - artifacts/evento-clasificado.json
+
+  - id: cargar-contexto
+    phase: planning
+    agent: null
+    action: Leer contexto y solicitud de cambio
+    outputs:
+      - contexto-cargado
+
+  - id: analizar-impacto
+    phase: planning
+    agent: lovable-analyzer-agent
+    conditions:
+      - feature_change_request:source == lovable
+    outputs:
+      - artifacts/cambios-lovable.json
+      - artifacts/frontend-impact.md
+      - artifacts/backend-impact.md
+
+  - id: generar-plan
+    phase: planning
+    agent: planner-agent
+    outputs:
+      - artifacts/plan-implementacion.md
+
+  - id: revisar-plan
+    phase: plan_review
+    agent: architect-agent
+    outputs:
+      - artifacts/impacto-arquitectonico.md
+
+  - id: implementar-frontend
+    phase: execution
+    agent: frontend-integration-agent
+    conditions:
+      - plan-implementacion.md:status == approved
+    outputs:
+      - artifacts/resumen-frontend.md
+
+  - id: evaluar-backend
+    phase: planning
+    agent: backend-impact-agent
+    outputs:
+      - artifacts/evaluacion-backend.md
+
+  - id: implementar-backend
+    phase: execution
+    agent: backend-agent
+    conditions:
+      - evaluacion-backend.md:requires_backend == true
+    outputs:
+      - artifacts/resumen-backend.md
+
+  - id: disenar-database
+    phase: execution
+    agent: database-agent
+    conditions:
+      - evaluacion-backend.md:requires_database == true
+    outputs:
+      - artifacts/especificacion-database.md
+
+  - id: proponer-infra
+    phase: execution
+    agent: cloud-agent
+    conditions:
+      - evaluacion-backend.md:requires_infra == true
+    outputs:
+      - artifacts/propuesta-infra.md
+
+  - id: ejecutar-qa
+    phase: validation
+    agent: qa-agent
+    outputs:
+      - artifacts/informe-qa.md
+
+  - id: revision-seguridad
+    phase: validation
+    agent: security-agent
+    outputs:
+      - artifacts/informe-seguridad.md
+
+  - id: revision-coherencia
+    phase: validation
+    agent: reviewer-agent
+    outputs:
+      - artifacts/informe-revision.md
+
+  - id: documentar
+    phase: documentation
+    agent: documentation-agent
+    outputs:
+      - artifacts/resumen-ejecucion.md
+
+  - id: metricas
+    phase: metrics
+    agent: metrics-agent
+    outputs:
+      - artifacts/metricas-ejecucion.json
+
+  - id: reflexion
+    phase: reflection
+    agent: reflection-agent
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+
+  - id: actualizar-kb
+    phase: knowledge_base_update
+    agent: knowledge-base-agent
+    outputs:
+      - artifacts/actualizacion-kb.md
+
+  - id: registrar-adrs
+    phase: knowledge_base_update
+    agent: adr-agent
+    outputs:
+      - artifacts/registro-adr.md
+
+quality_gates:
+  - no_lovable_code_copy
+  - no_mock_data_in_production
+  - build_success
+  - responsive_validation
+  - seo_basic_validation
+  - plan_approved
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json

@@ -1,0 +1,116 @@
+id: cloud-deployment
+name: Cloud Deployment Preparation
+version: "1.0.0"
+description: Prepara despliegue cloud sin ejecutar deploy — requiere aprobación humana
+project: "*"
+triggers:
+  - manual
+  - event:release.requested
+  - event:infra.change
+
+model:
+  phases:
+    - event_trigger
+    - planning
+    - plan_review
+    - execution
+    - validation
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - planner-agent
+  - architect-agent
+  - cloud-agent
+  - devops-agent
+  - security-agent
+  - qa-agent
+  - documentation-agent
+  - metrics-agent
+  - reflection-agent
+  - adr-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    action: Clasificar solicitud de despliegue o cambio infra
+    outputs:
+      - artifacts/evento-clasificado.json
+
+  - id: generar-plan
+    phase: planning
+    agent: planner-agent
+    action: Generar plan de despliegue
+    outputs:
+      - artifacts/plan-implementacion.md
+
+  - id: revisar-plan
+    phase: plan_review
+    agent: architect-agent
+    action: Validar impacto arquitectónico del despliegue
+    outputs:
+      - artifacts/impacto-arquitectonico.md
+
+  - id: generar-iac
+    phase: execution
+    agent: cloud-agent
+    conditions:
+      - plan-implementacion.md:status == approved
+    outputs:
+      - artifacts/propuesta-infra.md
+
+  - id: preparar-devops
+    phase: execution
+    agent: devops-agent
+    outputs:
+      - artifacts/plan-devops.md
+
+  - id: revision-seguridad
+    phase: validation
+    agent: security-agent
+    outputs:
+      - artifacts/informe-seguridad.md
+
+  - id: validar-qa
+    phase: validation
+    agent: qa-agent
+    outputs:
+      - artifacts/informe-qa.md
+
+  - id: documentar
+    phase: documentation
+    agent: documentation-agent
+    outputs:
+      - artifacts/resumen-ejecucion.md
+
+  - id: metricas
+    phase: metrics
+    agent: metrics-agent
+    outputs:
+      - artifacts/metricas-ejecucion.json
+
+  - id: reflexion
+    phase: reflection
+    agent: reflection-agent
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+
+  - id: registrar-adr
+    phase: knowledge_base_update
+    agent: adr-agent
+    outputs:
+      - artifacts/registro-adr.md
+
+quality_gates:
+  - no_secrets_in_config
+  - plan_approved
+  - security_pass
+  - no_autonomous_deploy
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json

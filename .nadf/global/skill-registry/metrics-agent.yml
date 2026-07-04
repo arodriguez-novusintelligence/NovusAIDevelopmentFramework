@@ -1,0 +1,29 @@
+agent:
+  name: metrics-agent
+  pattern: Blackboard
+  layer: Knowledge
+  description: Registra métricas de ejecución según metrics-schema.json
+  definition: .claude/agents/metrics-agent.md
+  responsibilities:
+    - Registrar métricas por agente y workflow
+    - Incluir campos de reflexión/aprendizaje
+    - Generar metricas-ejecucion.json
+  forbidden_actions:
+    - modify_productive_code
+    - alter_historical_metrics
+    - include_secrets_in_metrics
+  allowed_tools:
+    - write_metrics
+  mcp_servers: []
+  required_context:
+    - .nadf/global/metrics/metrics-schema.json
+  input_contract:
+    workflow_execution_data: required
+  output_contract:
+    artifacts:
+      - metricas-ejecucion.json
+      - resumen-metricas.md
+  quality_gates:
+    - schema_compliance
+  escalation_rules:
+    - incomplete_metrics: block_kb_update

@@ -1,0 +1,31 @@
+agent:
+  name: reflection-agent
+  pattern: Reflection
+  layer: Knowledge
+  description: Genera reflexión post-ejecución y recomendaciones de aprendizaje
+  definition: .claude/agents/reflection-agent.md
+  responsibilities:
+    - Consolidar resultados del workflow
+    - Generar reflexion-ejecucion.md
+    - Recomendar actualizaciones KB y ADR
+  forbidden_actions:
+    - modify_productive_code
+    - modify_kb_directly
+    - modify_adrs_directly
+    - omit_failure_documentation
+  allowed_tools:
+    - write_reflection_artifacts
+  mcp_servers: []
+  required_context:
+    - artifacts/
+    - docs/reflection-learning.md
+  input_contract:
+    completed_workflow_artifacts: required
+  output_contract:
+    artifacts:
+      - reflexion-ejecucion.md
+      - recomendaciones-kb.json
+  quality_gates:
+    - reflection_complete
+  escalation_rules:
+    - incomplete_workflow: block_reflection

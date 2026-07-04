@@ -1,0 +1,31 @@
+agent:
+  name: knowledge-base-agent
+  pattern: Blackboard
+  layer: Knowledge
+  description: Actualiza knowledge-base con patrones y errores frecuentes
+  definition: .claude/agents/knowledge-base-agent.md
+  responsibilities:
+    - Documentar patrones exitosos
+    - Registrar errores frecuentes y mitigaciones
+    - Incorporar aprendizajes de reflexión
+  forbidden_actions:
+    - modify_productive_code
+    - delete_kb_history
+    - modify_adrs
+    - invent_unsupported_patterns
+  allowed_tools:
+    - write_knowledge_base
+  mcp_servers: []
+  required_context:
+    - .nadf/global/knowledge-base/
+    - artifacts/reflexion-ejecucion.md
+  input_contract:
+    reflexion-ejecucion.md: required
+  output_contract:
+    artifacts:
+      - actualizacion-kb.md
+    knowledge_base: patterns, errors, components
+  quality_gates:
+    - evidence_backed_updates
+  escalation_rules:
+    - missing_reflection: block_update

@@ -1,0 +1,35 @@
+agent:
+  name: backend-impact-agent
+  pattern: Planner
+  layer: Planning
+  description: Evalúa necesidad de backend y genera especificación sin implementar
+  definition: .claude/agents/backend-impact-agent.md
+  responsibilities:
+    - Evaluar requires_backend
+    - Generar evaluacion-backend.md
+    - Generar especificacion-backend.md si aplica
+  forbidden_actions:
+    - implement_backend_code
+    - deploy
+    - create_secrets
+    - modify_infra
+  allowed_tools:
+    - read_artifacts
+    - write_spec_artifacts
+  mcp_servers:
+    - aws
+    - github
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/rules/backend-impact-rules.md
+    - .nadf/global/rules/provider-independence.md
+  input_contract:
+    artifacts: backend-impact.md, cambios-lovable.json
+  output_contract:
+    artifacts:
+      - evaluacion-backend.md
+      - especificacion-backend.md
+  quality_gates:
+    - all_functional_changes_evaluated
+  escalation_rules:
+    - infra_change_required: notify_cloud_agent

@@ -1,0 +1,79 @@
+id: reflection-learning
+name: Reflection and Learning
+version: "1.0.0"
+description: Ejecuta fases de reflexión, métricas y actualización de knowledge base post-workflow
+project: "*"
+triggers:
+  - manual
+  - event:workflow.completed
+
+model:
+  phases:
+    - event_trigger
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - metrics-agent
+  - reflection-agent
+  - knowledge-base-agent
+  - adr-agent
+  - documentation-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    action: Identificar workflow completado y artefactos disponibles
+    outputs:
+      - artifacts/evento-clasificado.json
+
+  - id: registrar-metricas
+    phase: metrics
+    agent: metrics-agent
+    action: Consolidar métricas del workflow origen
+    inputs:
+      - source_workflow_artifacts
+    outputs:
+      - artifacts/metricas-ejecucion.json
+      - artifacts/resumen-metricas.md
+
+  - id: generar-reflexion
+    phase: reflection
+    agent: reflection-agent
+    action: Generar reflexión y recomendaciones
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+      - artifacts/recomendaciones-kb.json
+
+  - id: actualizar-kb
+    phase: knowledge_base_update
+    agent: knowledge-base-agent
+    action: Actualizar patrones y errores frecuentes
+    outputs:
+      - artifacts/actualizacion-kb.md
+
+  - id: registrar-adrs
+    phase: knowledge_base_update
+    agent: adr-agent
+    action: Registrar ADRs pendientes
+    outputs:
+      - artifacts/registro-adr.md
+
+  - id: documentar
+    phase: documentation
+    agent: documentation-agent
+    action: Consolidar resumen de aprendizaje
+    outputs:
+      - artifacts/resumen-ejecucion.md
+
+quality_gates:
+  - reflection_complete
+  - metrics_registered
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json

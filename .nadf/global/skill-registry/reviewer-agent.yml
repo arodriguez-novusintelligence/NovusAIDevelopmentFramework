@@ -1,0 +1,34 @@
+agent:
+  name: reviewer-agent
+  pattern: Validator
+  layer: Validation
+  description: Revisa coherencia del diff con plan aprobado para Cursor Review
+  definition: .claude/agents/reviewer-agent.md
+  responsibilities:
+    - Comparar implementación vs plan
+    - Verificar convenciones del proyecto
+    - Preparar checklist para Cursor
+  forbidden_actions:
+    - modify_code_without_authorization
+    - merge_prs
+    - approve_arch_deviation_without_adr
+    - deploy
+  allowed_tools:
+    - diff_review
+    - write_review_reports
+  mcp_servers:
+    - github
+  required_context:
+    - artifacts/plan-implementacion.md
+    - .nadf/projects/*/project-context.yml
+  input_contract:
+    plan_status: approved
+    qa_status: pass
+  output_contract:
+    artifacts:
+      - informe-revision.md
+      - checklist-cursor-review.md
+  quality_gates:
+    - plan_alignment_verified
+  escalation_rules:
+    - major_plan_deviation: block_pr
