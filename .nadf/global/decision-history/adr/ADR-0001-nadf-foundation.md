@@ -2,7 +2,9 @@
 
 ## Estado
 
-Aceptado
+Superseded by ADR-0002
+
+> **Nota:** Este ADR documenta la fundación inicial de NADF (6 capas, 6 agentes). Fue reemplazado por ADR-0002, que introduce la arquitectura multiagente de 7 capas y 19 agentes. Las decisiones sobre separación Lovable/productivo permanecen vigentes.
 
 ## Fecha
 

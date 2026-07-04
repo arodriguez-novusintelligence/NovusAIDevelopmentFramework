@@ -1,110 +1,121 @@
-application:
-  name: Novus Intelligence Solutions
-  type: corporate_website
-  domain: artificial_intelligence_services
-  description: Sitio web corporativo de Novus Intelligence para servicios de inteligencia artificial
-  version: "0.2.0"
-  status: multiagent_setup
-
-architecture:
-  model: multiagent
-  adr: ADR-0002-multiagent-patterns
-  layers:
-    - design_source
-    - planning
-    - execution
-    - validation
-    - knowledge
-    - tooling
-    - runtime
-  patterns:
-    - Planner
-    - Executor
-    - Validator
-    - Mediator
-    - Blackboard
-    - Event Driven
-    - Reflection
-
-repositories:
-  framework: NovusAIDevelopmentFramework
-  lovable_source: novus-nexus
-  frontend: NovusIntelligenceWEB
-  backend: NovusIntelligenceBack
-
-frontend:
-  repo: NovusIntelligenceWEB
-  framework: React
-  language: TypeScript
-  styling: Tailwind
-  routing: React Router
-  build_tool: Vite
-  package_manager: npm
-
-backend:
-  repo: NovusIntelligenceBack
-  framework: Serverless Framework
-  runtime: Node.js 20
-  language: TypeScript
-  cloud: AWS
-  region: us-east-1
-  package_manager: npm
-
-design_source:
-  tool: Lovable
-  repo: novus-nexus
-  role: visual_and_functional_intent_only
-  event_trigger: lovable.commit
-  forbidden:
-    - copy_lovable_code_directly
-    - use_mock_data_in_production
-
-multiagent:
-  orchestrator: conceptual
-  primary_workflow: lovable-to-web
-  workflow_steps: 15
-  workflow_phases: 9
-  agents_enabled:
-    - lovable-analyzer-agent
-    - planner-agent
-    - architect-agent
-    - frontend-integration-agent
-    - backend-impact-agent
-    - backend-agent
-    - database-agent
-    - cloud-agent
-    - qa-agent
-    - security-agent
-    - documentation-agent
-    - metrics-agent
-    - reflection-agent
-    - knowledge-base-agent
-    - adr-agent
-  mcp_servers:
-    - github
-    - aws
-
-initial_scope:
-  - landing_page
-  - company_profile
-  - services_section
-  - contact_form
-  - call_to_action
-  - responsive_design
-
-quality_gates:
-  - plan_approved
-  - no_lovable_code_copy
-  - no_mock_data_in_production
-  - build_success
-  - responsive_validation
-  - seo_basic_validation
-  - security_pass
-
-metadata:
-  created: "2026-07-04"
-  updated: "2026-07-04"
-  updated_by: framework-architect-agent
-  nadf_version: "2.0.0"
-  primary_workflow: lovable-to-web
-  primary_command: novus-lovable-sync
+application:
+  name: Novus Intelligence Solutions
+  type: corporate_website
+  domain: artificial_intelligence_services
+  description: Sitio web corporativo de Novus Intelligence para servicios de inteligencia artificial
+  version: "0.2.0"
+  status: multiagent_setup
+
+architecture:
+  model: multiagent
+  adr: ADR-0002-multiagent-patterns
+  layers:
+    - design_source
+    - planning
+    - execution
+    - validation
+    - knowledge
+    - tooling
+    - runtime
+  patterns:
+    - Planner
+    - Executor
+    - Validator
+    - Mediator
+    - Blackboard
+    - Event Driven
+    - Reflection
+
+repositories:
+  framework: NovusAIDevelopmentFramework
+  lovable_source: novus-nexus
+  frontend: NovusIntelligenceWEB
+  backend: NovusIntelligenceBack
+
+frontend:
+  repo: NovusIntelligenceWEB
+  framework: React
+  language: TypeScript
+  styling: Tailwind
+  routing: React Router
+  build_tool: Vite
+  package_manager: npm
+
+backend:
+  repo: NovusIntelligenceBack
+  framework: Serverless Framework
+  runtime: Node.js 20
+  language: TypeScript
+  cloud: AWS
+  region: us-east-1
+  package_manager: npm
+
+design_source:
+  tool: Lovable
+  repo: novus-nexus
+  role: visual_and_functional_intent_only
+  event_trigger: lovable.commit
+  forbidden:
+    - copy_lovable_code_directly
+    - use_mock_data_in_production
+
+multiagent:
+  orchestrator: conceptual
+  orchestrator_mode: manual
+  primary_workflow: lovable-to-web
+  canonical_workflow: .nadf/global/workflow-library/lovable-to-web.yml
+  workflow_steps: 18
+  workflow_phases: 9
+  agents_enabled:
+    - framework-architect-agent
+    - lovable-analyzer-agent
+    - planner-agent
+    - architect-agent
+    - workflow-agent
+    - backend-impact-agent
+    - frontend-integration-agent
+    - backend-agent
+    - database-agent
+    - cloud-agent
+    - devops-agent
+    - qa-agent
+    - security-agent
+    - reviewer-agent
+    - documentation-agent
+    - metrics-agent
+    - reflection-agent
+    - knowledge-base-agent
+    - adr-agent
+  mcp_servers:
+    - github
+    - aws
+
+initial_scope:
+  - landing_page
+  - company_profile
+  - services_section
+  - contact_form
+  - call_to_action
+  - responsive_design
+
+quality_gates:
+  - plan_approved
+  - no_lovable_code_copy
+  - no_mock_data_in_production
+  - build_success
+  - responsive_validation
+  - seo_basic_validation
+  - security_pass
+  - metrics_registered
+  - reflection_generated
+  - adr_if_architectural
+
+metadata:
+  created: "2026-07-04"
+  updated: "2026-07-04"
+  updated_by: framework-architect-agent
+  nadf_version: "2.0.0"
+  primary_workflow: lovable-to-web
+  canonical_workflow: .nadf/global/workflow-library/lovable-to-web.yml
+  primary_command: novus-lovable-sync
+  adr_workflow_reconciliation: ADR-0003-lovable-to-web-canonicalization

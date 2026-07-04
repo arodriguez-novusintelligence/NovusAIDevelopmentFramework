@@ -1,7 +1,7 @@
 id: novus-intelligence-lovable-to-web
 name: Novus Intelligence — Lovable to Web
-version: "2.0.0"
-description: Workflow de 15 pasos para sincronizar cambios novus-nexus al stack productivo
+version: "2.0.1"
+description: Workflow de 18 pasos para sincronizar cambios novus-nexus al stack productivo. Extiende el workflow canónico global con mapeo y reglas específicas del proyecto.
 project: novus-intelligence
 extends: lovable-to-web
 triggers:
@@ -13,17 +13,22 @@ event:
   source: novus-nexus
   description: Cambio detectado en repositorio novus-nexus
 
+# Hereda model.phases del workflow global; el orden de fases es inmutable.
+# Este archivo solo añade mapeo de proyecto, inputs/outputs específicos y reglas locales.
+
 agents:
+  - workflow-agent
   - lovable-analyzer-agent
   - planner-agent
   - architect-agent
-  - frontend-integration-agent
   - backend-impact-agent
+  - frontend-integration-agent
   - backend-agent
   - database-agent
   - cloud-agent
   - qa-agent
   - security-agent
+  - reviewer-agent
   - documentation-agent
   - metrics-agent
   - reflection-agent
@@ -31,8 +36,32 @@ agents:
   - adr-agent
 
 steps:
-  - id: paso-01-analizar-lovable
+  - id: paso-01-event-trigger
     order: 1
+    phase: event_trigger
+    agent: workflow-agent
+    action: Clasificar evento lovable.commit y preparar plan-workflow
+    inputs:
+      - event: lovable.commit
+      - source: novus-nexus
+    outputs:
+      - artifacts/evento-clasificado.json
+      - artifacts/plan-workflow.md
+
+  - id: paso-02-cargar-contexto
+    order: 2
+    phase: event_trigger
+    agent: null
+    action: Leer project-context.yml, reglas y memoria del proyecto
+    inputs:
+      - .nadf/projects/novus-intelligence/project-context.yml
+      - .nadf/projects/novus-intelligence/rules/
+      - .nadf/projects/novus-intelligence/memory/
+    outputs:
+      - contexto-cargado
+
+  - id: paso-03-analizar-lovable
+    order: 3
     phase: planning
     agent: lovable-analyzer-agent
     action: Lovable Analyzer Agent analiza cambio en novus-nexus
@@ -46,8 +75,8 @@ steps:
       - artifacts/backend-impact.md
       - artifacts/riesgos.md
 
-  - id: paso-02-generar-plan
-    order: 2
+  - id: paso-04-generar-plan
+    order: 4
     phase: planning
     agent: planner-agent
     action: Planner Agent genera plan de implementación
@@ -59,18 +88,33 @@ steps:
       - artifacts/plan-implementacion.md
       - artifacts/tareas-ejecutor.json
 
-  - id: paso-03-validar-arquitectura
-    order: 3
+  - id: paso-05-evaluar-backend-impacto
+    order: 5
+    phase: planning
+    agent: backend-impact-agent
+    action: Backend Impact Agent evalúa necesidad backend/DB/infra antes de Plan Review
+    inputs:
+      - artifacts/backend-impact.md
+      - artifacts/cambios-lovable.json
+      - rules: .nadf/projects/novus-intelligence/rules/backend-impact-rules.md
+    outputs:
+      - artifacts/evaluacion-backend.md
+      - artifacts/especificacion-backend.md
+
+  - id: paso-06-revisar-plan
+    order: 6
     phase: plan_review
     agent: architect-agent
-    action: Architect Agent valida impacto arquitectónico
+    action: Architect Agent valida impacto arquitectónico con evaluación backend previa
     inputs:
       - artifacts/plan-implementacion.md
+      - artifacts/evaluacion-backend.md
+      - artifacts/especificacion-backend.md
     outputs:
       - artifacts/impacto-arquitectonico.md
 
-  - id: paso-04-implementar-frontend
-    order: 4
+  - id: paso-07-implementar-frontend
+    order: 7
     phase: execution
     agent: frontend-integration-agent
     action: Frontend Integration Agent implementa en NovusIntelligenceWEB
@@ -85,21 +129,8 @@ steps:
       - NovusIntelligenceWEB/**
       - artifacts/resumen-frontend.md
 
-  - id: paso-05-evaluar-backend
-    order: 5
-    phase: planning
-    agent: backend-impact-agent
-    action: Backend Impact Agent decide si backend es requerido
-    inputs:
-      - artifacts/backend-impact.md
-      - artifacts/cambios-lovable.json
-      - rules: .nadf/projects/novus-intelligence/rules/backend-impact-rules.md
-    outputs:
-      - artifacts/evaluacion-backend.md
-      - artifacts/especificacion-backend.md
-
-  - id: paso-06-implementar-backend
-    order: 6
+  - id: paso-08-implementar-backend
+    order: 8
     phase: execution
     agent: backend-agent
     action: Backend Agent implementa en NovusIntelligenceBack si backend requerido
@@ -112,8 +143,8 @@ steps:
       - NovusIntelligenceBack/**
       - artifacts/resumen-backend.md
 
-  - id: paso-07-diseno-database
-    order: 7
+  - id: paso-09-diseno-database
+    order: 9
     phase: execution
     agent: database-agent
     action: Database Agent diseña cambios si DB requerida
@@ -123,8 +154,8 @@ steps:
       - artifacts/especificacion-database.md
       - artifacts/resumen-database.md
 
-  - id: paso-08-propuesta-infra
-    order: 8
+  - id: paso-10-propuesta-infra
+    order: 10
     phase: execution
     agent: cloud-agent
     action: Cloud Agent genera IaC o propuesta cloud si infra requerida
@@ -134,8 +165,8 @@ steps:
       - artifacts/propuesta-infra.md
       - artifacts/resumen-cloud.md
 
-  - id: paso-09-validar-qa
-    order: 9
+  - id: paso-11-validar-qa
+    order: 11
     phase: validation
     agent: qa-agent
     action: QA Agent valida calidad
@@ -146,8 +177,8 @@ steps:
       - artifacts/informe-qa.md
       - artifacts/qa-result.json
 
-  - id: paso-10-revision-seguridad
-    order: 10
+  - id: paso-12-revision-seguridad
+    order: 12
     phase: validation
     agent: security-agent
     action: Security Agent revisa seguridad
@@ -155,8 +186,21 @@ steps:
       - artifacts/informe-seguridad.md
       - artifacts/security-result.json
 
-  - id: paso-11-documentar
-    order: 11
+  - id: paso-13-revision-coherencia
+    order: 13
+    phase: validation
+    agent: reviewer-agent
+    action: Reviewer Agent verifica coherencia con plan, convenciones y diff review
+    inputs:
+      - artifacts/plan-implementacion.md
+      - artifacts/informe-qa.md
+      - artifacts/informe-seguridad.md
+    outputs:
+      - artifacts/informe-revision.md
+      - artifacts/checklist-cursor-review.md
+
+  - id: paso-14-documentar
+    order: 14
     phase: documentation
     agent: documentation-agent
     action: Documentation Agent documenta ejecución
@@ -166,8 +210,8 @@ steps:
       - artifacts/resumen-ejecucion.md
       - memory/decision-log.md
 
-  - id: paso-12-metricas
-    order: 12
+  - id: paso-15-metricas
+    order: 15
     phase: metrics
     agent: metrics-agent
     action: Metrics Agent registra métricas
@@ -175,8 +219,8 @@ steps:
       - artifacts/metricas-ejecucion.json
       - artifacts/resumen-metricas.md
 
-  - id: paso-13-reflexion
-    order: 13
+  - id: paso-16-reflexion
+    order: 16
     phase: reflection
     agent: reflection-agent
     action: Reflection Agent genera aprendizaje
@@ -184,8 +228,8 @@ steps:
       - artifacts/reflexion-ejecucion.md
       - artifacts/recomendaciones-kb.json
 
-  - id: paso-14-actualizar-kb
-    order: 14
+  - id: paso-17-actualizar-kb
+    order: 17
     phase: knowledge_base_update
     agent: knowledge-base-agent
     action: Knowledge Base Agent actualiza patrones o errores frecuentes
@@ -194,8 +238,8 @@ steps:
     outputs:
       - artifacts/actualizacion-kb.md
 
-  - id: paso-15-registrar-adrs
-    order: 15
+  - id: paso-18-registrar-adrs
+    order: 18
     phase: knowledge_base_update
     agent: adr-agent
     action: ADR Agent registra decisiones relevantes

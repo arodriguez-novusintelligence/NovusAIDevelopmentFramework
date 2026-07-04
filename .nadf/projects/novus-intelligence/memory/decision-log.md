@@ -49,6 +49,18 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-04 — Reconciliación workflow lovable-to-web
+
+**Contexto:** La revisión arquitectónica detectó divergencia crítica entre el workflow global (18 pasos) y el de proyecto (15 pasos): orden invertido de backend-impact vs frontend, ausencia de workflow-agent y reviewer-agent.
+
+**Decisión:** Alinear el workflow de proyecto al canónico global con 18 pasos. Backend Impact en Planning (paso 5) antes de Plan Review (paso 6) y antes de Execution. Incluir workflow-agent en Event Trigger y reviewer-agent en Validation.
+
+**Rationale:** Eliminar riesgo de implementación frontend sin evaluación backend previa y garantizar Plan Review con alcance completo.
+
+**ADR:** ADR-0003-lovable-to-web-canonicalization
+
+---
+
 ## Template para nuevas entradas
 
 ```

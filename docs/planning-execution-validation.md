@@ -12,23 +12,21 @@ NADF separa formalmente tres fases en todo workflow de implementación. Ningún 
 |--------|-----------------|
 | Lovable Analyzer | Analizar cambios en fuente de diseño |
 | Planner Agent | Generar plan de implementación detallado |
-| Architect Agent | Validar impacto arquitectónico del plan |
-| Backend Impact Agent | Decidir si se requiere backend/DB/infra |
-| Workflow Agent | Seleccionar y parametrizar workflow |
+| Backend Impact Agent | Evaluar necesidad backend/DB/infra (**antes de Plan Review**) |
+| Workflow Agent | Clasificar evento y seleccionar/parametrizar workflow |
 
-**Salidas:** `plan-implementacion.md`, `impacto-arquitectonico.md`, artefactos de análisis Lovable
+**Salidas:** `plan-implementacion.md`, `evaluacion-backend.md`, `especificacion-backend.md`, artefactos de análisis Lovable
 
-**Restricción:** **Prohibido modificar código productivo** en esta fase.
+**Restricción:** **Prohibido modificar código productivo** en esta fase. **Backend Impact Agent debe completarse antes de Plan Review y antes de Execution.**
 
 ## Fase 2: Revisión de plan (Plan Review)
 
-**Objetivo:** Confirmar que el plan es coherente con arquitectura, reglas y ADRs existentes.
+**Objetivo:** Confirmar que el plan es coherente con arquitectura, reglas y ADRs existentes, **con evaluación backend previa**.
 
-- Architect Agent valida alineación arquitectónica
-- Backend Impact confirma alcance backend/DB/cloud
+- Architect Agent valida alineación arquitectónica consumiendo `evaluacion-backend.md`
 - Workflow Agent verifica que el workflow seleccionado es el correcto
 
-**Criterio de avance:** Plan marcado como `approved` en artefacto `plan-implementacion.md`.
+**Salidas:** `impacto-arquitectonico.md`, plan marcado como `approved` o `rejected`
 
 ## Fase 3: Ejecución (Execution Layer)
 

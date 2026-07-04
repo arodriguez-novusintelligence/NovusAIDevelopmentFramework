@@ -2,10 +2,10 @@
 
 ## Arquitectura multiagente NADF
 
-El proyecto opera bajo el modelo multiagente de NADF (ADR-0002) con workflow `lovable-to-web` de 15 pasos y 9 fases.
+El proyecto opera bajo el modelo multiagente de NADF (ADR-0002) con workflow `lovable-to-web` de **18 pasos** y 9 fases, alineado al canónico global (ADR-0003).
 
 ```
-Evento novus-nexus → Orquestador → Planning → Execution → Validation → Knowledge → PR → Cursor
+Evento novus-nexus → Workflow Agent → Planning → Plan Review → Execution → Validation → Knowledge → PR → Cursor
 ```
 
 Referencia: `docs/multiagent-architecture.md`
@@ -47,16 +47,18 @@ Referencia: `docs/multiagent-architecture.md`
 
 ## Agentes activos en workflow principal
 
-| Paso | Agente | Capa |
+| Paso | Agente | Fase |
 |------|--------|------|
-| 1 | Lovable Analyzer | Design Source |
-| 2 | Planner | Planning |
-| 3 | Architect | Planning |
-| 4 | Frontend Integration | Execution |
+| 1 | Workflow Agent | Event Trigger |
+| 2 | (cargar contexto) | Event Trigger |
+| 3 | Lovable Analyzer | Planning |
+| 4 | Planner | Planning |
 | 5 | Backend Impact | Planning |
-| 6-8 | Backend, Database, Cloud | Execution (cond.) |
-| 9-10 | QA, Security | Validation |
-| 11-15 | Docs, Metrics, Reflection, KB, ADR | Knowledge |
+| 6 | Architect | Plan Review |
+| 7 | Frontend Integration | Execution (cond.) |
+| 8-10 | Backend, Database, Cloud | Execution (cond.) |
+| 11-13 | QA, Security, Reviewer | Validation |
+| 14-18 | Docs, Metrics, Reflection, KB, ADR | Knowledge |
 
 ## Integración MCP
 
@@ -80,10 +82,12 @@ Solo nombres documentados en project-context y environments/. Nunca valores real
 | Cloud provider | AWS | ADR-0001 |
 | Arquitectura multiagente | 7 capas, 19 agentes | ADR-0002 |
 | Separación Lovable/prod | Intención vs implementación | ADR-0001 |
-| Workflow principal | 15 pasos lovable-to-web | ADR-0002 |
+| Workflow principal | 18 pasos lovable-to-web | ADR-0003 |
+| Orden de fases | Canónico global vía extends | ADR-0003 |
 
 ## Referencias
 
 - project-context.yml
 - docs/multiagent-architecture.md
-- .nadf/projects/novus-intelligence/workflows/lovable-to-web.yml
+- Workflow canónico: `.nadf/global/workflow-library/lovable-to-web.yml`
+- Workflow proyecto: `.nadf/projects/novus-intelligence/workflows/lovable-to-web.yml`
