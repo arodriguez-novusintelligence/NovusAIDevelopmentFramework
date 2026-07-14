@@ -4,6 +4,32 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-14 — Primera corrida workflow Lovable → Web (M6)
+
+**Contexto:** Ejecución piloto del workflow `novus-intelligence-lovable-to-web` sobre baseline Lovable `novus-nexus@e3a9819` (13 cambios, `backendRequired: true`). Runtime Cursor Cloud Agent (M6), target DEV AWS `sa-east-1`, run ID `bc-7db90cca-6bbe-4914-bce2-8b237c3cd973`.
+
+**Decisión:** Documentar la corrida como **parcialmente completada con bloqueos de validación**. No proceder a merge de ramas productivas ni despliegue DEV hasta resolver hallazgos bloqueantes.
+
+**Resultados clave:**
+
+- Plan `PLAN-NOVUS-LOVABLE-2026-07-14` aprobado por architect-agent.
+- Frontend implementado en `NovusIntelligenceWEB@cursor/implement-novus-frontend-2d22` (Fases 0–4 + UI contacto); paridad visual remediada en iteración posterior.
+- Backend implementado en `NovusIntelligenceBack@cursor/implement-contact-api-04c8` (`POST /api/v1/contact`).
+- Infra propuesta en `propuesta-infra.md`; región DEV reconciliada a `sa-east-1`.
+- QA FAIL: 4 errores ESLint en componentes UI WEB (`qualityScore: 0`).
+- Security FAIL: IAM SES wildcard + rate limit por IP ausente (`securityScore: 72`).
+- 15 agentes ejecutados de 19; fases Knowledge completadas (métricas, reflexión, KB, ADR).
+- 13+ PRs mergeados a `feature/nadf-foundation`; ningún merge a `main` en repos productivos.
+- `NO_DEPLOY` respetado en toda la corrida. **QualityScore global: 62/100**.
+
+**Rationale:** La documentación consolida evidencia auditable para corrección dirigida. Los gates `build_success` y `security_pass` bloquean avance a reviewer-agent según workflow canónico NADF, aunque métricas, reflexión y KB se completaron para capturar aprendizajes reutilizables.
+
+**Artefacto:** `artifacts/resumen-ejecucion.md`
+
+**Próximos agentes:** frontend-integration-agent (lint) → backend-agent (IAM + rate limit) → qa-agent → security-agent → visual-parity-agent → reviewer-agent.
+
+---
+
 ## 2026-07-14 — MVP automatización + paridad visual exacta
 
 **Contexto:** El sitio DEV no igualaba Lovable y no había trigger automático ante `lovable.commit`.
