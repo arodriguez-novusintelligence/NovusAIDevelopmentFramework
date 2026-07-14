@@ -8,15 +8,15 @@
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
-**Rama:** `cursor/propuesta-infra-dev-1385`
+**Rama:** `cursor/propuesta-infra-dev-caea`
 
 ---
 
 ## Resumen ejecutivo
 
-Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **sa-east-1**, reconciliando la configuración de `environments/dev.yml` (previamente `us-east-1`) con el target operativo del workflow.
+Se generó/actualizó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **sa-east-1**, alineada con `environments/dev.yml` (región ya reconciliada; recursos frontend parcialmente existentes).
 
-**Despliegue:** No realizado (`NO_DEPLOY`). La publicación requiere aprobación humana explícita y ejecución del checklist en `propuesta-infra.md`.
+**Despliegue:** No realizado (`NO_DEPLOY`). La publicación queda para pipeline post-gates (ADR-0006) o ejecución manual del checklist en `propuesta-infra.md`.
 
 ---
 
@@ -47,9 +47,10 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 | Componente | Nombre / identificador |
 |------------|----------------------|
-| Bucket SPA | **`novus-intelligence-web-dev`** |
-| CloudFront | `novus-intelligence-web-dev-cdn` |
-| URL pública | `https://dev.novusintelligence.com` |
+| Bucket SPA | **`novus-intelligence-web-dev-519010577666`** |
+| CloudFront | **`E8IN00J3MFCNO`** |
+| URL activa | `https://d1bfu6klutpp8m.cloudfront.net` |
+| URL DNS objetivo | `https://dev.novusintelligence.com` (pendiente alias) |
 | Certificado ACM (CloudFront) | `dev.novusintelligence.com` (us-east-1) |
 
 ### Assets
@@ -68,17 +69,18 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Secrets Manager | `/novus-intelligence/dev/crm` (opcional) |
 | SSM | `/novus-intelligence/dev/*` (CORS, rate limit, captcha flags, log level) |
 
-**Variables normalizadas (canónicas):** `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO` (reemplazan variantes `CONTACT_SES_*`).
+**Variables normalizadas (canónicas):** `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO`.
 
 ---
 
 ## Reconciliación regional (TASK-INFRA-001)
 
-| Campo | Antes | Después |
-|-------|-------|---------|
-| `environments/dev.yml` → `region` | `us-east-1` | **`sa-east-1`** |
-| Recursos compute/API/SES/S3 | — | sa-east-1 |
-| Certificado CloudFront | — | us-east-1 (requisito AWS) |
+| Campo | Estado |
+|-------|--------|
+| `environments/dev.yml` → `region` | **`sa-east-1`** — satisfecha |
+| Recursos compute/API/SES/S3 | sa-east-1 |
+| Certificado CloudFront | us-east-1 (requisito AWS) |
+| Bucket frontend + CloudFront | Existentes; documentados en propuesta |
 
 ---
 
@@ -86,7 +88,7 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 | Tarea | Estado | Evidencia |
 |-------|--------|-----------|
-| TASK-INFRA-001 | ✅ Documentada + `dev.yml` actualizado | Región sa-east-1 |
+| TASK-INFRA-001 | ✅ | Región sa-east-1 en `dev.yml` |
 | TASK-INFRA-002 | ✅ | API Gateway + Lambda + SES en propuesta |
 | TASK-INFRA-003 | ✅ | S3 + CloudFront frontend documentado |
 | TASK-INFRA-004 | ✅ | Bucket assets documentado |
@@ -101,7 +103,6 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | `plan_approved` | ✅ | Plan status `approved` |
 | `NO_DEPLOY` | ✅ | Sin apply ni recursos creados |
 | `NO_SECRETS_IN_REPO` | ✅ | Solo nombres y paths documentados |
-| `deploy_human_approval` | ✅ | Checklist explícito para humano |
 | `TARGET_DEV_REGION_SA_EAST_1` | ✅ | Propuesta alineada a sa-east-1 |
 
 ---
@@ -114,8 +115,9 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Secrets creados en AWS | Pendiente humano | Lambda no puede enviar email sin secrets |
 | SES dominio verificado | Pendiente humano | Bloqueante para envío real |
 | Frontend build CI | Pendiente devops-agent | Deploy SPA requiere pipeline |
+| Quality gates pre-deploy | Pendiente qa/security/visual-parity | Requeridos para auto-deploy DEV (ADR-0006) |
 
-**Despliegue DEV bloqueado hasta:** `deploy_human_approval` + prerrequisitos Fase A del checklist.
+**Despliegue DEV bloqueado hasta:** gates NADF completados + prerrequisitos Fase A del checklist.
 
 ---
 
@@ -146,8 +148,8 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Agente | Acción |
 |--------|--------|
 | **backend-agent** | Implementar handler y `serverless.yml` según propuesta |
-| **devops-agent** | Pipeline CI + variables build; deploy solo con aprobación |
-| **Humano (ops)** | Ejecutar checklist Fases A–F tras `deploy_human_approval` |
+| **devops-agent** | Pipeline CI + variables build; deploy auto tras gates |
+| **Humano (ops)** | Ejecutar checklist Fases A–F si deploy manual |
 | **qa-agent** | Validación end-to-end post-deploy (Fase 9) |
 | **security-agent** | Revisar secrets, CORS, rate limit, captcha pre-prod |
 
@@ -167,3 +169,4 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Propuesta infra DEV sa-east-1 + resumen cloud | cloud-agent |
+| 2026-07-14 | Reconciliación con `dev.yml` actual y ADR-0006 | cloud-agent |
