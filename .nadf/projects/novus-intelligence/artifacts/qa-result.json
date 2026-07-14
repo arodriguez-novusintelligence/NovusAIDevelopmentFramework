@@ -1,0 +1,160 @@
+{
+  "project": "novus-intelligence",
+  "workflow": "novus-intelligence-lovable-to-web",
+  "step": "paso-09-validar-qa",
+  "agent": "qa-agent",
+  "agentName": "qa-agent",
+  "timestamp": "2026-07-14T10:30:00Z",
+  "runtime": "Cursor Cloud Agent (M6)",
+  "targetEnvironment": {
+    "name": "dev",
+    "provider": "aws",
+    "region": "sa-east-1"
+  },
+  "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
+  "planStatus": "approved",
+  "status": "fail",
+  "qualityScore": 0,
+  "summary": "Build exitoso en WEB y Back; lint WEB falla con 4 errores ESLint bloqueantes. Gates críticos de seguridad, mocks y copia Lovable pasan. Workflow bloqueado hasta corregir lint.",
+  "repositories": {
+    "framework": {
+      "name": "NovusAIDevelopmentFramework",
+      "branch": "cursor/propuesta-infra-dev-1385",
+      "evaluated": true
+    },
+    "frontend": {
+      "name": "NovusIntelligenceWEB",
+      "branch": "cursor/implement-novus-frontend-2d22",
+      "mainBranchStatus": "scaffold_only",
+      "evaluated": true
+    },
+    "backend": {
+      "name": "NovusIntelligenceBack",
+      "branch": "cursor/implement-contact-api-04c8",
+      "mainBranchStatus": "scaffold_only",
+      "evaluated": true
+    }
+  },
+  "testsRun": [
+    {
+      "id": "build-web",
+      "repo": "NovusIntelligenceWEB",
+      "command": "npm run build",
+      "status": "pass"
+    },
+    {
+      "id": "lint-web",
+      "repo": "NovusIntelligenceWEB",
+      "command": "npm run lint",
+      "status": "fail",
+      "errors": 4,
+      "warnings": 1
+    },
+    {
+      "id": "build-back",
+      "repo": "NovusIntelligenceBack",
+      "command": "npm run build",
+      "status": "pass"
+    },
+    {
+      "id": "lint-back",
+      "repo": "NovusIntelligenceBack",
+      "command": "npm run lint",
+      "status": "pass"
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "plan_approved",
+      "blocking": true,
+      "status": "pass",
+      "evidence": "plan-implementacion.md status approved"
+    },
+    {
+      "id": "no_lovable_code_copy",
+      "blocking": true,
+      "status": "pass",
+      "evidence": "Sin imports novus-nexus; reimplementación propia en WEB"
+    },
+    {
+      "id": "no_mock_data_in_production",
+      "blocking": true,
+      "status": "pass",
+      "evidence": "contact.ts sin fallback demo; error explícito sin VITE_NOVUS_API_URL"
+    },
+    {
+      "id": "no_secrets_in_repo",
+      "blocking": true,
+      "status": "pass",
+      "evidence": "Escaneo sin credenciales en WEB, Back y artifacts"
+    },
+    {
+      "id": "build_success",
+      "blocking": true,
+      "status": "fail",
+      "evidence": "Build OK en ambos repos; lint WEB 4 errores @typescript-eslint/no-empty-object-type"
+    },
+    {
+      "id": "responsive_validation",
+      "blocking": true,
+      "status": "pass",
+      "evidence": "Análisis estático: breakpoints sm/md/lg y menú móvil presentes",
+      "method": "static_code_review"
+    },
+    {
+      "id": "seo_basic_validation",
+      "blocking": false,
+      "status": "pass",
+      "evidence": "PageMetaTags en 10 rutas + 404; title/description/og configurados",
+      "method": "static_code_review"
+    },
+    {
+      "id": "deploy_human_approval",
+      "blocking": true,
+      "status": "pass",
+      "evidence": "NO_DEPLOY respetado; sin despliegue ejecutado"
+    }
+  ],
+  "planAlignment": {
+    "status": "partial",
+    "completedPhases": [0, 1, 2, 3, 4, 5],
+    "pendingPhases": [6, 7],
+    "gaps": [
+      "NovusIntelligenceWEB lint errors block merge to main",
+      "Feature branches not merged to main in WEB and Back",
+      "resumen-backend.md not merged in Framework artifacts",
+      "pipeline-config.md missing (TASK-DEVOPS-001)",
+      "E2E contact API test blocked by NO_DEPLOY"
+    ]
+  },
+  "lintErrors": [
+    {
+      "file": "src/components/ui/Input.tsx",
+      "line": 4,
+      "rule": "@typescript-eslint/no-empty-object-type"
+    },
+    {
+      "file": "src/components/ui/Label.tsx",
+      "line": 4,
+      "rule": "@typescript-eslint/no-empty-object-type"
+    },
+    {
+      "file": "src/components/ui/Select.tsx",
+      "line": 4,
+      "rule": "@typescript-eslint/no-empty-object-type"
+    },
+    {
+      "file": "src/components/ui/Textarea.tsx",
+      "line": 4,
+      "rule": "@typescript-eslint/no-empty-object-type"
+    }
+  ],
+  "blockers": [
+    "NovusIntelligenceWEB: 4 errores ESLint bloqueantes en componentes UI"
+  ],
+  "nextAgentSuggested": "frontend-integration-agent",
+  "artifactsProduced": [
+    "artifacts/informe-qa.md",
+    "artifacts/qa-result.json"
+  ]
+}
