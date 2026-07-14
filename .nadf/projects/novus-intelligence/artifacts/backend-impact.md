@@ -1,8 +1,9 @@
 # Impacto Backend — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  
-**Fuente:** novus-nexus @ `e3a9819`  
-**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS us-east-1)  
+**Fuente:** novus-nexus @ `746c129`  
+**Delta desde:** `e3a9819` (17 commits)  
+**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS sa-east-1)  
 **Fecha:** 2026-07-14  
 **Agente:** lovable-analyzer-agent
 
@@ -10,13 +11,29 @@
 
 ## Resumen ejecutivo
 
-El prototipo Lovable **requiere un único endpoint backend** para funcionalidad productiva: el formulario de contacto. No se detectan otros endpoints, bases de datos ni integraciones backend en el snapshot actual. El componente `MultiAgentDemo` es puramente frontend (visualización educativa) y no requiere API.
+El delta reciente (`e3a9819` → `746c129`) **no introduce nuevos requisitos backend**. Los cambios son exclusivamente frontend: modal de simulación, rediseño de Testimonials, assets de logos y workflow CI.
 
-**backendRequired: true** — condicionado al formulario de contacto.
+El prototipo Lovable sigue requiriendo **un único endpoint backend** para funcionalidad productiva: el formulario de contacto. Los componentes interactivos (`NovusDevFrameworkDemo`, `MultiAgentDemo`) son puramente frontend (visualización educativa) y no requieren API.
+
+**backendRequired: true** — condicionado únicamente al formulario de contacto (sin cambios respecto al análisis anterior).
 
 ---
 
-## Endpoints requeridos
+## Evaluación del delta
+
+| Cambio | ID | ¿Requiere backend? | Motivo |
+|--------|-----|-------------------|--------|
+| NovusDevFrameworkDemo | CHG-014 | No | Simulación visual local, sin persistencia |
+| Hero CTA simulación | CHG-015 | No | Abre modal client-side |
+| Header demo trigger | CHG-016 | No | CustomEvent local |
+| Testimonials redesign | CHG-017 | No | Contenido estático de cases.ts |
+| Logos CDN Lovable | CHG-018 | No | Assets estáticos; servir desde WEB/CDN |
+| CI notify-nadf | CHG-019 | No | Infraestructura CI, no API productiva |
+| Hero badge removal | CHG-020 | No | Cambio visual |
+
+---
+
+## Endpoints requeridos (sin cambios)
 
 ### POST /api/v1/contact
 
@@ -63,122 +80,37 @@ El prototipo Lovable **requiere un único endpoint backend** para funcionalidad 
 
 ---
 
-## Implementación backend esperada
+## Servicios AWS implicados
 
-Según `reglasInfra/backend-endpoints.yml`:
-
-| Componente | Especificación |
-|------------|----------------|
-| **Lambda** | `novus-contact-handler`, handler `index.handler` |
-| **API Gateway** | REST o HTTP API con ruta `/api/v1/contact` |
-| **SES** | Envío de email a `CONTACT_SES_TO` desde `CONTACT_SES_FROM` |
-| **CRM (opcional)** | Webhook a `CRM_WEBHOOK_URL` |
-| **Permisos IAM** | `ses:SendEmail`, `logs:*` |
-| **Observabilidad** | CloudWatch alarms (lambda errors, API 5xx) |
-
-### Variables de entorno requeridas
-
-| Variable | Tipo | Uso |
-|----------|------|-----|
-| `CONTACT_SES_FROM` | Secreto | Email remitente SES |
-| `CONTACT_SES_TO` | Secreto | Email destino notificaciones |
-| `CRM_WEBHOOK_URL` | Secreto (opcional) | Integración CRM externa |
-
-### Variables frontend (públicas)
-
-| Variable | Valor prod | Uso |
-|----------|------------|-----|
-| `VITE_NOVUS_API_URL` | `https://api.novusintelligencesolutions.com` | Base URL API |
-| `VITE_DEMO_MODE` | `false` | **Obligatorio false en producción** |
+| Servicio | Uso | Nuevo en delta |
+|----------|-----|----------------|
+| API Gateway | Exponer POST /api/v1/contact | No |
+| Lambda | Handler de contacto | No |
+| SES o SNS | Notificación de leads | No |
+| DynamoDB (opcional) | Persistencia de leads | No |
+| WAF / Rate limiting | Protección formulario | No |
 
 ---
 
-## Comportamiento actual en Lovable (no productivo)
+## Riesgos backend del delta
 
-El archivo `src/lib/api/contact.ts` implementa un fallback demo:
+| Riesgo | Severidad | Nota |
+|--------|-----------|------|
+| Ninguno nuevo | — | Delta 100% frontend |
 
-- Si `VITE_NOVUS_API_URL` no está definida **y** (`VITE_DEMO_MODE=true` o `import.meta.env.DEV`), retorna éxito simulado con `requestId: demo-{timestamp}`.
-- En producción sin API, retorna `{ ok: false, message: "Servicio de contacto no configurado." }`.
-
-**Este fallback demo NO debe replicarse en el frontend productivo.** Es un riesgo documentado en `riesgos.md`.
-
----
-
-## Funcionalidades sin impacto backend
-
-| Componente | Motivo |
-|------------|--------|
-| MultiAgentDemo | Visualización estática/animada; datos hardcoded en componente |
-| Navegación y routing | Client-side only |
-| Contenido estático (services, solutions, cases) | Archivos TS estáticos; migrar a content/ del frontend |
-| Páginas legales | Contenido estático |
-| SEO meta tags | Generados en build/SSR del frontend |
-| Header/Footer/Layout | Sin datos dinámicos |
+Los riesgos preexistentes (modo demo en Lovable, falta de captcha) siguen vigentes. Ver `riesgos.md` (R-001, R-008).
 
 ---
 
-## Seguridad y validación
+## Recomendaciones para backend-impact-agent (paso 05)
 
-Requisitos detectados en Lovable y reglas de infra:
-
-| Requisito | Estado en Lovable | Requerido en backend |
-|-----------|-------------------|----------------------|
-| Validación campos required | Client-side | Server-side obligatorio |
-| Rate limiting | No implementado | Recomendado (429) |
-| Captcha (hCaptcha/Turnstile) | Pendiente (gap documentado) | Recomendado pre-prod |
-| Sanitización input | No visible | Obligatorio |
-| CORS | No definido en Lovable | Configurar en API Gateway |
-| Secrets en código | No detectados | Mantener en AWS Secrets/SSM |
-
----
-
-## Dependencias AWS
-
-| Servicio | Uso | Prioridad |
-|----------|-----|-----------|
-| Lambda | Handler de contacto | Alta |
-| API Gateway | Exposición REST | Alta |
-| SES | Notificación email | Alta |
-| CloudWatch | Logs y alarmas | Media |
-| Amplify (frontend) | Hosting | Media (DevOps, no backend logic) |
-
-Dominios esperados (según `reglasInfra/aws-prod.yml`):
-
-- API prod: `https://api.novusintelligencesolutions.com`
-- API dev: `https://dev-api.novusintelligencesolutions.com`
-
----
-
-## Evaluación de necesidad backend por cambio
-
-| ID Cambio | Componente | requiresBackend | Justificación |
-|-----------|------------|-----------------|---------------|
-| CHG-008 | contact-form | **Sí** | Submit a API real |
-| CHG-011 | api-contract | **Sí** | Define contrato a implementar |
-| CHG-009 | MultiAgentDemo | No | Solo visualización |
-| CHG-001–007, 010, 012–013 | Resto | No | Frontend/contenido estático |
-
----
-
-## Gaps pendientes (handoff a backend-impact-agent)
-
-1. **Captcha:** Lovable documenta como TODO pre-prod; backend debe soportar validación de token.
-2. **CRM webhook:** Opcional; definir si se implementa en MVP.
-3. **i18n:** No requiere backend en alcance actual.
-4. **Blog/recursos:** Fuera de alcance inicial.
-
----
-
-## Recomendación para planner-agent
-
-1. Incluir implementación de `POST /api/v1/contact` como **tarea bloqueante** para la página de contacto productiva.
-2. Coordinar con **backend-impact-agent** (paso 5) para `evaluacion-backend.md` y `especificacion-backend.md`.
-3. El MultiAgentDemo puede implementarse en frontend sin esperar backend.
-4. Secuenciar: backend contact API → frontend contacto con API real → validación QA.
+1. **Sin acción** para CHG-014 a CHG-020 — no generan endpoints nuevos.
+2. Mantener prioridad en `POST /api/v1/contact` como blocker del formulario productivo.
+3. Evaluar captcha (hCaptcha/Turnstile) antes de habilitar formulario en prod.
+4. El workflow `notify-nadf.yml` (CHG-019) es responsabilidad DevOps/CI, no backend API.
 
 ---
 
 ## Próximo agente
 
-**backend-impact-agent** (paso 5 del workflow) debe detallar la especificación Lambda, IAM y despliegue.  
-**planner-agent** (paso 4) debe incluir la dependencia backend en el plan de implementación.
+**planner-agent** — el plan de implementación puede ejecutar cambios frontend del delta sin esperar backend, excepto el formulario de contacto que sigue bloqueado por API.
