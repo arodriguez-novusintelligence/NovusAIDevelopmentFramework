@@ -1,16 +1,17 @@
 {
   "project": "novus-intelligence",
   "workflowId": "novus-intelligence-lovable-to-web",
-  "step": "paso-16-reflexion",
+  "step": "paso-17-reflexion",
   "agentName": "reflection-agent",
   "pattern": "Reflection",
-  "generatedAt": "2026-07-14T11:15:00Z",
+  "generatedAt": "2026-07-14T18:00:00Z",
   "runtime": "Cursor Cloud Agent (M6)",
   "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
-  "workflowRunId": "bc-7db90cca-6bbe-4914-bce2-8b237c3cd973",
+  "workflowRunId": "bc-cc30f597-a715-4ebc-9cee-5b65065fa596",
+  "priorRunId": "bc-7db90cca-6bbe-4914-bce2-8b237c3cd973",
   "workflowStatus": "blocked",
   "qualityScore": 62,
-  "reflectionSummary": "Primera corrida Lovable→Web completó planning y execution (~78%) con gates de intención (sin copia Lovable, sin mocks, sin secrets) en PASS; bloqueada por lint WEB (interfaces vacías shadcn) y seguridad backend (IAM SES wildcard, rate limit no conectado).",
+  "reflectionSummary": "Primera corrida Lovable→Web completó planning y execution (~78%) con gates de intención (sin copia Lovable, sin mocks, sin secrets) en PASS; bloqueada por lint WEB (interfaces vacías shadcn), seguridad backend (IAM SES wildcard, rate limit no conectado) y paridad visual formal pendiente (VP-001).",
   "patternsIdentified": [
     {
       "id": "PAT-001",
@@ -65,6 +66,15 @@
       "evidence": ["artifacts/resumen-ejecucion.md", "artifacts/metricas-ejecucion.json"],
       "reusability": "high",
       "applicableWorkflows": ["*"]
+    },
+    {
+      "id": "PAT-007",
+      "type": "success",
+      "title": "Fases Knowledge desacopladas de validación operativa",
+      "description": "Metrics, reflection, KB y ADR completaron documentando aprendizajes aunque reviewer-agent no ejecutara — evita pérdida de conocimiento en corridas blocked.",
+      "evidence": ["artifacts/metricas-ejecucion.json", "artifacts/actualizacion-kb.md", "artifacts/registro-adr.md"],
+      "reusability": "high",
+      "applicableWorkflows": ["lovable-to-web", "*"]
     }
   ],
   "antiPatterns": [
@@ -117,6 +127,16 @@
       "mitigation": "Ejecutar npm run lint como criterio de aceptación en tareas-ejecutor.json antes de marcar fase completa.",
       "severity": "medium",
       "frequency": "first_occurrence"
+    },
+    {
+      "id": "ANTI-006",
+      "type": "anti_pattern",
+      "title": "Remediación visual sin artefacto formal",
+      "description": "Paridad visual mejorada manualmente en frontend sin generar visual-parity-result.json; gate visual_exact_parity queda pendiente.",
+      "evidence": ["artifacts/metricas-ejecucion.json", "artifacts/resumen-metricas.md"],
+      "mitigation": "Ejecutar visual-parity-agent tras remediación y publicar visual-parity-result.json antes de avanzar a reviewer.",
+      "severity": "high",
+      "frequency": "first_occurrence"
     }
   ],
   "failuresDocumented": [
@@ -142,6 +162,14 @@
       "description": "Rate limiting por IP no implementado; rateLimitResponse() no invocado",
       "mitigation": "backend-agent + cloud-agent: implementar contador por IP o WAF rate-based en IaC",
       "ownerAgent": "backend-agent",
+      "blocking": true
+    },
+    {
+      "id": "VP-001",
+      "gate": "visual_exact_parity",
+      "description": "visual-parity-result.json ausente; remediación manual sin comparación formal Lovable vs productivo",
+      "mitigation": "visual-parity-agent: ejecutar comparación en rutas/viewports definidos y publicar artefacto",
+      "ownerAgent": "visual-parity-agent",
       "blocking": true
     },
     {
@@ -230,6 +258,17 @@
       "tags": ["qa", "responsive", "seo", "cloud-agent"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
       "sourceArtifact": "artifacts/informe-qa.md"
+    },
+    {
+      "id": "KB-008",
+      "type": "operational",
+      "priority": "high",
+      "title": "Gate visual_exact_parity requiere artefacto formal",
+      "summary": "Remediación manual de paridad visual no sustituye visual-parity-result.json; el gate permanece pending hasta comparación documentada.",
+      "content": "Tras remediación frontend, ejecutar visual-parity-agent en rutas (/ , /about, /services, /contact) y viewports (1440x900, 768x1024, 390x844). Publicar visual-parity-result.json con diff_ratio ≤ 0.002. No avanzar a reviewer-agent con gate pending.",
+      "tags": ["visual-parity", "quality-gates", "lovable-to-web", "validation"],
+      "sourceWorkflow": "novus-intelligence-lovable-to-web",
+      "sourceArtifact": "artifacts/metricas-ejecucion.json"
     }
   ],
   "adrRecommendations": [
@@ -273,16 +312,23 @@
     },
     {
       "id": "WF-003",
+      "title": "Bloquear paso-12 sin visual-parity-result.json",
+      "description": "No marcar paridad visual como completada sin artefacto formal aunque haya remediación manual",
+      "impact": "high"
+    },
+    {
+      "id": "WF-004",
       "title": "Reviewer advisory en validación fallida",
       "description": "Permitir reviewer-agent en modo documental cuando QA/Security fallan, sin bloquear reflection",
       "impact": "low"
     }
   ],
-  "nextAgentSuggested": "knowledge-base-agent",
+  "nextAgentSuggested": "frontend-integration-agent",
   "blockers": [
     "QA-001: lint WEB bloqueante",
     "SEC-001: IAM SES wildcard",
     "SEC-002: rate limit por IP no implementado",
+    "VP-001: visual_exact_parity formal pendiente",
     "reviewer-agent no ejecutado por validación fallida"
   ],
   "artifactsProduced": [
