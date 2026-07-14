@@ -73,6 +73,62 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-14 — Agent Runtime Bridge (M6) con Cursor Cloud Agent
+
+**Contexto:** El equipo dispone de cuenta Cursor Cloud Agent y necesita un puente formal entre roles NADF y el motor de ejecución cloud, sin reinventar los 19 agentes en la UI.
+
+**Decisión:** Adoptar contrato `AgentRuntime` (ADR-0005), adaptar primero Cursor Cloud vía `@cursor/sdk`, y entregar prototipo del paso 1 (`lovable-analyzer-agent`) en `prototypes/m6-cloud-agent/`. Documentar la operación en `docs/cloud-agent-integration.md`.
+
+**Rationale:** Separar definición de agente (NADF) de motor (Cloud Agent); habilitar automatización incremental hacia M5 sin acoplar el Meta Model a un proveedor.
+
+**ADR:** ADR-0005-agent-runtime-bridge
+
+---
+
+## 2026-07-14 — Primera corrida workflow Lovable → Web (M6)
+
+**Contexto:** Ejecución piloto del workflow `novus-intelligence-lovable-to-web` sobre baseline Lovable `novus-nexus@e3a9819` (13 cambios, `backendRequired: true`). Runtime Cursor Cloud Agent (M6), target DEV AWS `sa-east-1`.
+
+**Decisión:** Documentar la corrida como **parcialmente completada con bloqueos de validación**. No proceder a merge de ramas productivas ni despliegue DEV hasta resolver hallazgos bloqueantes.
+
+**Resultados clave (iteración inicial):**
+
+- Plan `PLAN-NOVUS-LOVABLE-2026-07-14` aprobado por architect-agent.
+- Frontend implementado en rama feature; backend con API contacto.
+- Infra propuesta en `propuesta-infra.md`; región DEV reconciliada a `sa-east-1`.
+- QA FAIL: 4 errores ESLint en componentes UI WEB (`qualityScore: 0`).
+- Security FAIL: IAM SES wildcard + rate limit por IP ausente (`securityScore: 72`).
+- 8 PRs en Framework (#1–#8); `NO_DEPLOY` respetado.
+
+**Rationale:** La documentación consolida evidencia auditable para corrección dirigida según workflow canónico NADF.
+
+**Artefacto:** `artifacts/resumen-ejecucion.md`
+
+---
+
+## 2026-07-14 — Re-consolidación corrida Lovable → Web (post-remediación)
+
+**Contexto:** Tras iteraciones de remediación, los repos productivos **NovusIntelligenceWEB** y **NovusIntelligenceBack** tienen implementación mergeada en `main`. Se re-ejecutaron validaciones QA, seguridad y paridad visual.
+
+**Decisión:** Actualizar `resumen-ejecucion.md` y este log con el estado **bloqueado por validación**, distinguiendo mejoras logradas de bloqueos activos.
+
+**Resultados clave (re-validación):**
+
+- **QA PASS** (`qualityScore: 100`) — build y lint exitosos en WEB y Back en `main`.
+- **Security FAIL** (`securityScore: 84`) — SEC-002 (rate limit) resuelto; SEC-001 (IAM) mitigado a `identity/*`; bloqueante actual: SEC-CORS-001 (wildcard en fallback CORS).
+- **Paridad visual FAIL** — gate `visual_exact_parity`: 0/12 capturas PASS; `maxDiffRatio: 23,45%` vs umbral 0,2%.
+- **Reviewer-agent** no ejecutado — pendiente hasta `security_pass` y remediación VP-P0.
+- Métricas, reflexión, KB y ADR completados en iteraciones previas; sin ADR nuevo requerido.
+- `NO_DEPLOY` y `NO_SECRETS_IN_REPO` respetados en toda la corrida.
+
+**Rationale:** La re-consolidación refleja el progreso real (código en `main`, QA PASS) sin ocultar bloqueos que impiden deploy DEV y revisión de coherencia.
+
+**Artefacto:** `artifacts/resumen-ejecucion.md`
+
+**Próximos agentes:** backend-agent (CORS) → security-agent → frontend-integration-agent (paridad) → visual-parity-agent → reviewer-agent.
+
+---
+
 ## Template para nuevas entradas
 
 ```
