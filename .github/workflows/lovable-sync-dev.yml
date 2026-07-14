@@ -58,9 +58,19 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           NADF_AUTO_MERGE_DEV: ${{ github.event.inputs.auto_merge || 'true' }}
           NADF_AUTO_DEPLOY_DEV: ${{ github.event.inputs.auto_deploy_dev || 'true' }}
-          NADF_REQUIRE_VISUAL_PARITY: "true"
+          # Pixel gate estricto solo cuando exista vars.NADF_LOVABLE_REFERENCE_URL
+          NADF_REQUIRE_VISUAL_PARITY: ${{ vars.NADF_LOVABLE_REFERENCE_URL != '' }}
           NADF_AUTO_CREATE_PR: "true"
           NADF_PROJECT_ID: novus-intelligence
+          NADF_MODEL: ${{ vars.NADF_MODEL || 'composer-2.5' }}
+          NADF_REPO_FRAMEWORK: ${{ vars.NADF_REPO_FRAMEWORK || 'https://github.com/arodriguez-novusintelligence/NovusAIDevelopmentFramework.git' }}
+          NADF_REPO_LOVABLE: ${{ vars.NADF_REPO_LOVABLE || 'https://github.com/arodriguez-novusintelligence/novus-nexus.git' }}
+          NADF_REPO_FRONTEND: ${{ vars.NADF_REPO_FRONTEND || 'https://github.com/arodriguez-novusintelligence/NovusIntelligenceWEB.git' }}
+          NADF_REPO_BACKEND: ${{ vars.NADF_REPO_BACKEND || 'https://github.com/arodriguez-novusintelligence/NovusIntelligenceBack.git' }}
+          NADF_REF_FRAMEWORK: ${{ vars.NADF_REF_FRAMEWORK || 'feature/nadf-foundation' }}
+          NADF_REF_LOVABLE: ${{ vars.NADF_REF_LOVABLE || 'main' }}
+          NADF_TARGET_ENV: dev
+          NADF_TARGET_REGION: sa-east-1
           NADF_LOVABLE_REFERENCE_URL: ${{ vars.NADF_LOVABLE_REFERENCE_URL }}
           NADF_DEV_FRONTEND_URL: ${{ vars.NADF_DEV_FRONTEND_URL || 'https://d1bfu6klutpp8m.cloudfront.net' }}
           NADF_VISUAL_PARITY_MAX_DIFF_RATIO: "0.002"
@@ -73,7 +83,7 @@ jobs:
           if [ -n "$NADF_LOVABLE_REFERENCE_URL" ]; then
             npm run visual-parity-check
           else
-            echo "WARN: sin NADF_LOVABLE_REFERENCE_URL — visual-parity via Cloud Agent ya en pipeline"
+            echo "WARN: sin NADF_LOVABLE_REFERENCE_URL — checker de píxeles omitido; paridad vía Cloud Agent"
           fi
           npm run post-pipeline-dev
 
