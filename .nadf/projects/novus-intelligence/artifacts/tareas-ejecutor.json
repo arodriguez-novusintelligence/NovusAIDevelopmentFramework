@@ -3,7 +3,7 @@
   "workflow": "novus-intelligence-lovable-to-web",
   "step": "paso-02-generar-plan",
   "producer": "planner-agent",
-  "createdAt": "2026-07-14T09:01:00Z",
+  "createdAt": "2026-07-14T20:15:00Z",
   "status": "draft",
   "baseline": {
     "sourceRepo": "novus-nexus",
@@ -13,9 +13,10 @@
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1",
-    "frontendUrl": "https://dev.novusintelligence.com",
+    "frontendUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+    "frontendUrlDnsPending": "https://dev.novusintelligence.com",
     "apiUrl": "https://api-dev.novusintelligence.com",
-    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+    "note": "Región oficial DEV: sa-east-1 según environments/dev.yml"
   },
   "scope": {
     "requiresBackend": true,
@@ -548,13 +549,14 @@
       "id": "TASK-INFRA-001",
       "agent": "cloud-agent",
       "phase": 7,
-      "title": "Reconciliar environments/dev.yml a región sa-east-1",
-      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "title": "Validar alineación environments/dev.yml con región sa-east-1",
+      "description": "Confirmar que dev.yml, stacks Serverless e IaC apuntan a sa-east-1 y URLs DEV documentadas.",
       "changeIds": ["CHG-011"],
       "dependencies": ["TASK-BI-001"],
       "priority": "high",
       "acceptanceCriteria": [
-        "dev.yml actualizado con region sa-east-1",
+        "dev.yml confirma region sa-east-1",
+        "Stack novus-intelligence-back-dev alineado a sa-east-1",
         "URLs DEV documentadas sin secrets"
       ],
       "blockedByPlanApproval": true,
@@ -814,6 +816,22 @@
       "acceptanceCriteria": [
         "Recomendación captcha documentada en informe-seguridad",
         "Bloqueo pre-prod si captcha no implementado"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-VP-001",
+      "agent": "visual-parity-agent",
+      "phase": 9,
+      "title": "Validar paridad visual exacta vs Lovable",
+      "description": "Comparar rutas /, /about, /services, /contact en viewports 1440x900, 768x1024, 390x844. Threshold diff ≤ 0.2%.",
+      "changeIds": ["CHG-002", "CHG-003", "CHG-004", "CHG-006"],
+      "dependencies": ["TASK-QA-003"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Diff ratio ≤ 0.002 en todas las rutas y viewports definidos",
+        "Gate visual_exact_parity evaluado",
+        "Informe de paridad generado"
       ],
       "blockedByPlanApproval": true
     },
