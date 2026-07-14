@@ -8,7 +8,7 @@
 **Runtime:** Cursor Cloud Agent (adaptador M6 cursor-cloud)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Baseline Lovable:** novus-nexus @ `e3a9819`  
-**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`draft`)
+**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)
 
 ---
 
@@ -165,9 +165,9 @@ El `database-agent` (paso 9) **no aplica** en esta iteración.
 
 ### Nota de reconciliación regional
 
-- `environments/dev.yml` declara `region: us-east-1`.
-- El constraint del workflow exige **TARGET_DEV_REGION_SA_EAST_1**.
-- **Acción downstream:** `cloud-agent` (TASK-INFRA-001) debe actualizar `dev.yml` y stacks Serverless antes del despliegue DEV.
+- `environments/dev.yml` declara `region: sa-east-1` (alineado con **TARGET_DEV_REGION_SA_EAST_1**).
+- Stacks Serverless e IaC deben desplegarse en `sa-east-1`; certificados CloudFront pueden requerir ACM en `us-east-1` (requisito del proveedor).
+- **Verificación downstream:** `cloud-agent` (TASK-INFRA-001) confirma coherencia de stacks antes del despliegue DEV.
 
 ### URLs DEV objetivo
 
@@ -237,7 +237,8 @@ flowchart LR
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 5 (completado) | backend-impact-agent | `evaluacion-backend.md` + `especificacion-backend.md` |
-| 6 (siguiente) | architect-agent | Plan Review con evaluación backend previa |
+| 6 (completado) | architect-agent | Plan Review → `approved`; `impacto-arquitectonico.md` |
+| 7+ (siguiente) | backend-agent, frontend-integration-agent, cloud-agent | Execution según plan y especificación |
 
 ---
 
@@ -258,3 +259,4 @@ flowchart LR
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Evaluación backend generada | backend-impact-agent |
+| 2026-07-14 | Revalidación paso-05; alineación plan approved y región DEV sa-east-1 | backend-impact-agent |

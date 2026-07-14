@@ -364,7 +364,7 @@ Variable sugerida: `RATE_LIMIT_PER_IP` (requests por ventana).
 | Observabilidad | CloudWatch | Log group `/aws/lambda/novus-contact-handler` |
 | IaC | Serverless Framework | Stack `novus-intelligence-back-dev` |
 
-**Región:** `sa-east-1` (reconciliar `environments/dev.yml`).
+**Región:** `sa-east-1` (`environments/dev.yml` alineado).
 
 **Despliegue:** Solo con aprobación humana explícita (`deploy_human_approval`).
 
@@ -490,3 +490,4 @@ components:
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Especificación backend generada | backend-impact-agent |
+| 2026-07-14 | Revalidación paso-05; región DEV confirmada sa-east-1 | backend-impact-agent |
