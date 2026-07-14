@@ -1,12 +1,13 @@
 {
-  "analysisDate": "2026-07-14T08:52:00Z",
+  "analysisDate": "2026-07-14T21:30:00Z",
   "sourceRepo": "novus-nexus",
   "targetFrontend": "NovusIntelligenceWEB",
   "baseline": {
-    "commit": "e3a9819",
-    "message": "Añadió ejemplo multiagente",
-    "previousBaseline": "8f106a6 (Reestructuró sitio de Novus)",
-    "note": "Primera ejecución del analyzer; se documenta snapshot completo más delta del último commit."
+    "commit": "20d79e1",
+    "message": "Lovable update — secciones y enlaces Sobre nosotros, Contáctanos, Privacidad y Tratamiento de datos",
+    "previousBaseline": "e3a9819 (Añadió ejemplo multiagente)",
+    "deltaFiles": 10,
+    "deltaNote": "El merge 20d79e1 modifica principalmente routeTree.gen.ts (registro SSR TanStack Start). Los cambios funcionales del delta e3a9819→20d79e1 son NovusDevFrameworkDemo, Hero, Header, Testimonials y workflow CI notify-nadf."
   },
   "changes": [
     {
@@ -55,7 +56,7 @@
       "id": "CHG-004",
       "type": "visual",
       "component": "Hero",
-      "description": "Hero de landing con badge 'Building Autonomous Intelligence', headline con gradiente de marca, dos CTAs (demo + soluciones), stats de partners/foco/sede y logo animado con glow y float.",
+      "description": "Hero de landing con badge 'Building Autonomous Intelligence', headline con gradiente de marca, CTAs (demo + simulación), stats de partners/foco/sede y logo animado clickeable que abre NovusDevFrameworkDemo.",
       "severity": "high",
       "requiresBackend": false,
       "affectedPages": ["landing"],
@@ -69,7 +70,7 @@
       "id": "CHG-005",
       "type": "content",
       "component": "content-modules",
-      "description": "Módulos de contenido estático tipado: site.ts (marca, contacto, founder), services.ts (5 pilares), solutions.ts (6 productos), cases.ts (2 casos de éxito). Sin mocks runtime en contenido.",
+      "description": "Módulos de contenido estático tipado: site.ts (marca, contacto, founder, nav legal), services.ts (5 pilares), solutions.ts (6 productos), cases.ts (2 casos de éxito bancario/eventos). Sin mocks runtime en contenido.",
       "severity": "medium",
       "requiresBackend": false,
       "affectedPages": ["landing", "services", "solutions", "about", "cases", "contact"],
@@ -83,7 +84,7 @@
       "id": "CHG-006",
       "type": "visual",
       "component": "sections-landing",
-      "description": "Secciones de landing: Partners (logos cloud), ServicesGrid (5 pilares en grid), SolutionsGrid (6 cards con hover), ImpactStats (métricas), Testimonials (casos), CTA final reutilizable.",
+      "description": "Secciones de landing: Partners (logos cloud), ServicesGrid (5 pilares en grid), SolutionsGrid (6 cards con hover), ImpactStats (métricas), Testimonials (casos con logos bancarios), CTA final reutilizable.",
       "severity": "medium",
       "requiresBackend": false,
       "affectedPages": ["landing"],
@@ -111,7 +112,7 @@
       "id": "CHG-008",
       "type": "functional",
       "component": "contact-form",
-      "description": "Formulario de contacto con campos nombre, empresa, email, teléfono, selector de solución de interés y mensaje. Validación inline, estados submitting/done, toast sonner y llamada a submitContact().",
+      "description": "Formulario de contacto con campos nombre, empresa, email, teléfono, selector de solución de interés y mensaje. Validación inline, estados submitting/done, toast sonner, enlaces a privacidad/tratamiento de datos y llamada a submitContact().",
       "severity": "high",
       "requiresBackend": true,
       "affectedPages": ["contact"],
@@ -125,7 +126,7 @@
       "id": "CHG-009",
       "type": "functional",
       "component": "MultiAgentDemo",
-      "description": "Nuevo componente interactivo en /solutions/ai-agents: diagrama SVG de arquitectura multiagente con 7 nodos, 8 conexiones animadas, timeline de 8 pasos, controles play/pausa/step y leyenda técnica (Frontend Lovable, Orquestación, AWS).",
+      "description": "Componente interactivo en /solutions/ai-agents: diagrama SVG de arquitectura multiagente con 7 nodos, 8 conexiones animadas, timeline de 8 pasos, controles play/pausa/step y leyenda técnica (Frontend Lovable, Orquestación, AWS).",
       "severity": "high",
       "requiresBackend": false,
       "affectedPages": ["solutions"],
@@ -139,7 +140,7 @@
       "id": "CHG-010",
       "type": "structural",
       "component": "routing-stack",
-      "description": "Stack de routing TanStack Start (src/routes/, createFileRoute, routeTree.gen.ts) difiere del stack productivo React Router/Vite. port-map.yml documenta traducción a rutas Next.js App Router.",
+      "description": "Stack de routing TanStack Start (src/routes/, createFileRoute, routeTree.gen.ts con registro SSR) difiere del stack productivo React Router/Vite. port-map.yml documenta traducción a rutas productivas.",
       "severity": "high",
       "requiresBackend": false,
       "affectedPages": ["landing", "services", "solutions", "about", "cases", "contact"],
@@ -167,7 +168,7 @@
       "id": "CHG-012",
       "type": "content",
       "component": "legal-pages",
-      "description": "Páginas legales completas: privacidad, tratamiento de datos (Ley 1581/2012 Colombia) y términos y condiciones. Enlazadas desde footer y formulario de contacto.",
+      "description": "Páginas legales completas: privacidad (10 secciones), tratamiento de datos (Ley 1581/2012 Colombia) y términos. Enlazadas desde footer, formulario de contacto y navegación legal en site.ts.",
       "severity": "medium",
       "requiresBackend": false,
       "affectedPages": ["privacy", "data-treatment", "terms"],
@@ -190,19 +191,94 @@
         "typography": [],
         "spacing": []
       }
+    },
+    {
+      "id": "CHG-014",
+      "type": "functional",
+      "component": "NovusDevFrameworkDemo",
+      "description": "Nuevo modal interactivo en Hero: simulación del flujo NovusAIDevelopmentFramework con 4 columnas (Triggers → Framework → Agentes IA → Entregables), 9 pasos animados, controles play/pausa/reset y log panel. Se abre desde CTA 'Ver simulación', logo clickeable o evento novus:open-dev-framework.",
+      "severity": "high",
+      "requiresBackend": false,
+      "affectedPages": ["landing"],
+      "designTokens": {
+        "colors": ["columnas con gradientes primary/secondary", "highlight activo por columna"],
+        "typography": ["font-mono text-xs en log panel"],
+        "spacing": ["Dialog max-w-5xl, grid 4 columnas responsive"]
+      }
+    },
+    {
+      "id": "CHG-015",
+      "type": "functional",
+      "component": "hero-demo-triggers",
+      "description": "Cambio de CTA secundario: de enlace 'Ver soluciones' a botón 'Ver simulación' (Play icon). Logo del hero convertido en botón accesible que dispara el mismo modal. Evento custom novus:open-dev-framework enlazado desde Header al hacer clic en 'Inicio' estando ya en /.",
+      "severity": "medium",
+      "requiresBackend": false,
+      "affectedPages": ["landing"],
+      "designTokens": {
+        "colors": [],
+        "typography": [],
+        "spacing": []
+      }
+    },
+    {
+      "id": "CHG-016",
+      "type": "visual",
+      "component": "Testimonials",
+      "description": "Rediseño de sección de casos de éxito: fondo claro contrastante (gradiente oklch 0.98→0.94), tarjetas estilo contact-card con logos bancarios (Banco Santa Cruz, doevents) vía asset.json de Lovable CDN, metadata de industria/país/sitio web e impacto en lista con bullets gradiente.",
+      "severity": "medium",
+      "requiresBackend": false,
+      "affectedPages": ["landing", "cases"],
+      "designTokens": {
+        "colors": ["fondo claro oklch(0.98 0.005 240)", "texto oscuro oklch(0.18 0.04 264)", "gradiente título cyan→púrpura"],
+        "typography": ["font-display text-2xl–4xl en cards"],
+        "spacing": ["py-24 section", "rounded-3xl cards con hover -translate-y-1"]
+      }
+    },
+    {
+      "id": "CHG-017",
+      "type": "content",
+      "component": "bank-logos-assets",
+      "description": "Logos de clientes bancarios referenciados vía archivos .asset.json de Lovable (banco-santa-cruz.png, doevents.jpg) en lugar de assets locales estáticos. Requiere assets reales del proyecto en implementación productiva.",
+      "severity": "low",
+      "requiresBackend": false,
+      "affectedPages": ["landing", "cases"],
+      "designTokens": {
+        "colors": [],
+        "typography": [],
+        "spacing": ["h-20 w-20 logo container"]
+      }
+    },
+    {
+      "id": "CHG-018",
+      "type": "structural",
+      "component": "ci-notify-nadf",
+      "description": "Workflow GitHub notify-nadf.yml en novus-nexus: dispara repository_dispatch lovable-commit al Framework en cada push a main. No impacta frontend productivo; habilita orquestación event-driven NADF.",
+      "severity": "low",
+      "requiresBackend": false,
+      "affectedPages": [],
+      "designTokens": {
+        "colors": [],
+        "typography": [],
+        "spacing": []
+      }
     }
   ],
   "summary": {
-    "totalChanges": 13,
-    "visualChanges": 5,
-    "functionalChanges": 3,
-    "contentChanges": 2,
-    "structuralChanges": 3,
+    "totalChanges": 18,
+    "visualChanges": 6,
+    "functionalChanges": 6,
+    "contentChanges": 3,
+    "structuralChanges": 4,
     "backendRequired": true,
     "latestDelta": {
-      "commit": "e3a9819",
-      "filesChanged": 4,
-      "primaryChange": "MultiAgentDemo integrado condicionalmente en solución ai-agents"
+      "commit": "20d79e1",
+      "filesChanged": 10,
+      "primaryChanges": [
+        "NovusDevFrameworkDemo modal en Hero",
+        "CTA secundario 'Ver simulación' y triggers de evento",
+        "Rediseño Testimonials con logos bancarios",
+        "Workflow CI notify-nadf"
+      ]
     }
   }
 }
