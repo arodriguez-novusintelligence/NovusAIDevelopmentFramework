@@ -15,6 +15,7 @@ Antes de activar qa-agent, el executor (o agente responsable) debe verificar:
 | 3 | Artefactos `resumen-{frontend,backend,cloud}.md` publicados en Blackboard | respectivos agentes |
 | 4 | `pipeline-config.md` presente si `requires_infra: true` y DevOps aplica | devops-agent |
 | 5 | Utilidades de seguridad definidas conectadas en handlers | backend-agent |
+| 6 | `visual-parity-result.json` publicado si `visual_parity.enabled: true` | visual-parity-agent |
 
 ## Ejemplo
 
