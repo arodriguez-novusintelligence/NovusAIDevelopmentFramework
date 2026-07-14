@@ -5,7 +5,7 @@
 **Paso:** paso-03-validar-arquitectura  
 **Agente:** architect-agent  
 **Fecha:** 2026-07-14  
-**Runtime:** Cursor Cloud Agent (M6)  
+**Runtime:** Cursor Cloud Agent (M6 — ADR-0005)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan evaluado:** PLAN-NOVUS-LOVABLE-2026-07-14  
 **Baseline Lovable:** novus-nexus @ `e3a9819`
@@ -14,9 +14,9 @@
 
 ## Resumen ejecutivo
 
-El plan de implementación y la evaluación backend (`evaluacion-backend.md`, `especificacion-backend.md`) son **arquitectónicamente coherentes** con el stack productivo, los ADRs vigentes y el NADF Meta Model v1.0.
+El plan de implementación y la evaluación backend (`evaluacion-backend.md`, `especificacion-backend.md`) son **arquitectónicamente coherentes** con el stack productivo, los ADRs vigentes (ADR-0001 a ADR-0005) y el NADF Meta Model v1.0.
 
-**Decisión:** `approved` — Execution puede proceder bajo los quality gates NADF documentados, con **tareas previas obligatorias** de reconciliación regional y normalización de nombres de variables antes del despliegue DEV.
+**Decisión:** `approved` — Execution puede proceder bajo los quality gates NADF documentados. La reconciliación regional DEV (`environments/dev.yml` → `sa-east-1`) **ya está aplicada**; queda pendiente la normalización de nombres de variables email antes del despliegue.
 
 ---
 
@@ -25,15 +25,15 @@ El plan de implementación y la evaluación backend (`evaluacion-backend.md`, `e
 | Artefacto | Estado | Rol en revisión |
 |-----------|--------|-----------------|
 | `plan-implementacion.md` | Revisado | Plan principal |
-| `tareas-ejecutor.json` | Revisado | Desglose ejecutable |
+| `tareas-ejecutor.json` | Revisado | Desglose ejecutable (46 tareas) |
 | `evaluacion-backend.md` | Revisado | Flags backend/infra |
 | `especificacion-backend.md` | Revisado | Contrato API contacto |
 | `cambios-lovable.json` | Revisado | Intención fuente (13 cambios) |
 | `frontend-impact.md` | Revisado | Impacto frontend |
-| `backend-impact.md` | Revisado | Contrato inicial |
+| `backend-impact.md` | Revisado | Contrato inicial (paso 01) |
 | `riesgos.md` | Revisado | R-001 a R-010 |
-| `environments/dev.yml` | Revisado | Config DEV (conflicto regional) |
-| `project-context.yml` | Revisado | Stack y quality gates |
+| `environments/dev.yml` | Revisado | Config DEV — **región `sa-east-1` confirmada** |
+| `project-context.yml` | Revisado | Stack, quality gates, target `sa-east-1` |
 | `memory/technical-context.md` | Revisado | Arquitectura productiva |
 
 ---
@@ -51,6 +51,7 @@ El plan de implementación y la evaluación backend (`evaluacion-backend.md`, `e
 | Lovable → productivo | ✅ Conforme | Intención traducida; prohibición explícita de copia directa |
 | R-001 (sin demo) | ✅ Mitigado | Plan, especificación y tareas bloquean fallback demo en prod |
 | Despliegue | ✅ Conforme | `deploy_human_approval` bloquea publicación autónoma |
+| Runtime M6 | ✅ Conforme | Ejecución vía Cursor Cloud Agent según ADR-0005; rol NADF aislado |
 
 ### Impacto por capa
 
@@ -90,19 +91,19 @@ flowchart TB
 | Backend | Endpoint contacto + email | Baja–Media |
 | Database | No aplica | — |
 | Infra | Stack serverless DEV en sa-east-1 | Media |
-| Validation | Gates QA, security, reviewer | Estándar NADF |
+| Validation | Gates QA, security, reviewer, visual parity | Estándar NADF |
 
-### Desviaciones detectadas (no bloqueantes)
+### Desviaciones detectadas
 
-| ID | Desviación | Severidad | Acción requerida |
-|----|------------|-----------|------------------|
-| D-001 | `environments/dev.yml` declara `region: us-east-1`; plan y constraint exigen `sa-east-1` | Media | **TASK-INFRA-001** — reconciliar antes de despliegue DEV |
-| D-002 | `project-context.yml` y `technical-context.md` referencian `us-east-1` como región backend | Baja | Actualizar memoria/contexto tras reconciliación (cloud-agent / documentation-agent) |
-| D-003 | Nombres de variables email inconsistentes: `CONTACT_SES_*` (plan, backend-impact) vs `CONTACT_EMAIL_*` (especificación, dev.yml) | Baja | Normalizar en implementación; preferir `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` (especificación backend) |
-| D-004 | `backend-impact.md` cita URL `dev-api.novusintelligencesolutions.com`; plan/dev.yml usan `api-dev.novusintelligence.com` | Baja | Adoptar URL de `dev.yml` como canónica DEV |
-| D-005 | ADR-0005 no existe en repositorio | — | Sin impacto; ADR-0001 a ADR-0004 cubren el alcance |
+| ID | Desviación | Severidad | Estado | Acción requerida |
+|----|------------|-----------|--------|------------------|
+| D-001 | `environments/dev.yml` declaraba `us-east-1`; constraint exige `sa-east-1` | Media | ✅ **Resuelto** | `dev.yml` confirma `region: sa-east-1` en backend, storage y database |
+| D-002 | Artefactos de planning (`plan`, `tareas-ejecutor`, `evaluacion-backend`) aún citan `us-east-1` en notas | Baja | ⚠️ Documental | Actualizar notas en próxima iteración planning; no bloquea Execution |
+| D-003 | Nombres de variables email inconsistentes: `CONTACT_SES_*` (plan, backend-impact) vs `CONTACT_EMAIL_*` (especificación, dev.yml) | Baja | ⚠️ Abierto | Normalizar en implementación; preferir `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` |
+| D-004 | `backend-impact.md` cita URL `dev-api.novusintelligencesolutions.com`; plan/dev.yml usan `api-dev.novusintelligence.com` | Baja | ⚠️ Abierto | Adoptar URL de `dev.yml` como canónica DEV |
+| D-005 | `tareas-ejecutor.json` mantiene `status: draft` mientras plan está `approved` | Baja | ⚠️ Documental | Sincronizar status en planner-agent o devops-agent |
 
-> **Región DEV:** No se bloquea la aprobación. El plan ya apunta a `sa-east-1` y documenta TASK-INFRA-001 como tarea previa de Execution/Infra. La reconciliación es **condición de despliegue**, no de inicio de desarrollo frontend/backend en repos.
+> **Región DEV:** La reconciliación a `sa-east-1` está aplicada en `environments/dev.yml`. No bloquea inicio de desarrollo frontend/backend. TASK-INFRA-001 puede marcarse como cumplida a nivel de configuración; cloud-agent debe validar stacks Serverless desplegados en la misma región.
 
 ---
 
@@ -111,14 +112,15 @@ flowchart TB
 | ADR | Requisito | Cumplimiento | Evidencia |
 |-----|-----------|--------------|-----------|
 | **ADR-0001** | Separación Lovable/productivo; sin copia directa; sin mocks en prod | ✅ | Gates `no_lovable_code_copy`, `no_mock_data_in_production`; mitigación R-001 |
-| **ADR-0001** | Sin despliegue autónomo | ✅ | Gate `deploy_human_approval`; TASK-DEVOPS-003 |
+| **ADR-0001** | Sin despliegue autónomo a QA/prod | ✅ | Gate `deploy_human_approval`; TASK-DEVOPS-003 |
 | **ADR-0002** | 7 capas; Planner/Executor/Validator; MCP cuando aplique | ✅ | Fases 0–9 con agentes correctos; separación planificación/ejecución |
 | **ADR-0003** | backend-impact en Planning antes de Plan Review y Execution | ✅ | `evaluacion-backend.md` y `especificacion-backend.md` generados en paso 5 |
 | **ADR-0003** | frontend-integration solo tras plan `approved` | ✅ | Todas las tareas FE tienen `blockedByPlanApproval: true` |
 | **ADR-0003** | Workflow 18 pasos / 9 fases | ✅ | Secuencia plan + tareas-ejecutor alineadas |
 | **ADR-0004** | Meta Model; Intent → Plan → Execution → Validation → Knowledge | ✅ | Artefactos mapeados a entidades oficiales; sin entidades ad hoc |
+| **ADR-0005** | Agent Runtime Bridge; un rol NADF por invocación; Planner no escribe código | ✅ | Esta revisión ejecutada como architect-agent vía M6; sin código productivo |
 
-**ADR nuevo requerido:** No. El alcance no introduce cambios arquitectónicos fuera de decisiones ya registradas. La reconciliación regional es configuración de entorno, no decisión arquitectónica nueva.
+**ADR nuevo requerido:** No. El alcance no introduce cambios arquitectónicos fuera de decisiones ya registradas.
 
 ---
 
@@ -134,7 +136,7 @@ flowchart TB
 | Artifact | Conjunto en `artifacts/` | ✅ |
 | Validation | Fase 9 (QA, Security, Reviewer) | ✅ Planificada |
 | Quality Gate | 5 gates bloqueantes en plan | ✅ |
-| Environment | DEV AWS; reconciliación regional pendiente | ⚠️ D-001 |
+| Environment | DEV AWS `sa-east-1` — reconciliado en `dev.yml` | ✅ |
 | Decision (ADR) | Sin conflicto con ADRs aceptados | ✅ |
 
 **Principio «Intención antes que implementación»:** El plan traduce CHG-001 a CHG-013 como intención; prohibe copiar `styles.css`, SVG inline de MultiAgentDemo y fallback demo de contacto.
@@ -145,7 +147,7 @@ flowchart TB
 
 | Gate | ID | Estado en revisión | Notas |
 |------|----|--------------------|-------|
-| Plan aprobado | `plan_approved` | ✅ **Cumplido** (esta revisión) | Status actualizado a `approved` |
+| Plan aprobado | `plan_approved` | ✅ **Cumplido** | Status `approved` confirmado en esta revisión |
 | Sin copia Lovable | `no_lovable_code_copy` | ✅ Planificado | Validación en reviewer-agent (TASK-REV-001) |
 | Sin mocks en prod | `no_mock_data_in_production` | ✅ Planificado | R-001; TASK-FE-021, TASK-QA-004 |
 | Sin secrets en repo | `no_secrets_in_repo` | ✅ Planificado | TASK-INFRA-005, TASK-SEC-001 |
@@ -164,10 +166,10 @@ flowchart TB
 | R-005 | Tokens oklch | Baja | Mapeo semántico, no copia literal |
 | R-006 | Contenido vs marca | Baja | Validar contra brand-context.md |
 | R-008 | Sin captcha | Media (DEV); Alta (pre-prod) | TASK-BE-008; security-agent bloquea prod sin captcha |
-| D-001 | Región us-east-1 vs sa-east-1 | Media hasta reconciliación | TASK-INFRA-001 obligatoria pre-deploy |
+| D-003 | Inconsistencia nombres variables email | Baja | Normalizar a `CONTACT_EMAIL_*` en backend-agent |
 
 **Blockers para Execution:** Ninguno.  
-**Blockers para despliegue DEV:** TASK-INFRA-001 (región) + aprobación humana + API contacto funcional.
+**Blockers para despliegue DEV:** API contacto funcional + normalización variables (D-003) + verificación SES + aprobación humana según gate.
 
 ---
 
@@ -184,6 +186,7 @@ flowchart TB
 | CRM webhook | Opcional (TASK-BE-005) | Opcional post-MVP | ✅ |
 | Secuencia | Fase 5 bloquea Fase 6 contacto | API antes de formulario productivo | ✅ |
 | MultiAgentDemo | Sin backend | Sin backend | ✅ |
+| Región DEV | sa-east-1 | sa-east-1 | ✅ (`dev.yml` reconciliado) |
 
 ---
 
@@ -203,7 +206,18 @@ flowchart TB
 2. La evaluación backend está completa y coherente con el alcance funcional (solo contacto).
 3. Las mitigaciones de R-001 (sin demo) y R-002 (sin copia Lovable) son explícitas y verificables.
 4. No se requiere base de datos ni nuevas entidades Meta Model.
-5. El conflicto regional está documentado con tarea de reconciliación; no invalida el diseño.
+5. La región DEV `sa-east-1` está reconciliada en `environments/dev.yml`.
+6. El runtime M6 (ADR-0005) se usa correctamente: un rol NADF por invocación, sin código productivo.
+
+### Motivos de rechazo evaluados y descartados
+
+| Criterio de bloqueo | Evaluación |
+|---------------------|------------|
+| Violación ADR sin reemplazo | No aplica |
+| Cambio de stack no documentado | No aplica — stack coincide con project-context |
+| Acoplamiento vendor sin justificación | No aplica — capacidades provider-agnostic en especificación |
+| Plan sin evaluación backend | No aplica — evaluacion + especificación presentes |
+| Separación Lovable comprometida | No aplica — gates y tareas explícitas |
 
 ---
 
@@ -214,22 +228,21 @@ Con `plan_status: approved`, los siguientes agentes **pueden proceder** respetan
 | Agente | Fases autorizadas | Restricciones |
 |--------|-------------------|--------------|
 | **frontend-integration-agent** | Fases 0–4 inmediatas; Fase 6 tras API DEV | Sin copia Lovable; sin demo en prod; `blockedByPlanApproval` levantado |
-| **backend-agent** | Fase 5 | Seguir `especificacion-backend.md`; sin secrets en repo |
-| **cloud-agent** | Fase 7 (preparación) | TASK-INFRA-001 primero; **sin despliegue** sin aprobación humana |
+| **backend-agent** | Fase 5 (`POST /api/v1/contact`) | Seguir `especificacion-backend.md`; usar `CONTACT_EMAIL_*`; sin secrets en repo |
+| **cloud-agent** | Fase 7 (preparación IaC) | Validar stacks en `sa-east-1`; **sin despliegue** sin aprobación humana |
 | **devops-agent** | Fase 7 (CI/pipeline) | `VITE_DEMO_MODE=false`; documentar variables |
 | **database-agent** | No aplica | — |
 
 ### Orden de ejecución recomendado (confirmado)
 
 1. **Paralelo:** frontend-integration-agent (Fases 0–4) + backend-agent (Fase 5)
-2. **Secuencial:** cloud-agent TASK-INFRA-001 (reconciliar `dev.yml` → `sa-east-1`)
-3. **Secuencial:** frontend-integration-agent Fase 6 (integración contacto) tras API DEV disponible
-4. **Preparación:** cloud-agent + devops-agent Fase 7 (IaC, pipeline; deploy bloqueado)
-5. **Post-ejecución:** qa-agent, security-agent, reviewer-agent (Fase 9)
+2. **Secuencial:** frontend-integration-agent Fase 6 (integración contacto) tras API DEV disponible
+3. **Preparación:** cloud-agent + devops-agent Fase 7 (IaC, pipeline; deploy bloqueado)
+4. **Post-ejecución:** qa-agent, security-agent, reviewer-agent (Fase 9)
 
-### Tareas previas obligatorias antes de despliegue DEV
+### Condiciones previas al despliegue DEV (no bloquean código)
 
-- [ ] **TASK-INFRA-001:** `environments/dev.yml` → `region: sa-east-1`
+- [x] **TASK-INFRA-001:** `environments/dev.yml` → `region: sa-east-1` (cumplido)
 - [ ] Normalizar nombres de variables email (`CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO`)
 - [ ] Verificación dominio SES en sa-east-1
 - [ ] Aprobación humana explícita para deploy (`deploy_human_approval`)
@@ -251,7 +264,7 @@ Con `plan_status: approved`, los siguientes agentes **pueden proceder** respetan
 - `artifacts/riesgos.md`
 - `.nadf/projects/novus-intelligence/project-context.yml`
 - `.nadf/projects/novus-intelligence/environments/dev.yml`
-- ADR-0001, ADR-0002, ADR-0003, ADR-0004
+- ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0005
 
 ---
 
@@ -259,4 +272,5 @@ Con `plan_status: approved`, los siguientes agentes **pueden proceder** respetan
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Plan Review completado; decisión `approved` | architect-agent |
+| 2026-07-14 | Plan Review inicial; decisión `approved` | architect-agent |
+| 2026-07-14 | Revisión confirmada; D-001 resuelto (`dev.yml` → sa-east-1); ADR-0005 incluido | architect-agent |
