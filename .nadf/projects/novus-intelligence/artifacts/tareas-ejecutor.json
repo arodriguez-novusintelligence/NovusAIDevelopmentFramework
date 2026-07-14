@@ -1,0 +1,887 @@
+{
+  "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
+  "workflow": "novus-intelligence-lovable-to-web",
+  "step": "paso-02-generar-plan",
+  "producer": "planner-agent",
+  "createdAt": "2026-07-14T09:01:00Z",
+  "status": "draft",
+  "baseline": {
+    "sourceRepo": "novus-nexus",
+    "commit": "e3a9819"
+  },
+  "targetEnvironment": {
+    "name": "dev",
+    "provider": "aws",
+    "region": "sa-east-1",
+    "frontendUrl": "https://dev.novusintelligence.com",
+    "apiUrl": "https://api-dev.novusintelligence.com",
+    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+  },
+  "scope": {
+    "requiresBackend": true,
+    "requiresDatabase": false,
+    "requiresInfra": true,
+    "hasFrontendChanges": true
+  },
+  "qualityGates": [
+    {
+      "id": "no_lovable_code_copy",
+      "blocking": true,
+      "description": "Prohibida copia directa de código, componentes o estilos de novus-nexus"
+    },
+    {
+      "id": "no_mock_data_in_production",
+      "blocking": true,
+      "description": "Sin fallback demo en contacto; sin mocks en rutas productivas"
+    },
+    {
+      "id": "deploy_human_approval",
+      "blocking": true,
+      "description": "Despliegue a DEV/QA/prod solo con aprobación humana explícita"
+    },
+    {
+      "id": "no_secrets_in_repo",
+      "blocking": true,
+      "description": "Credenciales solo en AWS Secrets Manager / SSM"
+    },
+    {
+      "id": "plan_approved",
+      "blocking": true,
+      "description": "plan-implementacion.md:status debe ser approved antes de Execution"
+    }
+  ],
+  "riskMitigations": [
+    {
+      "riskId": "R-001",
+      "title": "Modo demo en formulario de contacto",
+      "tasks": ["TASK-FE-021", "TASK-FE-022", "TASK-BE-001", "TASK-QA-004"]
+    },
+    {
+      "riskId": "R-002",
+      "title": "Copia directa de código Lovable",
+      "tasks": ["TASK-FE-016", "TASK-REV-001"]
+    },
+    {
+      "riskId": "R-003",
+      "title": "Incompatibilidad routing TanStack → React Router",
+      "tasks": ["TASK-FE-005", "TASK-QA-002"]
+    },
+    {
+      "riskId": "R-004",
+      "title": "Complejidad MultiAgentDemo",
+      "tasks": ["TASK-FE-016", "TASK-FE-017", "TASK-FE-018", "TASK-QA-006"]
+    },
+    {
+      "riskId": "R-008",
+      "title": "Sin captcha en formulario contacto",
+      "tasks": ["TASK-BE-008", "TASK-SEC-003"]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-FE-001",
+      "agent": "frontend-integration-agent",
+      "phase": 0,
+      "title": "Auditar design system existente en NovusIntelligenceWEB",
+      "description": "Inventariar tokens, fuentes, componentes shadcn/ui y convenciones Tailwind del repo productivo antes de traducir intención Lovable.",
+      "changeIds": ["CHG-002"],
+      "dependencies": [],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Documento interno o comentarios en PR con inventario de tokens y componentes reutilizables",
+        "Identificadas brechas vs paleta navy/cyan/púrpura de Lovable"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-002",
+      "agent": "frontend-integration-agent",
+      "phase": 0,
+      "title": "Definir tokens semánticos de marca",
+      "description": "Mapear tokens semánticos (primary, secondary, navy-deep, navy-surface, gradient-brand, shadow-glow) al design system productivo sin copiar CSS de Lovable.",
+      "changeIds": ["CHG-002"],
+      "riskIds": ["R-005"],
+      "dependencies": ["TASK-FE-001"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Variables Tailwind/CSS configuradas en proyecto productivo",
+        "Sin importación literal de src/styles.css de novus-nexus"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-003",
+      "agent": "frontend-integration-agent",
+      "phase": 0,
+      "title": "Configurar tipografías Space Grotesk e Inter",
+      "description": "Añadir fuentes display y body según intención Lovable vía Google Fonts o self-host.",
+      "changeIds": ["CHG-002"],
+      "dependencies": ["TASK-FE-002"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Headings usan Space Grotesk",
+        "Body usa Inter",
+        "Fuentes cargan sin error en build"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-004",
+      "agent": "frontend-integration-agent",
+      "phase": 0,
+      "title": "Implementar utilities de marca y animaciones",
+      "description": "Crear utilities para gradientes, grid-bg, shadow-glow y animaciones pulse/float con soporte prefers-reduced-motion.",
+      "changeIds": ["CHG-002"],
+      "dependencies": ["TASK-FE-002"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Utilities reutilizables documentadas",
+        "Animaciones se desactivan con prefers-reduced-motion: reduce"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-005",
+      "agent": "frontend-integration-agent",
+      "phase": 0,
+      "title": "Configurar React Router con 10 rutas y lazy loading",
+      "description": "Traducir routing TanStack Start a React Router v6 según tabla de mapeo del plan. Incluir 404 para slugs inválidos.",
+      "changeIds": ["CHG-001", "CHG-010"],
+      "riskIds": ["R-003"],
+      "dependencies": ["TASK-FE-002"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Rutas /, /services, /solutions, /solutions/:slug, /about, /cases, /contact, /privacy, /data-treatment, /terms configuradas",
+        "Slug inválido muestra página 404",
+        "Lazy loading aplicado donde corresponda"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-006",
+      "agent": "frontend-integration-agent",
+      "phase": 0,
+      "title": "Configurar meta tags SEO por ruta",
+      "description": "Implementar title, description y og:image por página usando React Helmet o equivalente.",
+      "changeIds": ["CHG-010", "CHG-013"],
+      "dependencies": ["TASK-FE-005"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Cada ruta tiene title y description únicos",
+        "og:image apunta a /assets/novus/brand-publicidad.png"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-007",
+      "agent": "frontend-integration-agent",
+      "phase": 1,
+      "title": "Implementar PageShell y layout base",
+      "description": "Crear wrapper de página con Toaster/notificaciones consistente en todas las rutas.",
+      "changeIds": ["CHG-003"],
+      "dependencies": ["TASK-FE-005"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Todas las páginas usan PageShell",
+        "Sistema de notificaciones operativo"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-008",
+      "agent": "frontend-integration-agent",
+      "phase": 1,
+      "title": "Implementar Header sticky con navegación y CTA",
+      "description": "Header con backdrop-blur, 6 ítems de nav, indicador activo, CTA 'Agenda una demo' y menú móvil colapsable.",
+      "changeIds": ["CHG-003"],
+      "dependencies": ["TASK-FE-007"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Navegación funcional en mobile y desktop",
+        "CTA enlaza a /contact",
+        "Ruta activa visualmente indicada"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-009",
+      "agent": "frontend-integration-agent",
+      "phase": 1,
+      "title": "Implementar Footer con contacto y enlaces legales",
+      "description": "Footer con datos de contacto, redes sociales y links a páginas legales.",
+      "changeIds": ["CHG-003", "CHG-012"],
+      "dependencies": ["TASK-FE-007"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Enlaces a /privacy, /data-treatment, /terms funcionan",
+        "Redes sociales enlazan correctamente"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-010",
+      "agent": "frontend-integration-agent",
+      "phase": 1,
+      "title": "Migrar assets de marca",
+      "description": "Copiar logo.jpeg y brand-publicidad.png a public/assets/novus/ del frontend productivo. Assets permitidos; no código.",
+      "changeIds": ["CHG-013"],
+      "dependencies": ["TASK-FE-007"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Assets disponibles en ruta pública",
+        "OG image configurada en meta tags"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-011",
+      "agent": "frontend-integration-agent",
+      "phase": 1,
+      "title": "Implementar Hero de landing",
+      "description": "Hero con badge, headline con gradiente, dual CTA, stats y logo animado según intención CHG-004.",
+      "changeIds": ["CHG-004"],
+      "dependencies": ["TASK-FE-004", "TASK-FE-010"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Badge 'Building Autonomous Intelligence' visible",
+        "CTAs enlazan a /contact y /solutions",
+        "Stats de partners/foco/sede renderizan"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-012",
+      "agent": "frontend-integration-agent",
+      "phase": 1,
+      "title": "Implementar secciones de landing",
+      "description": "Partners, ServicesGrid, SolutionsGrid, ImpactStats, Testimonials y CTA final reutilizable.",
+      "changeIds": ["CHG-006"],
+      "dependencies": ["TASK-FE-011"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "7 secciones renderizan en /",
+        "Cards con hover states",
+        "Responsive en sm/md/lg"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-013",
+      "agent": "frontend-integration-agent",
+      "phase": 2,
+      "title": "Crear módulos de contenido estático",
+      "description": "Implementar src/content/ con site.ts, services.ts, solutions.ts, cases.ts. Validar contra brand-context.md.",
+      "changeIds": ["CHG-005"],
+      "riskIds": ["R-006"],
+      "dependencies": ["TASK-FE-005"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "6 soluciones y 2 casos definidos",
+        "Datos de founder y contacto coherentes con brand-context",
+        "Sin placeholders ni mocks runtime"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-014",
+      "agent": "frontend-integration-agent",
+      "phase": 2,
+      "title": "Implementar páginas estáticas services, about y cases",
+      "description": "Páginas /services, /about y /cases con contenido de módulos estáticos.",
+      "changeIds": ["CHG-001", "CHG-005"],
+      "dependencies": ["TASK-FE-013", "TASK-FE-008"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "/services muestra 5 pilares",
+        "/about muestra founder y perfil empresa",
+        "/cases muestra 2 casos de éxito"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-015",
+      "agent": "frontend-integration-agent",
+      "phase": 2,
+      "title": "Implementar páginas legales",
+      "description": "Páginas /privacy, /data-treatment (Ley 1581/2012) y /terms con contenido completo.",
+      "changeIds": ["CHG-012"],
+      "dependencies": ["TASK-FE-009"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Contenido legal completo en las 3 páginas",
+        "Enlaces desde footer y formulario contacto"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-016",
+      "agent": "frontend-integration-agent",
+      "phase": 4,
+      "title": "Implementar componente MultiAgentDemo",
+      "description": "Reimplementar diagrama multiagente interactivo para /solutions/ai-agents. Sin copiar SVG ni clases de Lovable.",
+      "changeIds": ["CHG-009"],
+      "riskIds": ["R-002", "R-004"],
+      "dependencies": ["TASK-FE-018"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "7 nodos y 8 conexiones animadas visibles",
+        "Timeline 8 pasos con play/pause/step",
+        "Componente aislado y lazy-loaded",
+        "prefers-reduced-motion pausa animaciones"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-017",
+      "agent": "frontend-integration-agent",
+      "phase": 3,
+      "title": "Implementar grid y detalle de soluciones",
+      "description": "Páginas /solutions y /solutions/:slug con hero contextual, capacidades, resultados y soluciones relacionadas.",
+      "changeIds": ["CHG-007"],
+      "dependencies": ["TASK-FE-013"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Grid 6 soluciones en /solutions",
+        "Detalle carga por slug con 404 custom",
+        "Sección 'También te puede interesar' muestra hasta 3 relacionadas"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-018",
+      "agent": "frontend-integration-agent",
+      "phase": 3,
+      "title": "Integrar CTA demo con query param interest",
+      "description": "CTA 'Solicitar demo' en detalle solución enlaza a /contact?interest=<slug>.",
+      "changeIds": ["CHG-007", "CHG-008"],
+      "dependencies": ["TASK-FE-017"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Query param interest preservado al navegar a contacto",
+        "Campo solutionInterest pre-seleccionado en formulario"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-019",
+      "agent": "frontend-integration-agent",
+      "phase": 6,
+      "title": "Implementar página y formulario de contacto",
+      "description": "Página /contact con campos name, company, email, phone, solutionInterest, message y validación client-side.",
+      "changeIds": ["CHG-008"],
+      "dependencies": ["TASK-FE-015", "TASK-BE-003"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Formulario con todos los campos requeridos",
+        "Validación inline antes de submit",
+        "Estados idle, submitting, done y opción enviar otro"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-020",
+      "agent": "frontend-integration-agent",
+      "phase": 6,
+      "title": "Integrar submitContact con API real",
+      "description": "Conectar formulario a VITE_NOVUS_API_URL. Prohibido fallback demo de Lovable.",
+      "changeIds": ["CHG-008", "CHG-011"],
+      "riskIds": ["R-001"],
+      "dependencies": ["TASK-FE-019", "TASK-BE-003"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "POST a /api/v1/contact en API DEV",
+        "Respuesta 200 muestra requestId real",
+        "Sin código equivalente a demo-{timestamp}"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-021",
+      "agent": "frontend-integration-agent",
+      "phase": 6,
+      "title": "Eliminar modo demo y manejar error sin API",
+      "description": "Mitigación R-001: sin éxito simulado si API no disponible. Mostrar error claro al usuario.",
+      "changeIds": ["CHG-008", "CHG-011"],
+      "riskIds": ["R-001"],
+      "dependencies": ["TASK-FE-020"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Sin lógica VITE_DEMO_MODE que simule éxito en prod",
+        "API no disponible retorna mensaje de error explícito",
+        "VITE_DEMO_MODE=false en configuración de build productivo"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-FE-022",
+      "agent": "frontend-integration-agent",
+      "phase": 6,
+      "title": "Extraer componente CTA reutilizable",
+      "description": "Componente CTA compartido para landing, detalle solución y otras páginas.",
+      "changeIds": ["CHG-004", "CHG-006", "CHG-007"],
+      "dependencies": ["TASK-FE-012"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "CTA reutilizable en al menos 3 contextos",
+        "Props configurables para texto y destino"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-BE-001",
+      "agent": "backend-agent",
+      "phase": 5,
+      "title": "Implementar Lambda novus-contact-handler",
+      "description": "Handler Node.js 20 con validación, sanitización y envío SES según contrato OpenAPI.",
+      "changeIds": ["CHG-008", "CHG-011"],
+      "riskIds": ["R-001"],
+      "dependencies": ["TASK-BI-001"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Lambda desplegable con handler index.handler",
+        "Timeout 10s",
+        "Validación server-side de ContactRequest",
+        "Respuesta ContactResponse con ok y requestId"
+      ],
+      "blockedByPlanApproval": true,
+      "blockedByArtifact": "especificacion-backend.md"
+    },
+    {
+      "id": "TASK-BE-002",
+      "agent": "backend-agent",
+      "phase": 5,
+      "title": "Configurar API Gateway POST /api/v1/contact",
+      "description": "Exponer endpoint REST con códigos 200, 400, 429, 500 según contrato.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-BE-001"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Ruta POST /api/v1/contact accesible",
+        "CORS configurado para origen frontend",
+        "Rate limiting retorna 429 cuando aplica"
+      ],
+      "blockedByPlanApproval": true,
+      "blockedByArtifact": "especificacion-backend.md"
+    },
+    {
+      "id": "TASK-BE-003",
+      "agent": "backend-agent",
+      "phase": 5,
+      "title": "Integrar AWS SES para notificaciones de contacto",
+      "description": "Envío de email desde CONTACT_SES_FROM a CONTACT_SES_TO. Secrets en AWS, no en repo.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-BE-001"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Email enviado exitosamente en DEV",
+        "Variables CONTACT_SES_FROM y CONTACT_SES_TO referenciadas desde Secrets/SSM",
+        "Sin valores de secrets en código versionado"
+      ],
+      "blockedByPlanApproval": true,
+      "blockedByArtifact": "especificacion-backend.md"
+    },
+    {
+      "id": "TASK-BE-004",
+      "agent": "backend-agent",
+      "phase": 5,
+      "title": "Configurar observabilidad CloudWatch",
+      "description": "Logs estructurados y alarmas para errores Lambda y 5xx API Gateway.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-BE-002"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Logs visibles en CloudWatch",
+        "Alarmas definidas para errors y 5xx"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-BE-005",
+      "agent": "backend-agent",
+      "phase": 5,
+      "title": "Implementar webhook CRM opcional",
+      "description": "Si se aprueba en evaluacion-backend, enviar payload a CRM_WEBHOOK_URL tras envío exitoso.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-BE-003"],
+      "priority": "low",
+      "acceptanceCriteria": [
+        "Webhook configurable vía variable de entorno",
+        "Fallo de webhook no bloquea respuesta 200 al usuario"
+      ],
+      "blockedByPlanApproval": true,
+      "optional": true
+    },
+    {
+      "id": "TASK-BE-008",
+      "agent": "backend-agent",
+      "phase": 5,
+      "title": "Preparar validación captcha en endpoint contacto",
+      "description": "Soporte para validar token hCaptcha/Turnstile antes de procesar submit. Obligatorio pre-prod.",
+      "changeIds": ["CHG-011"],
+      "riskIds": ["R-008"],
+      "dependencies": ["TASK-BE-001"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Endpoint rechaza request sin token válido cuando captcha habilitado",
+        "Documentación de integración para frontend"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-BI-001",
+      "agent": "backend-impact-agent",
+      "phase": "planning",
+      "title": "Generar evaluacion-backend y especificacion-backend",
+      "description": "Paso 5 del workflow. Detallar Lambda, IAM, SES y despliegue antes de Plan Review.",
+      "changeIds": ["CHG-008", "CHG-011"],
+      "dependencies": [],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "artifacts/evaluacion-backend.md generado",
+        "artifacts/especificacion-backend.md generado",
+        "requires_backend confirmado"
+      ],
+      "blockedByPlanApproval": false,
+      "note": "Tarea de planning; ejecutar antes de backend-agent"
+    },
+    {
+      "id": "TASK-INFRA-001",
+      "agent": "cloud-agent",
+      "phase": 7,
+      "title": "Reconciliar environments/dev.yml a región sa-east-1",
+      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-BI-001"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "dev.yml actualizado con region sa-east-1",
+        "URLs DEV documentadas sin secrets"
+      ],
+      "blockedByPlanApproval": true,
+      "requiresHumanApprovalForDeploy": false
+    },
+    {
+      "id": "TASK-INFRA-002",
+      "agent": "cloud-agent",
+      "phase": 7,
+      "title": "Generar propuesta IaC para API y Lambda en sa-east-1",
+      "description": "Propuesta de API Gateway, Lambda, SES, IAM y CloudWatch para stack novus-intelligence-back-dev.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-INFRA-001", "TASK-BE-002"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "artifacts/propuesta-infra.md generado",
+        "Recursos definidos para región sa-east-1",
+        "Sin secrets en archivos versionados"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-INFRA-003",
+      "agent": "cloud-agent",
+      "phase": 7,
+      "title": "Configurar hosting frontend DEV (S3 + CloudFront)",
+      "description": "Bucket novus-intelligence-web-dev con CDN para https://dev.novusintelligence.com.",
+      "changeIds": ["CHG-001"],
+      "dependencies": ["TASK-INFRA-001"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Configuración S3/CloudFront documentada en propuesta-infra",
+        "Build frontend desplegable a bucket DEV"
+      ],
+      "blockedByPlanApproval": true,
+      "requiresHumanApprovalForDeploy": true
+    },
+    {
+      "id": "TASK-INFRA-004",
+      "agent": "cloud-agent",
+      "phase": 7,
+      "title": "Configurar bucket de assets DEV",
+      "description": "Bucket novus-intelligence-assets-dev para assets de marca.",
+      "changeIds": ["CHG-013"],
+      "dependencies": ["TASK-INFRA-001"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Bucket assets documentado",
+        "Política de acceso definida"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-INFRA-005",
+      "agent": "cloud-agent",
+      "phase": 7,
+      "title": "Configurar Secrets Manager / SSM para variables contacto",
+      "description": "Almacenar CONTACT_SES_FROM, CONTACT_SES_TO y CRM_WEBHOOK_URL fuera del repositorio.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-INFRA-002"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Nombres de parámetros documentados",
+        "Ningún valor secreto en git",
+        "Lambda referencia secrets por ARN/parameter name"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-DEVOPS-001",
+      "agent": "devops-agent",
+      "phase": 7,
+      "title": "Configurar pipeline CI lint y build",
+      "description": "Pipeline para NovusIntelligenceWEB y NovusIntelligenceBack con gates de calidad.",
+      "changeIds": ["CHG-001", "CHG-011"],
+      "dependencies": ["TASK-INFRA-002"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "artifacts/pipeline-config.md generado",
+        "npm run lint y npm run build ejecutan en CI",
+        "Gate no_lovable_code_copy documentado"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-DEVOPS-002",
+      "agent": "devops-agent",
+      "phase": 7,
+      "title": "Configurar variables de build frontend",
+      "description": "VITE_NOVUS_API_URL apuntando a API DEV; VITE_DEMO_MODE=false obligatorio.",
+      "changeIds": ["CHG-008", "CHG-011"],
+      "riskIds": ["R-001"],
+      "dependencies": ["TASK-DEVOPS-001"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "VITE_NOVUS_API_URL=https://api-dev.novusintelligence.com en DEV",
+        "VITE_DEMO_MODE=false en todos los builds no locales",
+        "Documentado en pipeline-config.md"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-DEVOPS-003",
+      "agent": "devops-agent",
+      "phase": 7,
+      "title": "Preparar despliegue DEV (bloqueado hasta aprobación humana)",
+      "description": "Artefactos de despliegue listos pero NO ejecutar deploy sin aprobación explícita.",
+      "changeIds": ["CHG-001", "CHG-011"],
+      "dependencies": ["TASK-DEVOPS-002", "TASK-INFRA-003", "TASK-BE-003", "TASK-FE-021"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Runbook de despliegue documentado",
+        "Deploy NO ejecutado por agente",
+        "Aprobación humana registrada antes de publicar"
+      ],
+      "blockedByPlanApproval": true,
+      "requiresHumanApprovalForDeploy": true
+    },
+    {
+      "id": "TASK-QA-001",
+      "agent": "qa-agent",
+      "phase": 9,
+      "title": "Validar build y lint exitosos",
+      "description": "Ejecutar build frontend y backend; verificar ausencia de errores.",
+      "changeIds": ["CHG-001"],
+      "dependencies": ["TASK-DEVOPS-003"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "npm run build exitoso en ambos repos",
+        "npm run lint sin errores bloqueantes",
+        "artifacts/informe-qa.md generado"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-QA-002",
+      "agent": "qa-agent",
+      "phase": 9,
+      "title": "Validar navegación completa de rutas",
+      "description": "Probar 10 rutas y 6 slugs; verificar 404 en slug inválido.",
+      "changeIds": ["CHG-001", "CHG-010"],
+      "riskIds": ["R-003"],
+      "dependencies": ["TASK-QA-001"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Todas las rutas accesibles sin error",
+        "Slug inválido muestra 404",
+        "Links de navegación y footer funcionan"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-QA-003",
+      "agent": "qa-agent",
+      "phase": 9,
+      "title": "Validar responsive y SEO básico",
+      "description": "Viewports sm/md/lg y meta tags por ruta.",
+      "changeIds": ["CHG-002", "CHG-010"],
+      "dependencies": ["TASK-QA-002"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Layout usable en 375px, 768px, 1280px",
+        "title y description presentes por ruta",
+        "og:image configurada"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-QA-004",
+      "agent": "qa-agent",
+      "phase": 9,
+      "title": "Validar formulario contacto sin modo demo (R-001)",
+      "description": "Verificar que submit sin API retorna error y con API retorna éxito real.",
+      "changeIds": ["CHG-008"],
+      "riskIds": ["R-001"],
+      "dependencies": ["TASK-FE-021", "TASK-BE-003"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Sin API: mensaje de error, nunca éxito simulado",
+        "Con API: 200 con requestId no prefijado demo-",
+        "Email recibido en bandeja DEV"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-QA-005",
+      "agent": "qa-agent",
+      "phase": 9,
+      "title": "Validar MultiAgentDemo accesibilidad y responsive",
+      "description": "Probar componente en mobile y con prefers-reduced-motion.",
+      "changeIds": ["CHG-009"],
+      "riskIds": ["R-004"],
+      "dependencies": ["TASK-FE-016"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Controles play/pause/step funcionan",
+        "Animaciones pausadas con reduced-motion",
+        "Diagrama usable en viewport sm"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-QA-006",
+      "agent": "qa-agent",
+      "phase": 9,
+      "title": "Generar qa-result.json",
+      "description": "Resultados estructurados de validación según schema NADF.",
+      "changeIds": ["CHG-001"],
+      "dependencies": ["TASK-QA-003", "TASK-QA-004", "TASK-QA-005"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "artifacts/qa-result.json generado",
+        "Todos los gates críticos evaluados"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-SEC-001",
+      "agent": "security-agent",
+      "phase": 9,
+      "title": "Auditar ausencia de secrets en repositorio",
+      "description": "Escanear cambios en WEB y Back por credenciales expuestas.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-QA-001"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Sin API keys, tokens ni passwords en código",
+        "artifacts/informe-seguridad.md generado"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-SEC-002",
+      "agent": "security-agent",
+      "phase": 9,
+      "title": "Validar CORS y rate limiting en API contacto",
+      "description": "Revisar configuración de seguridad del endpoint POST /api/v1/contact.",
+      "changeIds": ["CHG-011"],
+      "dependencies": ["TASK-BE-002"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "CORS restringido a orígenes permitidos",
+        "Rate limit activo y probado"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-SEC-003",
+      "agent": "security-agent",
+      "phase": 9,
+      "title": "Revisar estrategia captcha pre-prod",
+      "description": "Validar que plan de captcha cumple requisitos anti-spam antes de prod.",
+      "changeIds": ["CHG-008"],
+      "riskIds": ["R-008"],
+      "dependencies": ["TASK-BE-008"],
+      "priority": "medium",
+      "acceptanceCriteria": [
+        "Recomendación captcha documentada en informe-seguridad",
+        "Bloqueo pre-prod si captcha no implementado"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-REV-001",
+      "agent": "reviewer-agent",
+      "phase": 9,
+      "title": "Revisar coherencia plan vs implementación y ausencia de copia Lovable",
+      "description": "Comparar cambios implementados contra plan-implementacion.md y verificar gate no_lovable_code_copy.",
+      "changeIds": ["CHG-002", "CHG-009"],
+      "riskIds": ["R-002"],
+      "dependencies": ["TASK-QA-006", "TASK-SEC-001"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "artifacts/informe-revision.md generado",
+        "Sin evidencia de copia directa de novus-nexus",
+        "Alcance implementado coincide con plan aprobado"
+      ],
+      "blockedByPlanApproval": true
+    }
+  ],
+  "executionOrder": [
+    "TASK-BI-001",
+    "TASK-FE-001",
+    "TASK-FE-002",
+    "TASK-FE-003",
+    "TASK-FE-004",
+    "TASK-FE-005",
+    "TASK-FE-006",
+    "TASK-FE-007",
+    "TASK-FE-008",
+    "TASK-FE-009",
+    "TASK-FE-010",
+    "TASK-FE-011",
+    "TASK-FE-012",
+    "TASK-FE-013",
+    "TASK-FE-014",
+    "TASK-FE-015",
+    "TASK-FE-017",
+    "TASK-FE-018",
+    "TASK-FE-016",
+    "TASK-BE-001",
+    "TASK-BE-002",
+    "TASK-BE-003",
+    "TASK-BE-004",
+    "TASK-BE-008",
+    "TASK-FE-019",
+    "TASK-FE-020",
+    "TASK-FE-021",
+    "TASK-FE-022",
+    "TASK-INFRA-001",
+    "TASK-INFRA-002",
+    "TASK-INFRA-003",
+    "TASK-INFRA-004",
+    "TASK-INFRA-005",
+    "TASK-DEVOPS-001",
+    "TASK-DEVOPS-002",
+    "TASK-DEVOPS-003",
+    "TASK-QA-001",
+    "TASK-QA-002",
+    "TASK-QA-003",
+    "TASK-QA-004",
+    "TASK-QA-005",
+    "TASK-QA-006",
+    "TASK-SEC-001",
+    "TASK-SEC-002",
+    "TASK-SEC-003",
+    "TASK-REV-001"
+  ],
+  "nextAgentSuggested": "backend-impact-agent"
+}
