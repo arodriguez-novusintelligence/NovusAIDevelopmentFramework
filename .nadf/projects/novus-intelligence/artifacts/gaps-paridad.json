@@ -1,0 +1,96 @@
+{
+  "status": "FAIL",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatio": 0.12307,
+  "nextAgentSuggested": "frontend-integration-agent",
+  "gaps": [
+    {
+      "id": "VP-GLOBAL-01",
+      "priority": "P0",
+      "area": "design-system",
+      "changeIds": ["CHG-002"],
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.12307,
+      "description": "Tokens de color, tipografía y espaciado no coinciden con la referencia Lovable (oklch navy/cyan/púrpura, Space Grotesk + Inter, sombras glow).",
+      "action": "Auditar y alinear tokens semánticos en index.css/tailwind.config.js con valores oklch de novus-nexus; verificar carga de fuentes y line-height base sin copiar styles.css de Lovable."
+    },
+    {
+      "id": "VP-GLOBAL-02",
+      "priority": "P0",
+      "area": "layout-header-footer",
+      "changeIds": ["CHG-003"],
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.12307,
+      "description": "Header y Footer difieren en estructura de columnas, copy de CTA ('Agendar una demo' vs 'Solicita una demo'), underline activo y distribución de enlaces legales/servicios.",
+      "action": "Reimplementar Header.tsx y Footer.tsx: 6 ítems nav, CTA 'Agendar una demo', underline gradiente en ruta activa, footer 5 columnas (logo, servicios, soluciones, contacto, legales) según referencia."
+    },
+    {
+      "id": "VP-HOME-01",
+      "priority": "P0",
+      "area": "hero-landing",
+      "changeIds": ["CHG-004", "CHG-006"],
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.107082,
+      "description": "Hero con copy distinto ('Transformamos empresas…' vs 'Inteligencia que genera resultados'), CTAs diferentes ('Ver simulación' vs 'Ver soluciones'), asset derecho sin simulación NADF y stats inline ausentes.",
+      "action": "Alinear Hero.tsx: headline, badge, dual CTA (Agenda demo + Ver simulación), NovusDevFrameworkDemo interactivo, stats inline (Partners/Foco/Sede) y barra de partners cloud."
+    },
+    {
+      "id": "VP-HOME-02",
+      "priority": "P0",
+      "area": "sections-landing",
+      "changeIds": ["CHG-006"],
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.107082,
+      "description": "Secciones Pilares, Soluciones, Impacto, Testimonials y CTA final con títulos, grids y métricas distintas (5 pilares vs stats 3+/6/24/7, casos con layout diferente).",
+      "action": "Ajustar ServicesGrid, SolutionsGrid, ImpactStats, Testimonials y CTASection: títulos gradiente, grid 5-col pilares, grid 2x3 soluciones, 4 métricas de impacto y 2 cards de casos alineadas a Lovable."
+    },
+    {
+      "id": "VP-ABOUT-01",
+      "priority": "P0",
+      "area": "about-page",
+      "changeIds": ["CHG-005"],
+      "routes": ["/about"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.12307,
+      "description": "Página About con hero 2-col desalineado, cards misión/visión/valores con espaciado incorrecto, perfil founder duplicado y CTA final con copy/layout distinto.",
+      "action": "Reestructurar AboutPage.tsx: hero 2 columnas (copy + founder card), grid 3 cards misión/visión/valores, eliminar duplicación de perfil, CTA final con copy 'Hablemos sobre cómo la IA puede transformar tu negocio'."
+    },
+    {
+      "id": "VP-SERVICES-01",
+      "priority": "P0",
+      "area": "services-page",
+      "changeIds": ["CHG-005"],
+      "routes": ["/services"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.105514,
+      "description": "Grid de servicios con columnas, iconografía y espaciado distintos al layout de 5 pilares de Lovable.",
+      "action": "Alinear ServicesPage.tsx con ServicesGrid de landing: 5 columnas desktop, cards con icono+título+descripción+tags tech, heading oculto reutilizando componente compartido."
+    },
+    {
+      "id": "VP-CONTACT-01",
+      "priority": "P1",
+      "area": "contact-page",
+      "changeIds": ["CHG-008"],
+      "routes": ["/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.073206,
+      "description": "Layout contacto con sidebar de 3 cards (contacto/horario/partner) y ratio formulario 1:1.4 desalineado; campos y espaciado del form difieren.",
+      "action": "Ajustar ContactPage.tsx: grid 2-col con ratio 1:1.4, 3 sidebar cards con iconos, labels/placeholders según referencia, botón 'Enviar mensaje' con estilo gradiente."
+    },
+    {
+      "id": "VP-RESPONSIVE-01",
+      "priority": "P0",
+      "area": "responsive-breakpoints",
+      "changeIds": ["CHG-003", "CHG-006"],
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["768x1024", "390x844"],
+      "maxDiffRatio": 0.12307,
+      "description": "Diferencias móvil/tablet superan desktop en todas las rutas (hasta 12.3% en /about móvil), indicando breakpoints y menú móvil no alineados.",
+      "action": "Revisar clases responsive sm/md/lg en Header (menú hamburguesa), grids de secciones y padding vertical; validar stack móvil de hero y cards."
+    }
+  ]
+}
