@@ -1,0 +1,134 @@
+{
+  "status": "FAIL",
+  "gate": "visual_exact_parity",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatioObserved": 0.234509,
+  "referenceUrl": "http://127.0.0.1:4173",
+  "referenceNote": "novus-nexus dev local @746c129 (NADF_LOVABLE_REFERENCE_URL no definida en entorno)",
+  "candidateUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+  "generatedAt": "2026-07-14T21:06:37.619Z",
+  "nextAgentSuggested": "frontend-integration-agent",
+  "gaps": [
+    {
+      "id": "GAP-HOME-HERO",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.234509,
+      "component": "Hero",
+      "lovableRef": "CHG-004",
+      "description": "Headline, CTAs, stats y visual del hero no coinciden: falta «Transformamos empresas…», CTA «Ver simulación», card de marca con glow y meta partners/foco/sede.",
+      "action": "Reimplementar Hero.tsx alineando copy, dual CTA (demo + simulación), stats strip y asset de marca según novus-nexus; sin copiar JSX/CSS literal.",
+      "filesHint": ["NovusIntelligenceWEB/src/components/landing/Hero.tsx", "NovusIntelligenceWEB/src/content/site.ts"]
+    },
+    {
+      "id": "GAP-HOME-PARTNERS",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.234509,
+      "component": "Partners",
+      "lovableRef": "CHG-006",
+      "description": "Barra de partners cloud con logos AWS/Azure/GCP y copy «CONSTRUIMOS SOBRE INFRAESTRUCTURA CLOUD…» ausente o simplificada.",
+      "action": "Ajustar sección Partners con logos, tipografía y espaciado de referencia Lovable.",
+      "filesHint": ["NovusIntelligenceWEB/src/components/landing/Partners.tsx"]
+    },
+    {
+      "id": "GAP-HOME-SECTIONS",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.234509,
+      "component": "ServicesGrid,SolutionsGrid,ImpactStats,Testimonials,CTA",
+      "lovableRef": "CHG-006",
+      "description": "Títulos de sección, layout y estilos difieren: «mueven la aguja» vs «pilares», «empresas en evolución» vs «impacto inmediato», ImpactStats con iconos vs stats numéricos, testimonios en fondo blanco vs oscuro.",
+      "action": "Sincronizar headings, grid layouts (5-col servicios, 2×3 soluciones), ImpactStats con iconos+texto, Testimonials con fondo claro y cards Banco Santa Cruz/doevents.",
+      "filesHint": [
+        "NovusIntelligenceWEB/src/components/landing/ServicesGrid.tsx",
+        "NovusIntelligenceWEB/src/components/landing/SolutionsGrid.tsx",
+        "NovusIntelligenceWEB/src/components/landing/ImpactStats.tsx",
+        "NovusIntelligenceWEB/src/components/landing/Testimonials.tsx",
+        "NovusIntelligenceWEB/src/components/landing/CTA.tsx",
+        "NovusIntelligenceWEB/src/content/*.ts"
+      ]
+    },
+    {
+      "id": "GAP-ABOUT-STRUCTURE",
+      "priority": "P0",
+      "routes": ["/about"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.12307,
+      "component": "AboutPage",
+      "lovableRef": "CHG-005",
+      "description": "Página About con hero, copy y estructura distintos: falta «Somos Novus Intelligence Solutions», cards misión/visión/valores en 3 columnas y CTA «EMPIEZA HOY» con grid-bg.",
+      "action": "Reestructurar AboutPage: hero 2-col (copy + liderazgo), 3 cards misión/visión/valores, CTAs secundarios y sección CTA intermedia según referencia.",
+      "filesHint": ["NovusIntelligenceWEB/src/pages/AboutPage.tsx", "NovusIntelligenceWEB/src/content/site.ts"]
+    },
+    {
+      "id": "GAP-SERVICES-PAGE",
+      "priority": "P0",
+      "routes": ["/services"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.105514,
+      "component": "ServicesPage",
+      "lovableRef": "CHG-005",
+      "description": "Hero «Cinco capacidades que construyen ventaja competitiva» reemplazado por copy distinto; grid 5-col en fila vs layout 2-col; CTA final no alineada.",
+      "action": "Alinear hero copy, grid de 5 pilares en fila desktop y CTA «EMPIEZA HOY» de referencia.",
+      "filesHint": ["NovusIntelligenceWEB/src/pages/ServicesPage.tsx", "NovusIntelligenceWEB/src/components/landing/ServicesGrid.tsx"]
+    },
+    {
+      "id": "GAP-CONTACT-LAYOUT",
+      "priority": "P1",
+      "routes": ["/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.073206,
+      "component": "ContactPage",
+      "lovableRef": "CHG-008",
+      "description": "Sidebar de contacto (cards contacto/horario/AWS partner), proporciones formulario y espaciado no coinciden con Lovable.",
+      "action": "Ajustar layout 2-col, cards laterales, ratio formulario y estilos de inputs/botones hasta diff ≤ 0.002.",
+      "filesHint": ["NovusIntelligenceWEB/src/pages/ContactPage.tsx"]
+    },
+    {
+      "id": "GAP-GLOBAL-HEADER-FOOTER",
+      "priority": "P0",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.234509,
+      "component": "Header,Footer",
+      "lovableRef": "CHG-003",
+      "description": "Logo/marca, indicador de ruta activa (underline gradiente vs pill), footer 5 columnas con servicios/soluciones/legales y slogan BUILDING AUTONOMOUS INTELLIGENCE.",
+      "action": "Actualizar Header (logo NOVUS INTELLIGENCE, underline activo) y Footer (5 cols, enlaces servicios/soluciones, redes, legales) sin copiar código Lovable.",
+      "filesHint": [
+        "NovusIntelligenceWEB/src/components/layout/Header.tsx",
+        "NovusIntelligenceWEB/src/components/layout/Footer.tsx",
+        "NovusIntelligenceWEB/public/assets/novus/"
+      ]
+    },
+    {
+      "id": "GAP-GLOBAL-TOKENS",
+      "priority": "P0",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatioMax": 0.234509,
+      "component": "design-system",
+      "lovableRef": "CHG-002",
+      "description": "Tokens oklch (navy-deep, cyan-neon, purple-neon), gradientes, sombras glow, grid-bg y tipografías Space Grotesk/Inter no producen el mismo render que referencia.",
+      "action": "Auditar y ajustar variables CSS/Tailwind (colores, shadows, gradients, font-display) hasta paridad pixel en capturas gate.",
+      "filesHint": ["NovusIntelligenceWEB/src/index.css", "NovusIntelligenceWEB/tailwind.config.js"]
+    }
+  ],
+  "captureFailures": [
+    { "path": "/", "viewport": "1440x900", "diffRatio": 0.190696 },
+    { "path": "/", "viewport": "768x1024", "diffRatio": 0.214702 },
+    { "path": "/", "viewport": "390x844", "diffRatio": 0.234509 },
+    { "path": "/about", "viewport": "1440x900", "diffRatio": 0.066117 },
+    { "path": "/about", "viewport": "768x1024", "diffRatio": 0.101771 },
+    { "path": "/about", "viewport": "390x844", "diffRatio": 0.12307 },
+    { "path": "/services", "viewport": "1440x900", "diffRatio": 0.066206 },
+    { "path": "/services", "viewport": "768x1024", "diffRatio": 0.087895 },
+    { "path": "/services", "viewport": "390x844", "diffRatio": 0.105514 },
+    { "path": "/contact", "viewport": "1440x900", "diffRatio": 0.042823 },
+    { "path": "/contact", "viewport": "768x1024", "diffRatio": 0.061095 },
+    { "path": "/contact", "viewport": "390x844", "diffRatio": 0.073206 }
+  ]
+}
