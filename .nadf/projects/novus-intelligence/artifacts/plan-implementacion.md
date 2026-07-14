@@ -5,10 +5,12 @@
 **Paso:** paso-02-generar-plan  
 **Agente:** planner-agent  
 **Fecha:** 2026-07-14  
-**Status:** `draft`  
+**Status:** `approved`  
 **Runtime:** Cursor Cloud Agent (adaptador M6 cursor-cloud)  
 **Target environment:** DEV — AWS `sa-east-1`  
-**Baseline Lovable:** novus-nexus @ `e3a9819`
+**Baseline Lovable:** novus-nexus @ `e3a9819`  
+**Aprobado por:** architect-agent  
+**Fecha aprobación:** 2026-07-14
 
 ---
 
@@ -28,9 +30,9 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 |-------|-------|
 | `plan_id` | PLAN-NOVUS-LOVABLE-2026-07-14 |
 | `intent_source` | cambios-lovable.json (lovable-analyzer-agent) |
-| `status` | **draft** — pendiente aprobación humana / architect-agent |
-| `approved_by` | — |
-| `approved_at` | — |
+| `status` | **approved** — Plan Review completado por architect-agent |
+| `approved_by` | architect-agent |
+| `approved_at` | 2026-07-14 |
 | `requires_backend` | true |
 | `requires_database` | false |
 | `requires_infra` | true |
@@ -346,13 +348,38 @@ El formulario de contacto no persiste en BD; usa SES (+ webhook CRM opcional). `
 
 ---
 
+## Autorización de Execution (architect-agent)
+
+**Estado:** `approved` — Execution **autorizada** con gates NADF.
+
+Los agentes ejecutores pueden proceder según la secuencia de fases definida en este plan:
+
+| Agente | Autorización | Condición |
+|--------|--------------|-----------|
+| **frontend-integration-agent** | Fases 0–4 inmediatas; Fase 6 tras API DEV | Gates `no_lovable_code_copy`, `no_mock_data_in_production` |
+| **backend-agent** | Fase 5 (`POST /api/v1/contact`) | Seguir `especificacion-backend.md` |
+| **cloud-agent** | Fase 7 (preparación IaC) | **TASK-INFRA-001 obligatoria:** reconciliar `environments/dev.yml` a `sa-east-1` antes de despliegue |
+| **devops-agent** | Fase 7 (CI/pipeline) | Sin despliegue sin aprobación humana |
+
+**Tareas previas de infra (no bloquean inicio de código):**
+
+1. Reconciliar región DEV `us-east-1` → `sa-east-1` en `environments/dev.yml` (TASK-INFRA-001).
+2. Normalizar nombres de variables email a `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` (coherencia con especificación backend).
+3. Despliegue DEV bloqueado hasta `deploy_human_approval` explícita.
+
+Referencia completa: `artifacts/impacto-arquitectonico.md`.
+
+---
+
 ## Handoff y próximos pasos del workflow
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 5 (actual siguiente) | **backend-impact-agent** | Generar `evaluacion-backend.md` y `especificacion-backend.md` |
-| 6 | architect-agent | Plan Review; actualizar status a `approved` o `rejected` |
-| 7+ | Executors | Solo si `status == approved` |
+| 5 (completado) | **backend-impact-agent** | `evaluacion-backend.md` + `especificacion-backend.md` |
+| 6 (completado) | **architect-agent** | Plan Review → `approved`; `impacto-arquitectonico.md` |
+| 7+ | **frontend-integration-agent**, **backend-agent** | Execution autorizada (paralelo Fases 0–4 + Fase 5) |
+| 7 (infra) | **cloud-agent**, **devops-agent** | Preparación; reconciliar región; deploy con aprobación humana |
+| 11–13 | **qa-agent**, **security-agent**, **reviewer-agent** | Validation post-ejecución |
 
 ---
 
@@ -367,6 +394,9 @@ El formulario de contacto no persiste en BD; usa SES (+ webhook CRM opcional). `
 - `.nadf/projects/novus-intelligence/memory/brand-context.md`
 - `.nadf/projects/novus-intelligence/memory/technical-context.md`
 - ADR-0001, ADR-0002, ADR-0003, ADR-0004
+- `artifacts/impacto-arquitectonico.md`
+- `artifacts/evaluacion-backend.md`
+- `artifacts/especificacion-backend.md`
 
 ---
 
@@ -375,3 +405,5 @@ El formulario de contacto no persiste en BD; usa SES (+ webhook CRM opcional). `
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Plan generado en status `draft` | planner-agent |
+| 2026-07-14 | Evaluación y especificación backend generadas | backend-impact-agent |
+| 2026-07-14 | Plan Review completado; status `approved` | architect-agent |
