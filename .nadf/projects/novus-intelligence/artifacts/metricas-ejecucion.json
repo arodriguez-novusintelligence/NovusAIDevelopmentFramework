@@ -1,0 +1,397 @@
+{
+  "project": "novus-intelligence",
+  "workflowId": "novus-intelligence-lovable-to-web",
+  "step": "paso-12-metricas",
+  "agentName": "metrics-agent",
+  "startTime": "2026-07-14T21:58:00Z",
+  "endTime": "2026-07-14T22:05:00Z",
+  "duration": 420,
+  "status": "success",
+  "phase": "metrics",
+  "pattern": "Blackboard",
+  "runtime": "Cursor Cloud Agent (M6)",
+  "targetEnvironment": {
+    "name": "dev",
+    "provider": "aws",
+    "region": "sa-east-1"
+  },
+  "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
+  "planApproved": true,
+  "baselineLovable": {
+    "repo": "novus-nexus",
+    "commit": "e3a9819",
+    "parityReferenceCommit": "746c129"
+  },
+  "workflowRun": {
+    "runId": "bc-7db90cca-6bbe-4914-bce2-8b237c3cd973",
+    "documentationRunId": "bc-5b40c47d-2748-4810-a4d2-dc983a3a90fb",
+    "metricsRunId": "bc-a85bee59-d70f-4903-8b51-00283c6cc239",
+    "startTime": "2026-07-14T08:30:00Z",
+    "endTime": "2026-07-14T22:05:00Z",
+    "durationSeconds": 48900,
+    "status": "blocked",
+    "qualityScore": 58,
+    "agentsTotal": 19,
+    "agentsExecuted": 17,
+    "agentsSuccess": 13,
+    "agentsFailure": 3,
+    "agentsSkipped": 1,
+    "agentsBlocked": 1,
+    "agentsPending": 1,
+    "frameworkPRsOpen": 8,
+    "productReposMerged": 2
+  },
+  "qualityScoreBreakdown": {
+    "overall": 58,
+    "method": "weighted_quality_gates_v3",
+    "components": {
+      "blockingGatesPassed": 8,
+      "blockingGatesTotal": 10,
+      "blockingGatesScore": 80,
+      "visualParityScore": 0,
+      "qaQualityScore": 100,
+      "securityScore": 84,
+      "executionCompletionScore": 88,
+      "planAlignmentScore": 88
+    },
+    "formula": "0.45*blockingGates + 0.30*visualParity + 0.15*executionCompletion + 0.10*securityScore; security_pass FAIL (SEC-CORS-001) y visual_exact_parity FAIL (0/12) mantienen workflow blocked"
+  },
+  "agents": [
+    {
+      "agentName": "workflow-agent",
+      "phase": "event_trigger",
+      "pattern": "Mediator",
+      "status": "success",
+      "step": "paso-01",
+      "qualityScore": 100,
+      "artifactsProduced": ["cambios-lovable.json", "frontend-impact.md", "backend-impact.md", "riesgos.md"]
+    },
+    {
+      "agentName": "lovable-analyzer-agent",
+      "phase": "planning",
+      "pattern": "Planner",
+      "status": "success",
+      "step": "paso-03",
+      "qualityScore": 100,
+      "notes": "13 cambios detectados; backendRequired: true"
+    },
+    {
+      "agentName": "planner-agent",
+      "phase": "planning",
+      "pattern": "Planner",
+      "status": "success",
+      "step": "paso-04",
+      "qualityScore": 100,
+      "artifactsProduced": ["plan-implementacion.md", "tareas-ejecutor.json"]
+    },
+    {
+      "agentName": "backend-impact-agent",
+      "phase": "planning",
+      "pattern": "Planner",
+      "status": "success",
+      "step": "paso-05",
+      "qualityScore": 100,
+      "artifactsProduced": ["evaluacion-backend.md", "especificacion-backend.md"]
+    },
+    {
+      "agentName": "architect-agent",
+      "phase": "plan_review",
+      "pattern": "Planner",
+      "status": "success",
+      "step": "paso-06",
+      "qualityScore": 100,
+      "artifactsProduced": ["impacto-arquitectonico.md"],
+      "planApproved": true
+    },
+    {
+      "agentName": "frontend-integration-agent",
+      "phase": "execution",
+      "pattern": "Executor",
+      "status": "success",
+      "step": "paso-07",
+      "qualityScore": 85,
+      "notes": "Sitio mergeado en main @ cdd9f95; paridad visual pendiente (VP-P0-001..008)",
+      "filesChanged": ["NovusIntelligenceWEB (main @ cdd9f95)"]
+    },
+    {
+      "agentName": "backend-agent",
+      "phase": "execution",
+      "pattern": "Executor",
+      "status": "partial",
+      "step": "paso-08",
+      "qualityScore": 82,
+      "notes": "API contacto mergeada en main @ bf3bd2b; SEC-002 resuelto; SEC-CORS-001 pendiente",
+      "filesChanged": ["NovusIntelligenceBack (main @ bf3bd2b)"]
+    },
+    {
+      "agentName": "database-agent",
+      "phase": "execution",
+      "pattern": "Executor",
+      "status": "success",
+      "step": "paso-09",
+      "qualityScore": null,
+      "notes": "No aplica — requires_database: false"
+    },
+    {
+      "agentName": "cloud-agent",
+      "phase": "execution",
+      "pattern": "Executor",
+      "status": "success",
+      "step": "paso-10",
+      "qualityScore": 95,
+      "artifactsProduced": ["propuesta-infra.md", "resumen-cloud.md"],
+      "notes": "dev.yml reconciliado a sa-east-1; sin deploy (NO_DEPLOY)"
+    },
+    {
+      "agentName": "devops-agent",
+      "phase": "execution",
+      "pattern": "Executor",
+      "status": "failure",
+      "step": "paso-07-devops",
+      "qualityScore": 0,
+      "notes": "TASK-DEVOPS-001 no ejecutada; pipeline-config.md ausente"
+    },
+    {
+      "agentName": "qa-agent",
+      "phase": "validation",
+      "pattern": "Validator",
+      "status": "success",
+      "step": "paso-11",
+      "qualityScore": 100,
+      "testsRun": 6,
+      "artifactsProduced": ["informe-qa.md", "qa-result.json"],
+      "notes": "Revalidación post-merge — build y lint PASS en WEB y Back"
+    },
+    {
+      "agentName": "security-agent",
+      "phase": "validation",
+      "pattern": "Validator",
+      "status": "failure",
+      "step": "paso-10-revision-seguridad",
+      "qualityScore": 84,
+      "testsRun": 12,
+      "artifactsProduced": ["informe-seguridad.md", "security-result.json"],
+      "notes": "FAIL — SEC-CORS-001 bloqueante (fallback CORS wildcard *); SEC-002 resuelto; SEC-001 mitigado a identity/*"
+    },
+    {
+      "agentName": "visual-parity-agent",
+      "phase": "validation",
+      "pattern": "Validator",
+      "status": "failure",
+      "step": "paso-12",
+      "qualityScore": 0,
+      "testsRun": 12,
+      "artifactsProduced": ["informe-paridad-visual.md", "visual-parity-result.json", "gaps-paridad.json"],
+      "notes": "0/12 capturas PASS; maxDiffRatio=0.234509 (umbral 0.002)"
+    },
+    {
+      "agentName": "reviewer-agent",
+      "phase": "validation",
+      "pattern": "Validator",
+      "status": "blocked",
+      "step": "paso-13",
+      "qualityScore": null,
+      "notes": "No ejecutado — bloqueado por security_pass FAIL y visual_exact_parity FAIL"
+    },
+    {
+      "agentName": "documentation-agent",
+      "phase": "documentation",
+      "pattern": "Blackboard",
+      "status": "success",
+      "step": "paso-14",
+      "qualityScore": 100,
+      "artifactsProduced": ["resumen-ejecucion.md"]
+    },
+    {
+      "agentName": "metrics-agent",
+      "phase": "metrics",
+      "pattern": "Blackboard",
+      "status": "success",
+      "step": "paso-12-metricas",
+      "qualityScore": 100,
+      "artifactsProduced": ["metricas-ejecucion.json", "resumen-metricas.md"]
+    },
+    {
+      "agentName": "reflection-agent",
+      "phase": "reflection",
+      "pattern": "Reflection",
+      "status": "success",
+      "step": "paso-16",
+      "qualityScore": 100,
+      "artifactsProduced": ["reflexion-ejecucion.md", "recomendaciones-kb.json"],
+      "notes": "Completado en iteración previa"
+    },
+    {
+      "agentName": "knowledge-base-agent",
+      "phase": "knowledge_base_update",
+      "pattern": "Blackboard",
+      "status": "success",
+      "step": "paso-17",
+      "qualityScore": 100,
+      "artifactsProduced": ["actualizacion-kb.md"],
+      "notes": "Completado en iteración previa — 12 entradas KB"
+    },
+    {
+      "agentName": "adr-agent",
+      "phase": "knowledge_base_update",
+      "pattern": "Blackboard",
+      "status": "success",
+      "step": "paso-18",
+      "qualityScore": 100,
+      "artifactsProduced": ["registro-adr.md"],
+      "notes": "Sin ADR nuevo requerido"
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "plan_approved",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0
+    },
+    {
+      "id": "no_lovable_code_copy",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0
+    },
+    {
+      "id": "no_mock_data_in_production",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0
+    },
+    {
+      "id": "no_secrets_in_repo",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0
+    },
+    {
+      "id": "build_success",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0,
+      "evidence": "QA revalidación: build+lint OK WEB y Back en main"
+    },
+    {
+      "id": "responsive_validation",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0,
+      "method": "static_code_review"
+    },
+    {
+      "id": "seo_basic_validation",
+      "blocking": false,
+      "status": "pass",
+      "weight": 0.5
+    },
+    {
+      "id": "visual_exact_parity",
+      "blocking": true,
+      "status": "fail",
+      "weight": 1.0,
+      "evidence": "0/12 capturas PASS; maxDiffRatio 0.234509 vs umbral 0.002"
+    },
+    {
+      "id": "security_pass",
+      "blocking": true,
+      "status": "fail",
+      "weight": 1.0,
+      "evidence": "SEC-CORS-001: fallback CORS_ALLOWED_ORIGINS con wildcard (*) en serverless.yml; securityScore 84"
+    },
+    {
+      "id": "deploy_human_approval",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0,
+      "evidence": "NO_DEPLOY respetado"
+    },
+    {
+      "id": "metrics_registered",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0,
+      "evidence": "metricas-ejecucion.json consolidado paso-12-metricas"
+    },
+    {
+      "id": "reflection_generated",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0,
+      "evidence": "reflexion-ejecucion.md generado en iteración previa"
+    }
+  ],
+  "testsRun": 30,
+  "errors": [
+    {
+      "code": "SEC-CORS-001",
+      "message": "Fallback CORS_ALLOWED_ORIGINS incluye wildcard (*) en serverless.yml",
+      "severity": "critical"
+    },
+    {
+      "code": "VP-001",
+      "message": "Paridad visual FAIL — 0/12 capturas PASS; maxDiffRatio 0.234509",
+      "severity": "critical"
+    },
+    {
+      "code": "DEVOPS-001",
+      "message": "pipeline-config.md ausente — TASK-DEVOPS-001 no ejecutada",
+      "severity": "warning"
+    },
+    {
+      "code": "REV-001",
+      "message": "reviewer-agent no ejecutado — bloqueado por security_pass y visual_exact_parity",
+      "severity": "warning"
+    }
+  ],
+  "failuresDocumented": [
+    {
+      "gate": "security_pass",
+      "description": "Fallback CORS con wildcard (*) habilita cualquier origen si no se inyecta CORS_ALLOWED_ORIGINS explícito",
+      "mitigation": "backend-agent: eliminar * del fallback; alinear orígenes con propuesta-infra.md (SEC-CORS-001, SEC-CORS-002)"
+    },
+    {
+      "gate": "visual_exact_parity",
+      "description": "12 capturas pixel-a-pixel fallan en rutas /, /about, /services, /contact × 3 viewports",
+      "mitigation": "frontend-integration-agent: remediar tokens, layout, copy y componentes según gaps-paridad.json"
+    },
+    {
+      "gate": "devops_pipeline",
+      "description": "pipeline-config.md no generado por devops-agent",
+      "mitigation": "devops-agent: ejecutar TASK-DEVOPS-001 tras gates bloqueantes resueltos"
+    }
+  ],
+  "patternsIdentified": [
+    "Separación planificación/ejecución/validación respetada — plan approved antes de código productivo",
+    "Reimplementación Lovable sin copia directa verificada en QA y Security",
+    "Remediación iterativa post-merge: QA PASS; SEC-002 resuelto; SEC-001 mitigado; nuevo bloqueante CORS default",
+    "Doble bloqueo de validación: security_pass y visual_exact_parity impiden reviewer-agent y deploy DEV",
+    "NO_DEPLOY respetado — infraestructura solo documentada en sa-east-1"
+  ],
+  "reflectionSummary": "Corrida Lovable→Web mayormente exitosa en planning y execution con código mergeado en main; bloqueada por CORS wildcard (SEC-CORS-001) y paridad visual (0/12). QA PASS (100); securityScore 84.",
+  "kbUpdatesRecommended": [
+    "Checklist CORS: eliminar wildcard de fallbacks serverless.yml; alinear httpApi.cors y env",
+    "Checklist remediación paridad visual: tokens dark-first, layout 5-col, assets partners",
+    "Flujo revalidación post-merge: backend-agent → security-agent → visual-parity-agent → reviewer-agent"
+  ],
+  "qualityScore": 58,
+  "estimatedCost": 0,
+  "filesChanged": [
+    ".nadf/projects/novus-intelligence/artifacts/metricas-ejecucion.json",
+    ".nadf/projects/novus-intelligence/artifacts/resumen-metricas.md"
+  ],
+  "mcpServersUsed": ["cursor-cloud"],
+  "blockers": [
+    "SEC-CORS-001: fallback CORS_ALLOWED_ORIGINS con wildcard (*) en serverless.yml",
+    "VP-001: visual_exact_parity FAIL — 0/12 capturas",
+    "REV-001: reviewer-agent pendiente tras security_pass y paridad visual PASS",
+    "DEVOPS-001: pipeline-config.md ausente"
+  ],
+  "nextAgentSuggested": "backend-agent",
+  "artifactsProduced": [
+    "artifacts/metricas-ejecucion.json",
+    "artifacts/resumen-metricas.md"
+  ]
+}
