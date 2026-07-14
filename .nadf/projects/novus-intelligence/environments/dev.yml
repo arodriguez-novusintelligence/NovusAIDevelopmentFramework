@@ -1,6 +1,6 @@
 environment: dev
 provider: aws
-region: us-east-1
+region: sa-east-1
 
 frontend:
   hosting:
@@ -38,6 +38,8 @@ env_variables:
     description: Entorno de ejecución
   - name: API_BASE_URL
     description: URL base de la API backend
+  - name: CONTACT_EMAIL_FROM
+    description: Email remitente del formulario de contacto
   - name: CONTACT_EMAIL_TO
     description: Email destino del formulario de contacto
 
