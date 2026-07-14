@@ -1,12 +1,12 @@
 {
-  "analysisDate": "2026-07-14T08:52:00Z",
+  "analysisDate": "2026-07-14T17:30:00Z",
   "sourceRepo": "novus-nexus",
   "targetFrontend": "NovusIntelligenceWEB",
   "baseline": {
-    "commit": "e3a9819",
-    "message": "Añadió ejemplo multiagente",
-    "previousBaseline": "8f106a6 (Reestructuró sitio de Novus)",
-    "note": "Primera ejecución del analyzer; se documenta snapshot completo más delta del último commit."
+    "commit": "f97e53e",
+    "message": "Añadió simulación multiagente",
+    "previousBaseline": "e3a9819 (Añadió ejemplo multiagente)",
+    "note": "Snapshot completo del sitio + delta del commit f97e53e (NovusDevFrameworkDemo en landing)."
   },
   "changes": [
     {
@@ -55,7 +55,7 @@
       "id": "CHG-004",
       "type": "visual",
       "component": "Hero",
-      "description": "Hero de landing con badge 'Building Autonomous Intelligence', headline con gradiente de marca, dos CTAs (demo + soluciones), stats de partners/foco/sede y logo animado con glow y float.",
+      "description": "Hero de landing con badge 'Building Autonomous Intelligence', headline con gradiente de marca, CTAs (demo + simulación), stats de partners/foco/sede y logo animado clickeable con overlay 'Click para simular el framework'.",
       "severity": "high",
       "requiresBackend": false,
       "affectedPages": ["landing"],
@@ -125,7 +125,7 @@
       "id": "CHG-009",
       "type": "functional",
       "component": "MultiAgentDemo",
-      "description": "Nuevo componente interactivo en /solutions/ai-agents: diagrama SVG de arquitectura multiagente con 7 nodos, 8 conexiones animadas, timeline de 8 pasos, controles play/pausa/step y leyenda técnica (Frontend Lovable, Orquestación, AWS).",
+      "description": "Componente interactivo en /solutions/ai-agents: diagrama SVG de arquitectura multiagente con 7 nodos, 8 conexiones animadas, timeline de 8 pasos, controles play/pausa/step y leyenda técnica (Frontend Lovable, Orquestación, AWS).",
       "severity": "high",
       "requiresBackend": false,
       "affectedPages": ["solutions"],
@@ -190,19 +190,61 @@
         "typography": [],
         "spacing": []
       }
+    },
+    {
+      "id": "CHG-014",
+      "type": "functional",
+      "component": "NovusDevFrameworkDemo",
+      "description": "Nuevo modal Dialog en landing: simulación de 4 columnas (Triggers → Framework → Agentes IA → Entregables) con 9 pasos, auto-advance cada 1.2s, controles play/pausa/reiniciar, barra de progreso clickeable, mini-canvas SVG estilo n8n y tarjeta de producto entregado al finalizar. Datos hardcoded (Lead Manager B2B MVP).",
+      "severity": "high",
+      "requiresBackend": false,
+      "affectedPages": ["landing"],
+      "designTokens": {
+        "colors": ["border-primary/60 active columns", "bg-gradient-card", "oklch edge gradients en SVG"],
+        "typography": ["font-display título modal", "font-mono log panel text-xs"],
+        "spacing": ["max-w-6xl dialog", "grid 4-columnas lg"]
+      }
+    },
+    {
+      "id": "CHG-015",
+      "type": "functional",
+      "component": "hero-simulation-triggers",
+      "description": "Tres puntos de entrada para abrir NovusDevFrameworkDemo: botón secundario 'Ver simulación' (reemplaza link 'Ver soluciones'), click en logo animado del Hero, y CustomEvent 'novus:open-dev-framework' disparado desde Header al re-clicar enlace Home estando en /.",
+      "severity": "medium",
+      "requiresBackend": false,
+      "affectedPages": ["landing"],
+      "designTokens": {
+        "colors": ["border-primary/40 overlay badge", "group-hover:shadow-glow"],
+        "typography": ["text-xs overlay 'Click para simular el framework'"],
+        "spacing": []
+      }
+    },
+    {
+      "id": "CHG-016",
+      "type": "structural",
+      "component": "ci-notify-nadf",
+      "description": "Workflow GitHub notify-nadf.yml en novus-nexus: repository_dispatch a NovusAIDevelopmentFramework con event_type lovable-commit al push en main. Requiere secret NADF_DISPATCH_TOKEN. No impacta frontend productivo.",
+      "severity": "low",
+      "requiresBackend": false,
+      "affectedPages": [],
+      "designTokens": {
+        "colors": [],
+        "typography": [],
+        "spacing": []
+      }
     }
   ],
   "summary": {
-    "totalChanges": 13,
+    "totalChanges": 16,
     "visualChanges": 5,
-    "functionalChanges": 3,
+    "functionalChanges": 5,
     "contentChanges": 2,
-    "structuralChanges": 3,
+    "structuralChanges": 4,
     "backendRequired": true,
     "latestDelta": {
-      "commit": "e3a9819",
-      "filesChanged": 4,
-      "primaryChange": "MultiAgentDemo integrado condicionalmente en solución ai-agents"
+      "commit": "f97e53e",
+      "filesChanged": 5,
+      "primaryChange": "NovusDevFrameworkDemo modal integrado en Hero con múltiples triggers; CTA secundario cambia de 'Ver soluciones' a 'Ver simulación'"
     }
   }
 }
