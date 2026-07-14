@@ -8,8 +8,8 @@
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
-**Resultado global:** **FAIL**  
-**qualityScore:** 0 (gate bloqueante fallido)
+**Resultado global:** **PASS**  
+**qualityScore:** 100
 
 ---
 
@@ -17,7 +17,11 @@
 
 Se ejecutó validación QA sobre los tres repositorios del piloto (**NovusAIDevelopmentFramework**, **NovusIntelligenceWEB**, **NovusIntelligenceBack**) y los artefactos NADF asociados.
 
-La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) existen en **ramas feature** no mergeadas a `main`. El build de producción compila correctamente en ambos repos productivos, pero **NovusIntelligenceWEB falla lint** con 4 errores ESLint bloqueantes. Por política NADF (`qa-rules.md`), un gate bloqueante fallido implica `qualityScore = 0` y bloqueo del workflow.
+La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) están mergeadas en **`main`** en ambos repos productivos. Build y lint completan sin errores bloqueantes. Los gates críticos de calidad QA (`no_lovable_code_copy`, `no_mock_data_in_production`, `no_secrets_in_repo`, `build_success`, `responsive_validation`, `plan_approved`) pasan.
+
+**Revalidación respecto a corrida anterior:** los 4 errores ESLint en componentes UI WEB (QA-001) fueron corregidos en `main` (`eead55f`); lint ahora reporta 0 errores y 1 warning no bloqueante.
+
+**Constraint respetado:** `NO_DEPLOY` — no se desplegó infraestructura ni se invocó API remota.
 
 ---
 
@@ -25,11 +29,9 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 
 | Repositorio | Rama evaluada | Estado |
 |-------------|---------------|--------|
-| NovusAIDevelopmentFramework | `cursor/propuesta-infra-dev-1385` (+ refs remotas) | Artefactos planning/infra presentes |
-| NovusIntelligenceWEB | `cursor/implement-novus-frontend-2d22` | Implementación completa (no en `main`) |
-| NovusIntelligenceBack | `cursor/implement-contact-api-04c8` | API contacto implementada (no en `main`) |
-
-**Constraint respetado:** `NO_DEPLOY` — no se desplegó infraestructura ni se invocó API remota.
+| NovusAIDevelopmentFramework | `cursor/qa-validation-6f8c` (base: `cursor/propuesta-infra-dev-92c7`) | Artefactos planning/infra/validación |
+| NovusIntelligenceWEB | `main` (`cdd9f95`) | Sitio corporativo completo mergeado |
+| NovusIntelligenceBack | `main` (`bf3bd2b`) | API contacto mergeada |
 
 ---
 
@@ -46,19 +48,19 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 
 | Repo | Comando | Resultado |
 |------|---------|-----------|
-| NovusIntelligenceWEB | `npm run lint` | ❌ **4 errores**, 1 warning |
+| NovusIntelligenceWEB | `npm run lint` | ✅ **0 errores**, 1 warning |
 | NovusIntelligenceBack | `npm run lint` | ✅ Sin errores |
 
-**Errores lint WEB (bloqueantes):**
+**Warning no bloqueante WEB:** `src/router.tsx:35` — `react-refresh/only-export-components` (componente `LazyPage` exportado junto al router).
 
-| Archivo | Regla | Descripción |
-|---------|-------|-------------|
-| `src/components/ui/Input.tsx:4` | `@typescript-eslint/no-empty-object-type` | Interface vacía equivalente a su supertipo |
-| `src/components/ui/Label.tsx:4` | `@typescript-eslint/no-empty-object-type` | Idem |
-| `src/components/ui/Select.tsx:4` | `@typescript-eslint/no-empty-object-type` | Idem |
-| `src/components/ui/Textarea.tsx:4` | `@typescript-eslint/no-empty-object-type` | Idem |
+**Corrección QA-001 verificada:** `Input.tsx`, `Label.tsx`, `Select.tsx`, `Textarea.tsx` usan `type` alias en lugar de interfaces vacías.
 
-**Warning no bloqueante:** `src/router.tsx:35` — `react-refresh/only-export-components`.
+### Auditoría de dependencias (informativo)
+
+| Repo | Comando | Resultado |
+|------|---------|-----------|
+| NovusIntelligenceWEB | `npm audit --audit-level=high` | ✅ 0 vulnerabilidades |
+| NovusIntelligenceBack | `npm audit --audit-level=high` | ⚠️ 8 en toolchain Serverless (devDependencies); no bloqueante QA |
 
 ---
 
@@ -67,13 +69,13 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 | Gate | Bloqueante | Resultado | Evidencia |
 |------|------------|-----------|-----------|
 | `plan_approved` | Sí | ✅ PASS | `plan-implementacion.md` → `status: approved` |
-| `no_lovable_code_copy` | Sí | ✅ PASS | Sin imports de `novus-nexus`; reimplementación propia; comentario en `index.css` documenta intención, no copia |
-| `no_mock_data_in_production` | Sí | ✅ PASS | `contact.ts` retorna error si falta `VITE_NOVUS_API_URL`; sin fallback `demo-*`; `VITE_DEMO_MODE` solo en `.env.example` |
+| `no_lovable_code_copy` | Sí | ✅ PASS | Sin imports de `novus-nexus`; reimplementación propia; tokens documentados en `index.css` como intención, no copia literal |
+| `no_mock_data_in_production` | Sí | ✅ PASS | `contact.ts` retorna error si falta `VITE_NOVUS_API_URL`; sin fallback `demo-*`; sin éxito simulado |
 | `no_secrets_in_repo` | Sí | ✅ PASS | Escaneo sin `AKIA`, `sk-`, passwords ni tokens en WEB/Back/artifacts; solo `.env.example` con placeholders vacíos |
-| `build_success` | Sí | ❌ **FAIL** | Build OK; **lint WEB con 4 errores** (criterio TASK-QA-001) |
-| `responsive_validation` | Sí | ✅ PASS (documentado) | Breakpoints `sm:`/`md:`/`lg:` en layout, Hero, grids, contacto, MultiAgentDemo; menú móvil en Header; `prefers-reduced-motion` en CSS y hook |
-| `seo_basic_validation` | No | ✅ PASS (documentado) | `PageMetaTags` (Helmet) en las 10 rutas + 404; title/description/og:* configurados; un `<h1>` por página verificado en código |
-| `deploy_human_approval` | Sí | ✅ PASS | Sin despliegue ejecutado por agentes |
+| `build_success` | Sí | ✅ PASS | Build OK en WEB y Back; lint WEB 0 errores |
+| `responsive_validation` | Sí | ✅ PASS (documentado) | Breakpoints `sm:`/`md:`/`lg:` en layout, Hero, grids, contacto; menú móvil en Header; `prefers-reduced-motion` en CSS y hook |
+| `seo_basic_validation` | No | ✅ PASS (documentado) | `PageMetaTags` (Helmet) en 10 rutas + 404; title/description/og:* configurados; un `<h1>` por página |
+| `deploy_human_approval` | Sí | ✅ PASS | `NO_DEPLOY` respetado en esta ejecución QA |
 
 ---
 
@@ -85,7 +87,7 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 |---------|-----------|---------|
 | Plan aprobado | ✅ | Alineado a Fases 0–9 |
 | Artefactos planning | ✅ | `plan-implementacion.md`, `evaluacion-backend.md`, `especificacion-backend.md`, `propuesta-infra.md`, `resumen-frontend.md`, `resumen-cloud.md` |
-| `resumen-backend.md` | ⚠️ | Existe en rama remota `cursor/resumen-backend-artifact-04c8`; **no mergeado** al branch infra actual |
+| `resumen-backend.md` | ⚠️ | **Ausente** en branch actual; existe en rama remota `cursor/resumen-backend-artifact-04c8` sin merge |
 | `pipeline-config.md` | ❌ | **Ausente** — TASK-DEVOPS-001 pendiente |
 | `environments/dev.yml` | ✅ | Región reconciliada a `sa-east-1` |
 | Secrets en artifacts | ✅ | Solo nombres/paths documentados |
@@ -94,13 +96,12 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 
 | Aspecto | Resultado | Detalle |
 |---------|-----------|---------|
-| Rutas (10 + wildcard) | ✅ | Router define `/`, `/services`, `/solutions`, `/solutions/:slug`, `/about`, `/cases`, `/contact`, `/privacy`, `/data-treatment`, `/terms`, `*` |
+| Rutas (10 + wildcard) | ✅ | `/`, `/services`, `/solutions`, `/solutions/:slug`, `/about`, `/cases`, `/contact`, `/privacy`, `/data-treatment`, `/terms`, `*` |
 | Slugs soluciones (6) | ✅ | `ai-agents`, `automation`, `integrations`, `analytics`, `documents-ai`, `customer-ai` |
-| MultiAgentDemo lazy | ✅ | Solo en `/solutions/ai-agents` vía `SolutionDetailPage` |
+| MultiAgentDemo lazy | ✅ | Solo en `/solutions/ai-agents` (`showDemo = slug === "ai-agents"`) |
 | Contacto R-001 | ✅ | Sin éxito simulado; error explícito sin API |
-| Build | ✅ | dist/ generado |
-| Lint | ❌ | 4 errores en componentes UI |
-| Merge a `main` | ⚠️ | `main` sigue en scaffold vacío |
+| Build + lint | ✅ | dist/ generado; 0 errores ESLint |
+| Merge a `main` | ✅ | PR #2 mergeado |
 
 ### NovusIntelligenceBack
 
@@ -108,13 +109,14 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 |---------|-----------|---------|
 | Handler `POST /api/v1/contact` | ✅ | `src/handlers/contact.ts` implementado |
 | Región default | ✅ | `serverless.yml` → `sa-east-1` |
-| CORS | ✅ | `dev.novusintelligence.com`, `localhost:5173` |
-| Rate limit | ✅ | Throttle API Gateway (burst 20, rate 10) |
+| CORS | ✅ | Orígenes explícitos + `CORS_ALLOWED_ORIGINS` configurable |
+| Rate limit por IP | ✅ | `isIpRateLimited()` invocado en handler (SEC-002 corregido en `main`) |
+| IAM SES | ✅ | `Resource: arn:aws:ses:...:identity/*` (SEC-001 corregido en `main`) |
 | Captcha prep (R-008) | ✅ | `captchaService.ts` — deshabilitado por default |
 | requestId real | ✅ | `crypto.randomUUID()` — sin prefijo `demo-` |
 | Build + lint | ✅ | Sin errores |
-| Merge a `main` | ⚠️ | `main` sigue en scaffold vacío |
-| E2E contacto | ⏸️ | No testable — API no desplegada (`NO_DEPLOY`) |
+| Merge a `main` | ✅ | PR #3 mergeado |
+| E2E contacto | ⏸️ | No testable en esta corrida — `NO_DEPLOY` |
 
 ---
 
@@ -138,7 +140,7 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 | `<meta name="description">` | ✅ |
 | `og:title`, `og:description`, `og:image` | ✅ |
 | Un `<h1>` por página | ✅ verificado en páginas principales |
-| `alt` en imágenes | ⚠️ Solo `NovusLogo` tiene `alt`; assets SVG decorativos sin `<img>` adicional |
+| `alt` en imágenes | ⚠️ `NovusLogo` con `alt`; assets SVG decorativos sin `<img>` raster adicional |
 
 ---
 
@@ -146,27 +148,28 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 
 | Fase plan | Estado esperado | Estado real | Gap |
 |-----------|-----------------|-------------|-----|
-| 0–4 Frontend | Completado | ✅ Rama `cursor/implement-novus-frontend-2d22` | No mergeado |
-| 5 Backend | Completado | ✅ Rama `cursor/implement-contact-api-04c8` | No mergeado; artifact resumen pendiente merge |
-| 6 Contacto integración | Tras API DEV | ⚠️ UI lista; E2E bloqueado por `NO_DEPLOY` | API no desplegada |
-| 7 Infra/DevOps | Preparación | ⚠️ Parcial | `propuesta-infra.md` ✅; `pipeline-config.md` ❌ |
-| 9 Validation | En curso | ❌ FAIL lint | Corregir lint WEB |
+| 0–4 Frontend | Completado | ✅ `main` | — |
+| 5 Backend | Completado | ✅ `main` | — |
+| 6 Contacto integración | Tras API DEV | ⚠️ UI lista; E2E bloqueado por `NO_DEPLOY` | API no probada end-to-end |
+| 7 Infra/DevOps | Preparación | ⚠️ Parcial | `propuesta-infra.md` ✅; `pipeline-config.md` ❌; CI deploy en repos ✅ |
+| 9 Validation QA | En curso | ✅ PASS | Gates QA cumplidos |
 
 ---
 
 ## Hallazgos y recomendaciones
 
-### Bloqueantes (requieren acción antes de avanzar)
+### Bloqueantes QA
 
-1. **Corregir 4 errores ESLint** en componentes UI WEB (`Input`, `Label`, `Select`, `Textarea`) — usar `type` alias en lugar de interface vacía extends.
-2. **Merge PRs** de frontend y backend a `main` tras corregir lint.
+Ninguno. Todos los gates bloqueantes QA pasan.
 
-### No bloqueantes (seguimiento)
+### Seguimiento (no bloqueantes QA)
 
 1. Mergear `resumen-backend.md` al Framework desde rama `cursor/resumen-backend-artifact-04c8`.
 2. Completar TASK-DEVOPS-001 (`pipeline-config.md`) — agente devops-agent.
-3. Validación E2E contacto post-deploy (TASK-QA-004) cuando exista API DEV desplegada con aprobación humana.
-4. Agregar `alt` descriptivos si se incorporan imágenes raster en futuras iteraciones.
+3. Re-ejecutar **security-agent** sobre `main` — informe previo (`informe-seguridad.md`) refleja estado pre-corrección SEC-001/SEC-002.
+4. Validación E2E contacto post-deploy (TASK-QA-004) cuando exista API DEV desplegada.
+5. Ejecutar **visual-parity-agent** para gate `visual_exact_parity` (ADR-0006).
+6. Agregar `alt` descriptivos si se incorporan imágenes raster en futuras iteraciones.
 
 ---
 
@@ -175,19 +178,19 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 | Métrica | Valor |
 |---------|-------|
 | agentName | qa-agent |
-| qualityScore | 0 |
+| qualityScore | 100 |
 | gatesTotal | 8 |
-| gatesPassed | 7 |
-| gatesFailed | 1 (`build_success`) |
-| testsRun | 4 (build WEB, lint WEB, build Back, lint Back) |
-| testsPassed | 3 |
-| testsFailed | 1 (lint WEB) |
+| gatesPassed | 8 |
+| gatesFailed | 0 |
+| testsRun | 6 |
+| testsPassed | 6 |
+| testsFailed | 0 |
 
 ---
 
 ## Próximo agente sugerido
 
-**frontend-integration-agent** — corregir errores lint bloqueantes en NovusIntelligenceWEB antes de re-ejecutar QA o proceder con security-agent/reviewer-agent.
+**security-agent** — Revalidar seguridad sobre `main` (SEC-001/SEC-002 corregidos en código mergeado; informe previo desactualizado). Tras `security_pass`, proceder con **reviewer-agent**.
 
 ---
 
@@ -197,7 +200,7 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 - `artifacts/resumen-frontend.md`
 - `artifacts/propuesta-infra.md`
 - `.nadf/projects/novus-intelligence/rules/qa-rules.md`
-- Ramas: `NovusIntelligenceWEB@cursor/implement-novus-frontend-2d22`, `NovusIntelligenceBack@cursor/implement-contact-api-04c8`
+- Ramas evaluadas: `NovusIntelligenceWEB@main`, `NovusIntelligenceBack@main`
 
 ---
 
@@ -206,3 +209,4 @@ La implementación frontend (Fases 0–4 + UI contacto) y backend (Fase 5) exist
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Validación QA Fase 9 — resultado FAIL (lint WEB) | qa-agent |
+| 2026-07-14 | Revalidación QA — resultado PASS (lint corregido, main mergeado) | qa-agent |
