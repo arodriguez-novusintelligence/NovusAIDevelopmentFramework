@@ -3,7 +3,8 @@
   "workflow": "novus-intelligence-lovable-to-web",
   "step": "paso-02-generar-plan",
   "producer": "planner-agent",
-  "createdAt": "2026-07-14T09:01:00Z",
+  "createdAt": "2026-07-14T17:30:00Z",
+  "updatedAt": "2026-07-14T17:30:00Z",
   "status": "draft",
   "baseline": {
     "sourceRepo": "novus-nexus",
@@ -13,9 +14,11 @@
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1",
-    "frontendUrl": "https://dev.novusintelligence.com",
+    "frontendUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+    "frontendUrlDnsPending": "https://dev.novusintelligence.com",
     "apiUrl": "https://api-dev.novusintelligence.com",
-    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+    "emailFrom": "noreply-dev@novusintelligence.com",
+    "note": "Región oficial DEV: sa-east-1 según environments/dev.yml y project-context.yml"
   },
   "scope": {
     "requiresBackend": true,
@@ -43,6 +46,11 @@
       "id": "no_secrets_in_repo",
       "blocking": true,
       "description": "Credenciales solo en AWS Secrets Manager / SSM"
+    },
+    {
+      "id": "visual_exact_parity",
+      "blocking": true,
+      "description": "Paridad visual exacta vs Lovable en rutas /, /about, /services, /contact (ADR-0006)"
     },
     {
       "id": "plan_approved",
@@ -548,13 +556,14 @@
       "id": "TASK-INFRA-001",
       "agent": "cloud-agent",
       "phase": 7,
-      "title": "Reconciliar environments/dev.yml a región sa-east-1",
-      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "title": "Validar alineación environments/dev.yml con región sa-east-1",
+      "description": "Confirmar que stacks Serverless, SES y recursos AWS del entorno DEV operan en sa-east-1 según environments/dev.yml.",
       "changeIds": ["CHG-011"],
       "dependencies": ["TASK-BI-001"],
       "priority": "high",
       "acceptanceCriteria": [
-        "dev.yml actualizado con region sa-east-1",
+        "dev.yml confirma region sa-east-1",
+        "Stacks Serverless y SES verificados en sa-east-1",
         "URLs DEV documentadas sin secrets"
       ],
       "blockedByPlanApproval": true,
