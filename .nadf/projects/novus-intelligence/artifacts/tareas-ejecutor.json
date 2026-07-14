@@ -3,7 +3,7 @@
   "workflow": "novus-intelligence-lovable-to-web",
   "step": "paso-02-generar-plan",
   "producer": "planner-agent",
-  "createdAt": "2026-07-14T09:01:00Z",
+  "createdAt": "2026-07-14T21:31:00Z",
   "status": "draft",
   "baseline": {
     "sourceRepo": "novus-nexus",
@@ -13,9 +13,10 @@
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1",
-    "frontendUrl": "https://dev.novusintelligence.com",
+    "frontendUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+    "frontendUrlDnsPending": "https://dev.novusintelligence.com",
     "apiUrl": "https://api-dev.novusintelligence.com",
-    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+    "stackName": "novus-intelligence-back-dev"
   },
   "scope": {
     "requiresBackend": true,
@@ -37,7 +38,7 @@
     {
       "id": "deploy_human_approval",
       "blocking": true,
-      "description": "Despliegue a DEV/QA/prod solo con aprobación humana explícita"
+      "description": "Despliegue a QA/prod solo con aprobación humana explícita; DEV auto-deploy solo tras gates ADR-0006"
     },
     {
       "id": "no_secrets_in_repo",
@@ -47,14 +48,19 @@
     {
       "id": "plan_approved",
       "blocking": true,
-      "description": "plan-implementacion.md:status debe ser approved antes de Execution"
+      "description": "plan-implementacion.md status debe ser approved antes de Execution"
+    },
+    {
+      "id": "visual_exact_parity",
+      "blocking": true,
+      "description": "Paridad visual exacta diff ≤ 0.2% vs referencia Lovable en rutas DEV"
     }
   ],
   "riskMitigations": [
     {
       "riskId": "R-001",
       "title": "Modo demo en formulario de contacto",
-      "tasks": ["TASK-FE-021", "TASK-FE-022", "TASK-BE-001", "TASK-QA-004"]
+      "tasks": ["TASK-FE-021", "TASK-FE-020", "TASK-BE-001", "TASK-DEVOPS-002", "TASK-QA-004"]
     },
     {
       "riskId": "R-002",
@@ -69,7 +75,7 @@
     {
       "riskId": "R-004",
       "title": "Complejidad MultiAgentDemo",
-      "tasks": ["TASK-FE-016", "TASK-FE-017", "TASK-FE-018", "TASK-QA-006"]
+      "tasks": ["TASK-FE-016", "TASK-FE-017", "TASK-FE-018", "TASK-QA-005"]
     },
     {
       "riskId": "R-008",
@@ -78,6 +84,23 @@
     }
   ],
   "tasks": [
+    {
+      "id": "TASK-BI-001",
+      "agent": "backend-impact-agent",
+      "phase": "planning",
+      "title": "Generar evaluacion-backend y especificacion-backend",
+      "description": "Paso 5 del workflow. Detallar Lambda, IAM, SES y despliegue en sa-east-1 antes de Plan Review.",
+      "changeIds": ["CHG-008", "CHG-011"],
+      "dependencies": [],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "artifacts/evaluacion-backend.md generado",
+        "artifacts/especificacion-backend.md generado",
+        "requires_backend confirmado para POST /api/v1/contact"
+      ],
+      "blockedByPlanApproval": false,
+      "note": "Tarea de planning; ejecutar inmediatamente tras este plan draft"
+    },
     {
       "id": "TASK-FE-001",
       "agent": "frontend-integration-agent",
@@ -88,8 +111,8 @@
       "dependencies": [],
       "priority": "critical",
       "acceptanceCriteria": [
-        "Documento interno o comentarios en PR con inventario de tokens y componentes reutilizables",
-        "Identificadas brechas vs paleta navy/cyan/púrpura de Lovable"
+        "Inventario de tokens y componentes reutilizables documentado en PR",
+        "Brechas vs paleta navy/cyan/púrpura identificadas"
       ],
       "blockedByPlanApproval": true
     },
@@ -314,24 +337,6 @@
       "blockedByPlanApproval": true
     },
     {
-      "id": "TASK-FE-016",
-      "agent": "frontend-integration-agent",
-      "phase": 4,
-      "title": "Implementar componente MultiAgentDemo",
-      "description": "Reimplementar diagrama multiagente interactivo para /solutions/ai-agents. Sin copiar SVG ni clases de Lovable.",
-      "changeIds": ["CHG-009"],
-      "riskIds": ["R-002", "R-004"],
-      "dependencies": ["TASK-FE-018"],
-      "priority": "high",
-      "acceptanceCriteria": [
-        "7 nodos y 8 conexiones animadas visibles",
-        "Timeline 8 pasos con play/pause/step",
-        "Componente aislado y lazy-loaded",
-        "prefers-reduced-motion pausa animaciones"
-      ],
-      "blockedByPlanApproval": true
-    },
-    {
       "id": "TASK-FE-017",
       "agent": "frontend-integration-agent",
       "phase": 3,
@@ -363,6 +368,24 @@
       "blockedByPlanApproval": true
     },
     {
+      "id": "TASK-FE-016",
+      "agent": "frontend-integration-agent",
+      "phase": 4,
+      "title": "Implementar componente MultiAgentDemo",
+      "description": "Reimplementar diagrama multiagente interactivo para /solutions/ai-agents. Sin copiar SVG ni clases de Lovable.",
+      "changeIds": ["CHG-009"],
+      "riskIds": ["R-002", "R-004"],
+      "dependencies": ["TASK-FE-018"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "7 nodos y 8 conexiones animadas visibles",
+        "Timeline 8 pasos con play/pause/step",
+        "Componente aislado y lazy-loaded",
+        "prefers-reduced-motion pausa animaciones"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
       "id": "TASK-FE-019",
       "agent": "frontend-integration-agent",
       "phase": 6,
@@ -383,7 +406,7 @@
       "agent": "frontend-integration-agent",
       "phase": 6,
       "title": "Integrar submitContact con API real",
-      "description": "Conectar formulario a VITE_NOVUS_API_URL. Prohibido fallback demo de Lovable.",
+      "description": "Conectar formulario a VITE_NOVUS_API_URL. Prohibido fallback demo de Lovable (R-001).",
       "changeIds": ["CHG-008", "CHG-011"],
       "riskIds": ["R-001"],
       "dependencies": ["TASK-FE-019", "TASK-BE-003"],
@@ -432,7 +455,7 @@
       "agent": "backend-agent",
       "phase": 5,
       "title": "Implementar Lambda novus-contact-handler",
-      "description": "Handler Node.js 20 con validación, sanitización y envío SES según contrato OpenAPI.",
+      "description": "Handler Node.js 20 en sa-east-1 con validación, sanitización y envío SES según contrato OpenAPI.",
       "changeIds": ["CHG-008", "CHG-011"],
       "riskIds": ["R-001"],
       "dependencies": ["TASK-BI-001"],
@@ -473,7 +496,7 @@
       "dependencies": ["TASK-BE-001"],
       "priority": "critical",
       "acceptanceCriteria": [
-        "Email enviado exitosamente en DEV",
+        "Email enviado exitosamente en DEV sa-east-1",
         "Variables CONTACT_SES_FROM y CONTACT_SES_TO referenciadas desde Secrets/SSM",
         "Sin valores de secrets en código versionado"
       ],
@@ -528,37 +551,19 @@
       "blockedByPlanApproval": true
     },
     {
-      "id": "TASK-BI-001",
-      "agent": "backend-impact-agent",
-      "phase": "planning",
-      "title": "Generar evaluacion-backend y especificacion-backend",
-      "description": "Paso 5 del workflow. Detallar Lambda, IAM, SES y despliegue antes de Plan Review.",
-      "changeIds": ["CHG-008", "CHG-011"],
-      "dependencies": [],
-      "priority": "critical",
-      "acceptanceCriteria": [
-        "artifacts/evaluacion-backend.md generado",
-        "artifacts/especificacion-backend.md generado",
-        "requires_backend confirmado"
-      ],
-      "blockedByPlanApproval": false,
-      "note": "Tarea de planning; ejecutar antes de backend-agent"
-    },
-    {
       "id": "TASK-INFRA-001",
       "agent": "cloud-agent",
       "phase": 7,
-      "title": "Reconciliar environments/dev.yml a región sa-east-1",
-      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "title": "Validar configuración DEV sa-east-1",
+      "description": "Confirmar alineación de environments/dev.yml, stack novus-intelligence-back-dev y recursos AWS en región sa-east-1.",
       "changeIds": ["CHG-011"],
       "dependencies": ["TASK-BI-001"],
       "priority": "high",
       "acceptanceCriteria": [
-        "dev.yml actualizado con region sa-east-1",
+        "dev.yml coherente con project-context region sa-east-1",
         "URLs DEV documentadas sin secrets"
       ],
-      "blockedByPlanApproval": true,
-      "requiresHumanApprovalForDeploy": false
+      "blockedByPlanApproval": true
     },
     {
       "id": "TASK-INFRA-002",
@@ -581,7 +586,7 @@
       "agent": "cloud-agent",
       "phase": 7,
       "title": "Configurar hosting frontend DEV (S3 + CloudFront)",
-      "description": "Bucket novus-intelligence-web-dev con CDN para https://dev.novusintelligence.com.",
+      "description": "Bucket novus-intelligence-web-dev-519010577666 con CDN para https://d1bfu6klutpp8m.cloudfront.net.",
       "changeIds": ["CHG-001"],
       "dependencies": ["TASK-INFRA-001"],
       "priority": "high",
@@ -644,7 +649,7 @@
       "agent": "devops-agent",
       "phase": 7,
       "title": "Configurar variables de build frontend",
-      "description": "VITE_NOVUS_API_URL apuntando a API DEV; VITE_DEMO_MODE=false obligatorio.",
+      "description": "VITE_NOVUS_API_URL apuntando a API DEV; VITE_DEMO_MODE=false obligatorio (R-001).",
       "changeIds": ["CHG-008", "CHG-011"],
       "riskIds": ["R-001"],
       "dependencies": ["TASK-DEVOPS-001"],
@@ -660,15 +665,15 @@
       "id": "TASK-DEVOPS-003",
       "agent": "devops-agent",
       "phase": 7,
-      "title": "Preparar despliegue DEV (bloqueado hasta aprobación humana)",
-      "description": "Artefactos de despliegue listos pero NO ejecutar deploy sin aprobación explícita.",
+      "title": "Preparar despliegue DEV (bloqueado hasta gates)",
+      "description": "Artefactos de despliegue listos; deploy DEV solo tras plan_approved, qa_pass, security_pass, visual_exact_parity.",
       "changeIds": ["CHG-001", "CHG-011"],
-      "dependencies": ["TASK-DEVOPS-002", "TASK-INFRA-003", "TASK-BE-003", "TASK-FE-021"],
+      "dependencies": ["TASK-DEVOPS-002", "TASK-INFRA-003", "TASK-BE-003", "TASK-FE-021", "TASK-QA-006"],
       "priority": "high",
       "acceptanceCriteria": [
         "Runbook de despliegue documentado",
-        "Deploy NO ejecutado por agente",
-        "Aprobación humana registrada antes de publicar"
+        "Deploy NO ejecutado por agente sin gates cumplidos",
+        "Gates ADR-0006 verificados antes de publicar"
       ],
       "blockedByPlanApproval": true,
       "requiresHumanApprovalForDeploy": true
@@ -772,6 +777,22 @@
       "blockedByPlanApproval": true
     },
     {
+      "id": "TASK-VP-001",
+      "agent": "visual-parity-agent",
+      "phase": 9,
+      "title": "Validar paridad visual exacta vs Lovable",
+      "description": "Comparar rutas /, /about, /services, /contact en viewports 1440x900, 768x1024, 390x844. Threshold diff ≤ 0.2%.",
+      "changeIds": ["CHG-002", "CHG-003", "CHG-004"],
+      "dependencies": ["TASK-QA-003"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Diff ratio ≤ 0.002 en todas las rutas y viewports configurados",
+        "artifacts/informe-paridad-visual.md generado",
+        "Gate visual_exact_parity pass"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
       "id": "TASK-SEC-001",
       "agent": "security-agent",
       "phase": 9,
@@ -825,7 +846,7 @@
       "description": "Comparar cambios implementados contra plan-implementacion.md y verificar gate no_lovable_code_copy.",
       "changeIds": ["CHG-002", "CHG-009"],
       "riskIds": ["R-002"],
-      "dependencies": ["TASK-QA-006", "TASK-SEC-001"],
+      "dependencies": ["TASK-QA-006", "TASK-SEC-001", "TASK-VP-001"],
       "priority": "critical",
       "acceptanceCriteria": [
         "artifacts/informe-revision.md generado",
@@ -878,6 +899,7 @@
     "TASK-QA-004",
     "TASK-QA-005",
     "TASK-QA-006",
+    "TASK-VP-001",
     "TASK-SEC-001",
     "TASK-SEC-002",
     "TASK-SEC-003",
