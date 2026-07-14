@@ -14,7 +14,7 @@
 
 ## Resumen ejecutivo
 
-Esta propuesta define la infraestructura AWS DEV para el sitio corporativo Novus Intelligence en la región **sa-east-1**, reconciliando `environments/dev.yml` (originalmente `us-east-1`).
+Esta propuesta define la infraestructura AWS DEV para el sitio corporativo Novus Intelligence en la región **sa-east-1**, alineada con `environments/dev.yml` (ya reconciliado) y `especificacion-backend.md`.
 
 **Alcance:**
 
@@ -27,38 +27,45 @@ Esta propuesta define la infraestructura AWS DEV para el sitio corporativo Novus
 | Secrets | AWS Secrets Manager / SSM Parameter Store |
 | DNS | Route 53 (alias a CloudFront y API custom domain) |
 
-**Restricciones respetadas:** `NO_DEPLOY`, `NO_SECRETS_IN_REPO`, `deploy_human_approval` obligatorio para cualquier apply.
+**Restricciones respetadas:** `NO_DEPLOY`, `NO_SECRETS_IN_REPO`, `PLAN_MUST_BE_APPROVED`, `TARGET_DEV_REGION_SA_EAST_1`.
+
+**Política de despliegue DEV (ADR-0006):** auto-deploy tras gates (`plan_approved`, `qa_pass`, `security_pass`, `visual_exact_parity`). PROD/QA requieren aprobación humana explícita.
 
 ---
 
 ## Reconciliación regional (TASK-INFRA-001)
 
-| Campo | Valor actual `dev.yml` | Valor propuesto DEV |
-|-------|------------------------|---------------------|
-| `region` | `us-east-1` | **`sa-east-1`** |
+| Campo | `environments/dev.yml` (canónico) | Estado |
+|-------|-----------------------------------|--------|
+| `region` | **`sa-east-1`** | ✅ Reconciliado |
+| `backend.region` | **`sa-east-1`** | ✅ Alineado |
 | `backend.stack_name` | `novus-intelligence-back-dev` | Sin cambio |
-| `backend.api_url` | `https://api-dev.novusintelligence.com` | Sin cambio (DNS global) |
-| `frontend.url` | `https://dev.novusintelligence.com` | Sin cambio |
-| `services.email.from_address` | `noreply-dev@novusintelligence.com` | Sin cambio |
+| `backend.api_url` | `https://api-dev.novusintelligence.com` | DNS pendiente |
+| `frontend.url` | `https://d1bfu6klutpp8m.cloudfront.net` | ✅ Activa |
+| `frontend.url_dns_pending` | `https://dev.novusintelligence.com` | Pendiente alias Route 53 |
+| `services.email.from_address` | `noreply-dev@novusintelligence.com` | Pendiente verificación SES |
+
+> **Verificación pendiente:** Artefactos residuales (`backend-impact.md`, `tareas-ejecutor.json`) aún citan `us-east-1` o nombres `CONTACT_SES_*`. cloud-agent confirma que `dev.yml` y esta propuesta usan **`sa-east-1`** y variables canónicas **`CONTACT_EMAIL_FROM`** / **`CONTACT_EMAIL_TO`**.
 
 > **Nota SES:** Las identidades de email y dominio deben crearse/verificarse en **sa-east-1**. Si el dominio ya está verificado en otra región, replicar verificación en sa-east-1 antes del primer envío.
 
-### `environments/dev.yml` reconciliado (referencia)
+### Referencia canónica `environments/dev.yml`
 
 ```yaml
 environment: dev
 provider: aws
 region: sa-east-1
+status: target_environment
 
 frontend:
   hosting:
     service: object_storage
     provider: aws
-    bucket_name: novus-intelligence-web-dev
+    bucket_name: novus-intelligence-web-dev-519010577666
     cdn_enabled: true
-  url: https://dev.novusintelligence.com
-  build_command: npm run build
-  lint_command: npm run lint
+    cloudfront_distribution_id: E8IN00J3MFCNO
+  url: https://d1bfu6klutpp8m.cloudfront.net
+  url_dns_pending: https://dev.novusintelligence.com
 
 backend:
   service: serverless_api
@@ -66,31 +73,33 @@ backend:
   stack_name: novus-intelligence-back-dev
   api_url: https://api-dev.novusintelligence.com
   runtime: nodejs20.x
+  region: sa-east-1
 
 services:
   storage:
-    provider: aws
-    service: object_storage
     bucket_name: novus-intelligence-assets-dev
+    region: sa-east-1
   email:
-    provider: aws
-    service: email
     from_address: noreply-dev@novusintelligence.com
   database:
-    provider: aws
-    service: nosql_database
     table_prefix: novus-intelligence-dev
-    enabled: false  # requires_database: false
+    region: sa-east-1
+    # requires_database: false — no aplica en alcance actual
 
 env_variables:
-  - name: NODE_ENV
-    description: Entorno de ejecución
-  - name: API_BASE_URL
-    description: URL base de la API backend
-  - name: CONTACT_EMAIL_FROM
-    description: Email remitente del formulario de contacto (normalizado)
-  - name: CONTACT_EMAIL_TO
-    description: Email destino del formulario de contacto (normalizado)
+  - NODE_ENV
+  - API_BASE_URL
+  - CONTACT_EMAIL_TO
+  - AWS_REGION
+
+deploy:
+  requires_human_approval: false
+  auto_after_gates: true
+  gates_required:
+    - plan_approved
+    - qa_pass
+    - security_pass
+    - visual_exact_parity
 ```
 
 ---
@@ -100,20 +109,21 @@ env_variables:
 ```mermaid
 flowchart TB
     subgraph DNS["Route 53"]
-        FE_DNS["dev.novusintelligence.com"]
-        API_DNS["api-dev.novusintelligence.com"]
+        FE_DNS["dev.novusintelligence.com<br/>(pendiente)"]
+        API_DNS["api-dev.novusintelligence.com<br/>(pendiente)"]
+        CF_DNS["d1bfu6klutpp8m.cloudfront.net<br/>(activa)"]
     end
 
-    subgraph CDN["CloudFront"]
+    subgraph CDN["CloudFront E8IN00J3MFCNO"]
         CF["Distribution DEV"]
     end
 
-    subgraph FE["Frontend"]
-        S3_WEB["S3: novus-intelligence-web-dev"]
+    subgraph FE["Frontend sa-east-1"]
+        S3_WEB["S3: novus-intelligence-web-dev-519010577666"]
         S3_ASSETS["S3: novus-intelligence-assets-dev"]
     end
 
-    subgraph API["Backend Serverless"]
+    subgraph API["Backend Serverless sa-east-1"]
         AGW["HTTP API Gateway<br/>novus-intelligence-api-dev"]
         LAM["Lambda: novus-contact-handler"]
         SEC["Secrets Manager<br/>/novus-intelligence/dev/*"]
@@ -121,7 +131,8 @@ flowchart TB
         CW["CloudWatch Logs + Alarms"]
     end
 
-    U[Usuario] --> FE_DNS --> CF --> S3_WEB
+    U[Usuario] --> CF_DNS --> CF --> S3_WEB
+    U -. futuro .-> FE_DNS --> CF
     U --> API_DNS --> AGW --> LAM
     LAM --> SEC
     LAM --> SES
@@ -138,6 +149,7 @@ flowchart TB
 | Prefijo | Uso |
 |---------|-----|
 | `novus-intelligence-*-dev` | Recursos de aplicación DEV |
+| `novus-intelligence-*-dev-{accountId}` | Buckets S3 (sufijo cuenta AWS) |
 | `/novus-intelligence/dev/` | Prefijo SSM / Secrets Manager |
 | Tag `Environment=dev` | Obligatorio en todos los recursos |
 | Tag `Project=novus-intelligence` | Trazabilidad NADF |
@@ -149,7 +161,7 @@ flowchart TB
 | Stack IaC | CloudFormation (Serverless) | **`novus-intelligence-back-dev`** | sa-east-1 |
 | HTTP API | API Gateway HTTP API | **`novus-intelligence-api-dev`** | sa-east-1 |
 | Función | Lambda | **`novus-contact-handler`** | sa-east-1 |
-| Rol IAM | IAM Role | `novus-intelligence-back-dev-{stage}-lambdaRole` | sa-east-1 |
+| Rol IAM | IAM Role | `novus-intelligence-back-dev-dev-lambdaRole` | sa-east-1 |
 | Log group | CloudWatch Logs | `/aws/lambda/novus-contact-handler` | sa-east-1 |
 | Stage | API Gateway stage | `dev` | sa-east-1 |
 
@@ -178,7 +190,7 @@ flowchart TB
 | Throttle burst | 20 |
 | Throttle rate | 10 req/s |
 | Rate limit por IP (app) | 10 req / 5 min (variable `RATE_LIMIT_PER_IP`) |
-| CORS origins | `https://dev.novusintelligence.com`, `http://localhost:5173` |
+| CORS origins | `https://dev.novusintelligence.com`, `https://d1bfu6klutpp8m.cloudfront.net`, `http://localhost:5173` |
 | CORS methods | `POST`, `OPTIONS` |
 | CORS headers | `Content-Type` |
 
@@ -218,12 +230,13 @@ flowchart TB
 
 ### Frontend — S3 + CloudFront
 
-| Recurso | Nombre | Región | Notas |
-|---------|--------|--------|-------|
-| Bucket SPA | **`novus-intelligence-web-dev`** | sa-east-1 | Website estático; bloqueo público; acceso vía OAI/OAC |
-| Distribución CDN | `novus-intelligence-web-dev-cdn` | Global (edge) | Origin: bucket sa-east-1 |
-| Certificado ACM | `dev.novusintelligence.com` | **us-east-1** | Requisito CloudFront (certificado en us-east-1) |
-| Alias DNS | `dev.novusintelligence.com` | Route 53 | A/AAAA alias → CloudFront |
+| Recurso | Nombre / ID | Región | Estado |
+|---------|-------------|--------|--------|
+| Bucket SPA | **`novus-intelligence-web-dev-519010577666`** | sa-east-1 | Documentado en dev.yml |
+| Distribución CDN | **`E8IN00J3MFCNO`** | Global (edge) | Activa |
+| URL activa | `https://d1bfu6klutpp8m.cloudfront.net` | — | Operativa |
+| URL objetivo DNS | `https://dev.novusintelligence.com` | Route 53 | Pendiente alias |
+| Certificado ACM | `dev.novusintelligence.com` | **us-east-1** | Requisito CloudFront |
 
 #### Configuración bucket SPA
 
@@ -254,19 +267,19 @@ flowchart TB
 
 **Contenido esperado:** logos, imágenes OG, material de marca (CHG-013).
 
-**Alternativa MVP:** servir assets desde `public/assets/novus/` en el bucket SPA (`novus-intelligence-web-dev`) y usar bucket dedicado solo si se requiere CDN separado o assets compartidos multi-entorno.
+**Alternativa MVP:** servir assets desde `public/assets/novus/` en el bucket SPA (`novus-intelligence-web-dev-519010577666`) y usar bucket dedicado solo si se requiere CDN separado o assets compartidos multi-entorno.
 
 | Política | Valor |
 |----------|-------|
 | Acceso público | Denegado |
-| CORS | Origen `https://dev.novusintelligence.com` si acceso directo |
+| CORS | Origen `https://dev.novusintelligence.com` y `https://d1bfu6klutpp8m.cloudfront.net` |
 | Lifecycle | Sin expiración DEV |
 
 ---
 
 ### Secrets y parámetros (TASK-INFRA-005)
 
-> **Solo nombres.** Valores creados manualmente o vía pipeline con aprobación humana.
+> **Solo nombres.** Valores creados manualmente o vía pipeline con aprobación humana. Nunca en repositorio.
 
 #### AWS Secrets Manager (recomendado para secretos)
 
@@ -281,7 +294,9 @@ flowchart TB
 | Parameter name | Tipo | Valor DEV sugerido |
 |----------------|------|-------------------|
 | `/novus-intelligence/dev/NODE_ENV` | String | `development` |
-| `/novus-intelligence/dev/CORS_ALLOWED_ORIGINS` | String | `https://dev.novusintelligence.com,http://localhost:5173` |
+| `/novus-intelligence/dev/AWS_REGION` | String | `sa-east-1` |
+| `/novus-intelligence/dev/API_BASE_URL` | String | `https://api-dev.novusintelligence.com` |
+| `/novus-intelligence/dev/CORS_ALLOWED_ORIGINS` | String | `https://dev.novusintelligence.com,https://d1bfu6klutpp8m.cloudfront.net,http://localhost:5173` |
 | `/novus-intelligence/dev/RATE_LIMIT_PER_IP` | String | `10` |
 | `/novus-intelligence/dev/CAPTCHA_ENABLED` | String | `false` |
 | `/novus-intelligence/dev/CAPTCHA_PROVIDER` | String | `turnstile` |
@@ -292,6 +307,7 @@ flowchart TB
 | Variable entorno Lambda | Fuente | Descripción |
 |-------------------------|--------|-------------|
 | `NODE_ENV` | SSM | Entorno |
+| `AWS_REGION` | SSM | Región sa-east-1 |
 | `CONTACT_EMAIL_FROM` | Secrets Manager | Remitente SES |
 | `CONTACT_EMAIL_TO` | Secrets Manager | Destinatario notificaciones |
 | `CORS_ALLOWED_ORIGINS` | SSM | Orígenes CORS |
@@ -308,6 +324,13 @@ flowchart TB
 |----------|-----------|-------|
 | `VITE_NOVUS_API_URL` | `https://api-dev.novusintelligence.com` | Sin trailing slash |
 | `VITE_DEMO_MODE` | `false` | **Obligatorio** en builds desplegados (R-001) |
+
+#### Normalización de nombres (D-003)
+
+| Nombre legacy (artefactos antiguos) | Nombre canónico (usar en IaC) |
+|-------------------------------------|-------------------------------|
+| `CONTACT_SES_FROM` | `CONTACT_EMAIL_FROM` |
+| `CONTACT_SES_TO` | `CONTACT_EMAIL_TO` |
 
 ---
 
@@ -346,6 +369,7 @@ provider:
   timeout: 10
   environment:
     NODE_ENV: ${ssm:/novus-intelligence/dev/NODE_ENV}
+    AWS_REGION: ${ssm:/novus-intelligence/dev/AWS_REGION}
     CORS_ALLOWED_ORIGINS: ${ssm:/novus-intelligence/dev/CORS_ALLOWED_ORIGINS}
     RATE_LIMIT_PER_IP: ${ssm:/novus-intelligence/dev/RATE_LIMIT_PER_IP}
     CAPTCHA_ENABLED: ${ssm:/novus-intelligence/dev/CAPTCHA_ENABLED}
@@ -390,6 +414,7 @@ custom:
     cors:
       allowedOrigins:
         - https://dev.novusintelligence.com
+        - https://d1bfu6klutpp8m.cloudfront.net
         - http://localhost:5173
       allowedHeaders:
         - Content-Type
@@ -398,7 +423,7 @@ custom:
         - OPTIONS
 ```
 
-**Comando de despliegue (solo humano autorizado):**
+**Comando de despliegue (solo tras gates ADR-0006 o aprobación humana):**
 
 ```bash
 cd NovusIntelligenceBack
@@ -409,24 +434,25 @@ npx serverless deploy --stage dev --region sa-east-1
 
 ## DNS y certificados
 
-| Dominio | Tipo registro | Destino | Certificado |
-|---------|---------------|---------|-------------|
-| `dev.novusintelligence.com` | A/AAAA Alias | CloudFront distribution | ACM us-east-1 |
-| `api-dev.novusintelligence.com` | A Alias | API Gateway custom domain | ACM sa-east-1 |
-| `_amazonses.novusintelligence.com` | TXT | Verificación SES | — |
-| DKIM selectors (3) | CNAME | SES DKIM | — |
+| Dominio | Tipo registro | Destino | Certificado | Estado |
+|---------|---------------|---------|-------------|--------|
+| `d1bfu6klutpp8m.cloudfront.net` | CloudFront default | Distribution `E8IN00J3MFCNO` | ACM us-east-1 | ✅ Activo |
+| `dev.novusintelligence.com` | A/AAAA Alias | CloudFront `E8IN00J3MFCNO` | ACM us-east-1 | Pendiente |
+| `api-dev.novusintelligence.com` | A Alias | API Gateway custom domain | ACM sa-east-1 | Pendiente |
+| `_amazonses.novusintelligence.com` | TXT | Verificación SES | — | Pendiente |
+| DKIM selectors (3) | CNAME | SES DKIM | — | Pendiente |
 
 ---
 
 ## Checklist de despliegue humano (DEV sa-east-1)
 
-> Ejecutar **solo tras `deploy_human_approval` explícita**. Orden recomendado.
+> **cloud-agent no ejecuta deploy.** Orden recomendado para operador humano o **devops-agent** tras gates NADF (ADR-0006 permite auto-deploy DEV cuando `auto_after_gates: true`).
 
 ### Fase A — Prerrequisitos
 
 - [ ] **A.1** Confirmar cuenta AWS y permisos IAM para sa-east-1
 - [ ] **A.2** Verificar plan `approved` y backend implementado (`POST /api/v1/contact`)
-- [ ] **A.3** Actualizar `environments/dev.yml` con `region: sa-east-1` (TASK-INFRA-001)
+- [ ] **A.3** Confirmar `environments/dev.yml` con `region: sa-east-1` (TASK-INFRA-001 ✅)
 - [ ] **A.4** Crear secretos en Secrets Manager (sin commitear valores):
   - [ ] `/novus-intelligence/dev/contact-email`
   - [ ] `/novus-intelligence/dev/captcha` (si aplica)
@@ -450,17 +476,17 @@ npx serverless deploy --stage dev --region sa-east-1
 - [ ] **C.5** Configurar custom domain `api-dev.novusintelligence.com`
 - [ ] **C.6** Probar `POST /api/v1/contact` con curl (payload válido → 200)
 - [ ] **C.7** Verificar email recibido en bandeja `CONTACT_EMAIL_TO`
-- [ ] **C.8** Verificar CORS preflight desde origen DEV
+- [ ] **C.8** Verificar CORS preflight desde origen DEV y CloudFront
 - [ ] **C.9** Confirmar CloudWatch logs con `requestId` (sin prefijo `demo-`)
 
 ### Fase D — Frontend hosting
 
-- [ ] **D.1** Crear bucket `novus-intelligence-web-dev` (sa-east-1, privado)
-- [ ] **D.2** Crear certificado ACM `dev.novusintelligence.com` en **us-east-1**
-- [ ] **D.3** Crear distribución CloudFront con OAC hacia bucket
-- [ ] **D.4** Configurar alias Route 53 `dev.novusintelligence.com`
+- [ ] **D.1** Verificar bucket `novus-intelligence-web-dev-519010577666` (sa-east-1, privado)
+- [ ] **D.2** Verificar distribución CloudFront `E8IN00J3MFCNO` con OAC hacia bucket
+- [ ] **D.3** Crear/validar certificado ACM `dev.novusintelligence.com` en **us-east-1**
+- [ ] **D.4** Configurar alias Route 53 `dev.novusintelligence.com` → CloudFront
 - [ ] **D.5** Build frontend con `VITE_NOVUS_API_URL` y `VITE_DEMO_MODE=false`
-- [ ] **D.6** Sync `dist/` a bucket (`aws s3 sync dist/ s3://novus-intelligence-web-dev/`)
+- [ ] **D.6** Sync `dist/` a bucket (`aws s3 sync dist/ s3://novus-intelligence-web-dev-519010577666/`)
 - [ ] **D.7** Invalidar cache CloudFront para `index.html`
 - [ ] **D.8** Navegar 10 rutas + formulario contacto end-to-end
 
@@ -476,7 +502,8 @@ npx serverless deploy --stage dev --region sa-east-1
 - [ ] **F.2** Payload inválido → 400 con `errors[]`
 - [ ] **F.3** Sin secrets expuestos en repos ni logs
 - [ ] **F.4** Alarmas CloudWatch activas
-- [ ] **F.5** Handoff a qa-agent + security-agent (Fase 9)
+- [ ] **F.5** Gates `qa_pass`, `security_pass`, `visual_exact_parity` cumplidos
+- [ ] **F.6** Handoff a qa-agent + security-agent (Fase 9)
 
 ---
 
@@ -498,11 +525,11 @@ npx serverless deploy --stage dev --region sa-east-1
 
 | Tarea | Estado en propuesta |
 |-------|---------------------|
-| TASK-INFRA-001 | Reconciliación región sa-east-1 documentada |
-| TASK-INFRA-002 | API Gateway + Lambda + SES + IAM + CloudWatch |
-| TASK-INFRA-003 | S3 + CloudFront frontend DEV |
-| TASK-INFRA-004 | Bucket assets DEV |
-| TASK-INFRA-005 | Secrets Manager / SSM — nombres documentados |
+| TASK-INFRA-001 | ✅ Verificación región sa-east-1 confirmada en dev.yml |
+| TASK-INFRA-002 | ✅ API Gateway + Lambda + SES + IAM + CloudWatch |
+| TASK-INFRA-003 | ✅ S3 + CloudFront frontend DEV (bucket y distribution documentados) |
+| TASK-INFRA-004 | ✅ Bucket assets DEV |
+| TASK-INFRA-005 | ✅ Secrets Manager / SSM — nombres documentados |
 
 ---
 
@@ -512,9 +539,10 @@ npx serverless deploy --stage dev --region sa-east-1
 |--------|------------|
 | SES en sandbox | Verificar destinatarios o solicitar production access |
 | Certificado CloudFront en región incorrecta | ACM frontend en us-east-1; API en sa-east-1 |
-| CORS bloqueado | Validar `CORS_ALLOWED_ORIGINS` antes de deploy frontend |
+| CORS bloqueado | Incluir URL CloudFront activa en `CORS_ALLOWED_ORIGINS` |
 | R-001 demo mode | `VITE_DEMO_MODE=false` en pipeline; QA valida `requestId` real |
 | R-008 captcha | `CAPTCHA_ENABLED=false` en DEV; habilitar pre-prod |
+| DNS pendiente | Usar `d1bfu6klutpp8m.cloudfront.net` hasta alias `dev.novusintelligence.com` |
 
 ---
 
@@ -522,7 +550,7 @@ npx serverless deploy --stage dev --region sa-east-1
 
 | Constraint | Cumplimiento |
 |------------|--------------|
-| `NO_DEPLOY` | ✅ Solo propuesta; checklist para humano |
+| `NO_DEPLOY` | ✅ Solo propuesta; checklist para humano/devops |
 | `NO_SECRETS_IN_REPO` | ✅ Solo nombres de variables y paths |
 | `NO_LOVABLE_CODE_COPY` | N/A (infra) |
 | `PLAN_MUST_BE_APPROVED` | ✅ Plan status `approved` |
@@ -540,6 +568,7 @@ npx serverless deploy --stage dev --region sa-east-1
 - `.nadf/projects/novus-intelligence/environments/dev.yml`
 - `.nadf/projects/novus-intelligence/project-context.yml`
 - `.nadf/global/rules/provider-independence.md`
+- ADR-0006 (auto-deploy DEV tras gates)
 
 ---
 
@@ -547,4 +576,5 @@ npx serverless deploy --stage dev --region sa-east-1
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Propuesta IaC DEV sa-east-1 generada | cloud-agent |
+| 2026-07-14 | Propuesta IaC DEV sa-east-1 generada (v1) | cloud-agent |
+| 2026-07-14 | Reconciliación con dev.yml canónico: bucket real, CloudFront E8IN00J3MFCNO, ADR-0006 | cloud-agent |
