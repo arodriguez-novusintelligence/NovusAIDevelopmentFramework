@@ -34,3 +34,4 @@ Patrón «dead code security»: utilidades de protección definidas durante desa
 | Severidad | high |
 | Gate bloqueante | security_pass |
 | Fecha | 2026-07-14 |
+| Estado | remediated |

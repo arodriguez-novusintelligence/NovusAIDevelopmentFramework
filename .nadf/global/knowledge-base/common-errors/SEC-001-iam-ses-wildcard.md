@@ -42,3 +42,4 @@ Verificar alineación con `propuesta-infra.md` del mismo workflow.
 | Severidad | high |
 | Gate bloqueante | security_pass |
 | Fecha | 2026-07-14 |
+| Estado | remediated |

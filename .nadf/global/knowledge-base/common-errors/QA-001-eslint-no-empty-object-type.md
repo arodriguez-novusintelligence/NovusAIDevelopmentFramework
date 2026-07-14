@@ -46,3 +46,4 @@ Alternativa: añadir al menos una prop semántica explícita a la interface.
 | Severidad | critical |
 | Gate bloqueante | build_success |
 | Fecha | 2026-07-14 |
+| Estado | remediated |
