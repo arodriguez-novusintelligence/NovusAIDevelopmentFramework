@@ -364,7 +364,7 @@ Variable sugerida: `RATE_LIMIT_PER_IP` (requests por ventana).
 | Observabilidad | CloudWatch | Log group `/aws/lambda/novus-contact-handler` |
 | IaC | Serverless Framework | Stack `novus-intelligence-back-dev` |
 
-**Región:** `sa-east-1` (reconciliar `environments/dev.yml`).
+**Región:** `sa-east-1` (`environments/dev.yml` alineado; verificar stacks Serverless en cloud-agent).
 
 **Despliegue:** Solo con aprobación humana explícita (`deploy_human_approval`).
 
@@ -481,7 +481,7 @@ components:
 
 ## Próximo agente
 
-**architect-agent** (paso 6) — Plan Review validando coherencia entre `plan-implementacion.md`, `evaluacion-backend.md` y esta especificación.
+**backend-agent** (Fase 5) — Implementación del endpoint según esta especificación; plan ya `approved` por architect-agent.
 
 ---
 
@@ -490,3 +490,4 @@ components:
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Especificación backend generada | backend-impact-agent |
+| 2026-07-14 | Revalidación paso-05; handoff actualizado a backend-agent | backend-impact-agent |

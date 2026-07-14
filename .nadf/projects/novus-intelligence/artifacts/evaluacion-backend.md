@@ -8,7 +8,7 @@
 **Runtime:** Cursor Cloud Agent (adaptador M6 cursor-cloud)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Baseline Lovable:** novus-nexus @ `e3a9819`  
-**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`draft`)
+**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)
 
 ---
 
@@ -165,9 +165,8 @@ El `database-agent` (paso 9) **no aplica** en esta iteración.
 
 ### Nota de reconciliación regional
 
-- `environments/dev.yml` declara `region: us-east-1`.
-- El constraint del workflow exige **TARGET_DEV_REGION_SA_EAST_1**.
-- **Acción downstream:** `cloud-agent` (TASK-INFRA-001) debe actualizar `dev.yml` y stacks Serverless antes del despliegue DEV.
+- `environments/dev.yml` declara `region: sa-east-1` (alineado con **TARGET_DEV_REGION_SA_EAST_1**).
+- **Acción downstream:** `cloud-agent` (TASK-INFRA-001) debe verificar que stacks Serverless y despliegues de NovusIntelligenceBack usen la misma región antes de publicar en DEV.
 
 ### URLs DEV objetivo
 
@@ -214,8 +213,8 @@ flowchart LR
     CLOUD --> DEPLOY[Deploy DEV con aprobación humana]
 ```
 
-1. **architect-agent** (paso 6) valida coherencia con `plan-implementacion.md`.
-2. **backend-agent** implementa según `especificacion-backend.md` tras plan `approved`.
+1. **architect-agent** (paso 6) ya aprobó el plan; esta evaluación confirma coherencia con `plan-implementacion.md`.
+2. **backend-agent** implementa según `especificacion-backend.md` (plan `approved`).
 3. **cloud-agent** propone IaC en `sa-east-1`; despliegue bloqueado sin aprobación humana.
 4. **frontend-integration-agent** integra contacto solo tras API DEV disponible (mitigación R-001).
 
@@ -237,7 +236,8 @@ flowchart LR
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 5 (completado) | backend-impact-agent | `evaluacion-backend.md` + `especificacion-backend.md` |
-| 6 (siguiente) | architect-agent | Plan Review con evaluación backend previa |
+| 6 (completado) | architect-agent | Plan Review → `approved` |
+| 7+ (siguiente) | backend-agent, cloud-agent | Execution Fase 5 e infra según especificación |
 
 ---
 
@@ -258,3 +258,4 @@ flowchart LR
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Evaluación backend generada | backend-impact-agent |
+| 2026-07-14 | Revalidación paso-05; plan `approved`; dev.yml sa-east-1 confirmado | backend-impact-agent |
