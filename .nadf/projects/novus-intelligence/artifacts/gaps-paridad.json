@@ -1,0 +1,173 @@
+{
+  "status": "FAIL",
+  "gate": "visual_exact_parity",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatio": 0.234509,
+  "referenceUrl": "http://127.0.0.1:4173",
+  "candidateUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+  "generatedAt": "2026-07-14T20:32:56.426Z",
+  "summary": "12/12 capturas FAIL. Desviaciones materiales en hero, secciones landing, about, contact sidebar y footer global.",
+  "gaps": [
+    {
+      "id": "GAP-HOME-HERO",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "Hero",
+      "files": ["NovusIntelligenceWEB/src/components/sections/Hero.tsx"],
+      "finding": "Badge, headline, CTA secundario y visual del hero no coinciden con Lovable (copy distinto, falta simulación/demo, asset de marca incorrecto).",
+      "action": "Restaurar overline «BUILDING AUTONOMOUS INTELLIGENCE», headline completo «Transformamos empresas con inteligencia que genera resultados», CTA «Ver simulación» y visual de marca (no icono checkmark genérico)."
+    },
+    {
+      "id": "GAP-HOME-PARTNERS",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "PartnersBanner",
+      "files": ["NovusIntelligenceWEB/src/components/sections/Partners.tsx"],
+      "finding": "Banner cloud muestra texto plano en lugar de logos AWS/Azure/GCP con badges de partner.",
+      "action": "Reimplementar banner «CONSTRUIMOS SOBRE INFRAESTRUCTURA CLOUD DE CLASE MUNDIAL» con logos y layout de referencia."
+    },
+    {
+      "id": "GAP-HOME-SERVICES-GRID",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "ServicesGrid",
+      "files": ["NovusIntelligenceWEB/src/components/sections/ServicesGrid.tsx"],
+      "finding": "Título «Cinco pilares…» y grid 3 columnas vs referencia «Cinco capacidades que mueven la aguja» en 5 columnas.",
+      "action": "Alinear título, copy de cards, iconos circulares y layout 5-col desktop/tablet/móvil."
+    },
+    {
+      "id": "GAP-HOME-SOLUTIONS-GRID",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "SolutionsGrid",
+      "files": ["NovusIntelligenceWEB/src/components/sections/SolutionsGrid.tsx"],
+      "finding": "Sección soluciones con título y cards distintos («Productos listos…» vs «Inteligencia aplicada…»).",
+      "action": "Igualar títulos, descripciones, iconografía y enlaces «EXPLORAR →» por card."
+    },
+    {
+      "id": "GAP-HOME-IMPACT",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "ImpactStats",
+      "files": ["NovusIntelligenceWEB/src/components/sections/ImpactStats.tsx"],
+      "finding": "Sección impacto usa stats numéricos (3+, 6, 24/7) en lugar de 4 bloques icono+título (Productividad, Costos, Calidad, Escalabilidad).",
+      "action": "Reimplementar «Resultados medibles, no promesas vacías» con iconografía y copy Lovable."
+    },
+    {
+      "id": "GAP-HOME-TESTIMONIALS",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "Testimonials",
+      "files": ["NovusIntelligenceWEB/src/components/sections/Testimonials.tsx"],
+      "finding": "Sección testimonios con fondo oscuro; referencia usa fondo blanco y cards Banco Santa Cruz / doevents con logos.",
+      "action": "Cambiar contraste de sección a fondo claro, cards blancas con sombra y logos de clientes."
+    },
+    {
+      "id": "GAP-HOME-CTA",
+      "priority": "P0",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "CTA",
+      "files": ["NovusIntelligenceWEB/src/components/sections/CTA.tsx"],
+      "finding": "CTA inferior con copy y botones distintos («¿Listo para construir…?» vs «Hablemos sobre cómo la IA puede transformar tu negocio»).",
+      "action": "Alinear headline gradiente, descripción y botones «Agenda una demo» + «Explorar soluciones»."
+    },
+    {
+      "id": "GAP-ABOUT-HERO-VALUES",
+      "priority": "P0",
+      "routes": ["/about"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.12307,
+      "component": "AboutPage",
+      "files": ["NovusIntelligenceWEB/src/pages/AboutPage.tsx"],
+      "finding": "Hero y estructura de página difieren: falta fila de 3 cards Misión/Visión/Valores y CTAs «Ver soluciones» / «Hablemos».",
+      "action": "Reestructurar About con hero «Somos Novus Intelligence Solutions», tagline y cards de valores como referencia."
+    },
+    {
+      "id": "GAP-SERVICES-PAGE",
+      "priority": "P0",
+      "routes": ["/services"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.105514,
+      "component": "ServicesPage",
+      "files": ["NovusIntelligenceWEB/src/pages/ServicesPage.tsx"],
+      "finding": "Página servicios con layout, títulos y densidad de cards distintos a referencia Lovable.",
+      "action": "Alinear hero, grid de 5 pilares, espaciado vertical y tipografía con página Lovable /services."
+    },
+    {
+      "id": "GAP-CONTACT-SIDEBAR",
+      "priority": "P1",
+      "routes": ["/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.073206,
+      "component": "ContactPage",
+      "files": ["NovusIntelligenceWEB/src/pages/ContactPage.tsx"],
+      "finding": "Sidebar incompleto: faltan cards «Horario» y «Partner principal»; layout no respeta ratio 1:1.4.",
+      "action": "Añadir 3 cards laterales (Datos, Horario, Partner AWS) y ajustar proporción grid formulario."
+    },
+    {
+      "id": "GAP-GLOBAL-HEADER",
+      "priority": "P0",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "Header",
+      "files": ["NovusIntelligenceWEB/src/components/layout/Header.tsx"],
+      "finding": "Logo «Novus» con checkmark vs «NOVUS INTELLIGENCE»; indicador activo pill vs underline gradiente.",
+      "action": "Alinear branding, nav spacing y estado activo con Header Lovable."
+    },
+    {
+      "id": "GAP-GLOBAL-FOOTER",
+      "priority": "P0",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "Footer",
+      "files": ["NovusIntelligenceWEB/src/components/layout/Footer.tsx"],
+      "finding": "Footer 4 columnas (Contacto/Navegación/Legal) vs 5 columnas Lovable (Servicios, Soluciones, Contacto) + tagline.",
+      "action": "Reestructurar a 5 columnas con listas Servicios/Soluciones y tagline «BUILDING AUTONOMOUS INTELLIGENCE»."
+    },
+    {
+      "id": "GAP-GLOBAL-TOKENS",
+      "priority": "P0",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "component": "DesignTokens",
+      "files": [
+        "NovusIntelligenceWEB/src/index.css",
+        "NovusIntelligenceWEB/tailwind.config.js"
+      ],
+      "finding": "Desviación sistemática en gradientes, sombras (shadow-glow, shadow-card), grid-bg y tipografía.",
+      "action": "Refinar tokens semánticos oklch y utilities de marca hasta coincidencia pixel-level sin copiar CSS Lovable."
+    }
+  ],
+  "captureResults": [
+    { "path": "/", "viewport": "1440x900", "diffRatio": 0.190696, "pass": false },
+    { "path": "/about", "viewport": "1440x900", "diffRatio": 0.066117, "pass": false },
+    { "path": "/services", "viewport": "1440x900", "diffRatio": 0.066206, "pass": false },
+    { "path": "/contact", "viewport": "1440x900", "diffRatio": 0.042823, "pass": false },
+    { "path": "/", "viewport": "768x1024", "diffRatio": 0.214702, "pass": false },
+    { "path": "/about", "viewport": "768x1024", "diffRatio": 0.101771, "pass": false },
+    { "path": "/services", "viewport": "768x1024", "diffRatio": 0.087895, "pass": false },
+    { "path": "/contact", "viewport": "768x1024", "diffRatio": 0.061095, "pass": false },
+    { "path": "/", "viewport": "390x844", "diffRatio": 0.234509, "pass": false },
+    { "path": "/about", "viewport": "390x844", "diffRatio": 0.12307, "pass": false },
+    { "path": "/services", "viewport": "390x844", "diffRatio": 0.105514, "pass": false },
+    { "path": "/contact", "viewport": "390x844", "diffRatio": 0.073206, "pass": false }
+  ],
+  "nextAgentSuggested": "frontend-integration-agent"
+}
