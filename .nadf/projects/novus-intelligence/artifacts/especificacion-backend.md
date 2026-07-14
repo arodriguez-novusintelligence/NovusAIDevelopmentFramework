@@ -481,7 +481,7 @@ components:
 
 ## Próximo agente
 
-**architect-agent** (paso 6) — Plan Review validando coherencia entre `plan-implementacion.md`, `evaluacion-backend.md` y esta especificación.
+**architect-agent** (paso 6) — Plan Review completado (`approved`). **backend-agent** (Fase 5) implementa según esta especificación; **cloud-agent** prepara IaC DEV `sa-east-1` (TASK-INFRA-001/002).
 
 ---
 
@@ -490,3 +490,4 @@ components:
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Especificación backend generada | backend-impact-agent |
+| 2026-07-14 | Re-validación paso-05; handoff actualizado post Plan Review | backend-impact-agent |

@@ -8,7 +8,7 @@
 **Runtime:** Cursor Cloud Agent (adaptador M6 cursor-cloud)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Baseline Lovable:** novus-nexus @ `e3a9819`  
-**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`draft`)
+**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)
 
 ---
 
@@ -237,7 +237,8 @@ flowchart LR
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 5 (completado) | backend-impact-agent | `evaluacion-backend.md` + `especificacion-backend.md` |
-| 6 (siguiente) | architect-agent | Plan Review con evaluación backend previa |
+| 6 (completado) | architect-agent | Plan Review → `approved`; `impacto-arquitectonico.md` |
+| 7+ (siguiente) | backend-agent, frontend-integration-agent | Execution autorizada según `especificacion-backend.md` y plan aprobado |
 
 ---
 
@@ -258,3 +259,4 @@ flowchart LR
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Evaluación backend generada | backend-impact-agent |
+| 2026-07-14 | Re-validación paso-05; plan `approved`; handoff actualizado | backend-impact-agent |
