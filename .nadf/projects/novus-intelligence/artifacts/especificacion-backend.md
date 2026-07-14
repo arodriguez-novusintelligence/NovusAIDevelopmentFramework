@@ -481,7 +481,9 @@ components:
 
 ## Próximo agente
 
-**architect-agent** (paso 6) — Plan Review validando coherencia entre `plan-implementacion.md`, `evaluacion-backend.md` y esta especificación.
+**architect-agent** (paso 6) — Plan Review validando coherencia entre `plan-implementacion.md`, `evaluacion-backend.md` y esta especificación. *(Completado: plan `approved` 2026-07-14.)*
+
+**Ejecutores autorizados:** `backend-agent` (Fase 5), `frontend-integration-agent` (Fases 0–4; Fase 6 tras API DEV), `cloud-agent` (Fase 7 — despliegue con aprobación humana).
 
 ---
 
@@ -490,3 +492,4 @@ components:
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Especificación backend generada | backend-impact-agent |
+| 2026-07-14 | Revalidación paso-05; handoff actualizado post Plan Review | backend-impact-agent |
