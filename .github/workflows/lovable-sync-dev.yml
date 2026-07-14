@@ -20,14 +20,14 @@ on:
         type: choice
         options: [smoke, full, deploy-only, parity-only]
       auto_merge:
-        description: "Merge PRs productivos (ignorado si protect archetype / smoke)"
+        description: "Merge PRs productivos a main tras gates PASS (DEV)"
         required: true
-        default: false
+        default: true
         type: boolean
       auto_deploy_dev:
-        description: "Deploy DEV (ignorado si protect archetype / smoke)"
+        description: "Disparar Deploy DEV WEB/Back tras merge"
         required: true
-        default: false
+        default: true
         type: boolean
 
 concurrency:
@@ -97,9 +97,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           GH_TOKEN: ${{ secrets.GH_PAT }}
           NADF_SMOKE_TEST: "false"
-          NADF_PROTECT_ARCHETYPE: ${{ vars.NADF_PROTECT_ARCHETYPE || 'true' }}
-          NADF_AUTO_MERGE_DEV: ${{ github.event.inputs.auto_merge || 'false' }}
-          NADF_AUTO_DEPLOY_DEV: ${{ github.event.inputs.auto_deploy_dev || 'false' }}
+          # Piloto: permitir merge+deploy DEV cuando gates PASS (smoke sigue protegiendo)
+          NADF_PROTECT_ARCHETYPE: ${{ vars.NADF_PROTECT_ARCHETYPE || 'false' }}
+          NADF_AUTO_MERGE_DEV: ${{ github.event.inputs.auto_merge || vars.NADF_AUTO_MERGE_DEV || 'true' }}
+          NADF_AUTO_DEPLOY_DEV: ${{ github.event.inputs.auto_deploy_dev || vars.NADF_AUTO_DEPLOY_DEV || 'true' }}
           NADF_REQUIRE_VISUAL_PARITY: ${{ vars.NADF_LOVABLE_REFERENCE_URL != '' }}
           NADF_ARTIFACTS_REMOTE_ONLY: "true"
           NADF_AUTO_CREATE_PR: "true"

@@ -5,8 +5,8 @@
  * - smoke (NADF_SMOKE_TEST=true): verifica que el pipeline corrió; NO merge/deploy; exit 0.
  * - full: lee gates desde artifacts FRESCOS (PR Cloud del Framework), no stale del checkout.
  *
- * Arquetipo: por defecto NO mergea WEB/Back (NADF_PROTECT_ARCHETYPE=true).
- * Nunca deploya PROD.
+ * Arquetipo: NADF_PROTECT_ARCHETYPE=true bloquea merge/deploy WEB/Back.
+ * En piloto DEV el workflow full usa NADF_PROTECT_ARCHETYPE=false + auto merge/deploy.
  *
  * Env:
  *   NADF_SMOKE_TEST=true|false
@@ -380,12 +380,15 @@ function triggerDeployDev(): void {
 
 function main(): void {
   const smoke = flag("NADF_SMOKE_TEST", false);
-  const protectArchetype = flag("NADF_PROTECT_ARCHETYPE", true);
+  const protectArchetype = flag("NADF_PROTECT_ARCHETYPE", false);
   let autoMerge = flag("NADF_AUTO_MERGE_DEV", !smoke);
   let autoDeploy = flag("NADF_AUTO_DEPLOY_DEV", !smoke);
 
-  if (smoke || protectArchetype) {
-    // Arquetipo / smoke: nunca mutar WEB/Back ni desplegar desde este post
+  if (smoke) {
+    // Smoke: nunca mutar WEB/Back ni desplegar
+    autoMerge = false;
+    autoDeploy = false;
+  } else if (protectArchetype) {
     autoMerge = false;
     autoDeploy = false;
   }
