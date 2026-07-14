@@ -16,7 +16,7 @@ on:
       mode:
         description: "smoke = cableado; full = pipeline+gates; deploy-only; parity-only"
         required: true
-        default: smoke
+        default: full
         type: choice
         options: [smoke, full, deploy-only, parity-only]
       auto_merge:
@@ -58,8 +58,8 @@ jobs:
         id: mode
         run: |
           if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            # Push Lovable: por defecto smoke para no tocar arquetipo hasta instancia
-            MODE="${{ vars.NADF_DISPATCH_MODE || 'smoke' }}"
+            # Push Lovable: vars.NADF_DISPATCH_MODE (default full)
+            MODE="${{ vars.NADF_DISPATCH_MODE || 'full' }}"
           else
             MODE="${{ inputs.mode }}"
           fi
