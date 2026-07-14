@@ -10,7 +10,8 @@
     "invoke:planner": "tsx src/invoke-planner.ts",
     "invoke:backend-impact": "tsx src/invoke-backend-impact.ts",
     "invoke:architect": "tsx src/invoke-architect.ts",
-    "invoke:remaining-pipeline": "tsx src/invoke-remaining-pipeline.ts",`n    "post-pipeline-dev": "tsx src/post-pipeline-dev.ts",
+    "invoke:remaining-pipeline": "tsx src/invoke-remaining-pipeline.ts",
+    "post-pipeline-dev": "tsx src/post-pipeline-dev.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "engines": {
