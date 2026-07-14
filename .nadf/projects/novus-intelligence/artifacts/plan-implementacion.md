@@ -56,7 +56,7 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 - `NO_DEPLOY` — Infraestructura se propone; despliegue queda bloqueado hasta aprobación.
 - `TARGET_DEV_REGION_SA_EAST_1` — Toda propuesta cloud DEV apunta a región **sa-east-1**.
 
-> **Nota de alineación:** `environments/dev.yml` actualmente declara `region: us-east-1`. El target operativo de esta planificación es **sa-east-1** según constraints del workflow. El **backend-impact-agent** y **cloud-agent** deben reconciliar `dev.yml` y stacks Serverless en pasos posteriores.
+> **Nota de alineación:** `environments/dev.yml` ya declara `region: sa-east-1` (reconciliado). El **cloud-agent** debe verificar que stacks Serverless y referencias residuales en artefactos (`backend-impact.md`, `tareas-ejecutor.json`) apunten a **sa-east-1** antes del despliegue DEV.
 
 ---
 
@@ -358,14 +358,14 @@ Los agentes ejecutores pueden proceder según la secuencia de fases definida en 
 |--------|--------------|-----------|
 | **frontend-integration-agent** | Fases 0–4 inmediatas; Fase 6 tras API DEV | Gates `no_lovable_code_copy`, `no_mock_data_in_production` |
 | **backend-agent** | Fase 5 (`POST /api/v1/contact`) | Seguir `especificacion-backend.md` |
-| **cloud-agent** | Fase 7 (preparación IaC) | **TASK-INFRA-001 obligatoria:** reconciliar `environments/dev.yml` a `sa-east-1` antes de despliegue |
+| **cloud-agent** | Fase 7 (preparación IaC) | **TASK-INFRA-001:** verificar reconciliación regional (`dev.yml` ya en `sa-east-1`); alinear stacks Serverless |
 | **devops-agent** | Fase 7 (CI/pipeline) | Sin despliegue sin aprobación humana |
 
 **Tareas previas de infra (no bloquean inicio de código):**
 
-1. Reconciliar región DEV `us-east-1` → `sa-east-1` en `environments/dev.yml` (TASK-INFRA-001).
+1. **TASK-INFRA-001:** `environments/dev.yml` ya reconciliado a `sa-east-1`; verificar stacks Serverless y artefactos con referencias obsoletas a `us-east-1`.
 2. Normalizar nombres de variables email a `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` (coherencia con especificación backend).
-3. Despliegue DEV bloqueado hasta `deploy_human_approval` explícita.
+3. Despliegue DEV: auto-tras gates según ADR-0006 (`visual_exact_parity`, `qa_pass`, `security_pass`); PROD/QA requieren aprobación humana.
 
 Referencia completa: `artifacts/impacto-arquitectonico.md`.
 
@@ -407,3 +407,4 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 | 2026-07-14 | Plan generado en status `draft` | planner-agent |
 | 2026-07-14 | Evaluación y especificación backend generadas | backend-impact-agent |
 | 2026-07-14 | Plan Review completado; status `approved` | architect-agent |
+| 2026-07-14 | Revalidación Plan Review (paso-03); región DEV confirmada `sa-east-1` | architect-agent |
