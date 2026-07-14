@@ -62,7 +62,7 @@ jobs:
           npm run invoke:backend-impact
           npm run invoke:architect
           npm run invoke:remaining-pipeline
-          node --import tsx src/post-pipeline-dev.ts
+          npm run post-pipeline-dev
 
   deploy_only:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'deploy-only' }}
