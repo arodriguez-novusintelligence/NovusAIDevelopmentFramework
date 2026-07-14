@@ -4,6 +4,30 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-14 — Primera corrida workflow Lovable → Web
+
+**Contexto:** Evento `lovable.commit` en novus-nexus (`e3a9819`) activó el workflow canónico de 19 pasos para traducir la intención visual/funcional al stack productivo NovusIntelligenceWEB + NovusIntelligenceBack bajo runtime Cursor Cloud Agent (M6).
+
+**Decisión:**
+- Ejecutar planning completo (13 cambios CHG-001–CHG-013) con plan `PLAN-NOVUS-LOVABLE-2026-07-14` aprobado por architect-agent
+- Implementar sitio corporativo (10 rutas, 6 slugs, MultiAgentDemo, contact API) mediante reimplementación propia — sin copia de código Lovable
+- Mergear implementación frontend (PR #2) y backend (PR #2/#3) en repos productivos `main`
+- Respetar `NO_DEPLOY` — infraestructura solo como propuesta documentada en `sa-east-1`
+- Bloquear cierre del workflow por gate `visual_exact_parity` (0/12 capturas PASS; `maxDiffRatio: 0.234509`)
+- Remediar bloqueantes QA-001, SEC-001 y SEC-002 antes de revalidación (completado en `main`)
+
+**Rationale:** La corrida validó el modelo multiagente NADF de punta a punta: planning autorizado, ejecución multi-repo, validación con gates bloqueantes y fases Knowledge (métricas, reflexión, KB, ADR). El bloqueo por paridad visual confirma ADR-0006 — el resultado debe igualar Lovable sin clonar código.
+
+**Agentes ejecutados:** 17 de 19 (workflow, lovable-analyzer, planner, backend-impact, architect, frontend-integration, backend, cloud, qa, visual-parity, security, documentation, metrics, reflection, knowledge-base, adr). Pendientes: devops-agent, reviewer-agent.
+
+**PRs Framework (draft):** #1–#8. Revalidaciones en ramas `cursor/qa-validation-6f8c`, `cursor/security-review-paso10-554d`.
+
+**Artefactos clave:** `resumen-ejecucion.md`, `resumen-backend.md`, `metricas-ejecucion.json` (qualityScore: 62), `informe-paridad-visual.md` (FAIL), `informe-seguridad.md` (PASS, securityScore: 86).
+
+**ADR:** ADR-0003 (workflow canónico), ADR-0005 (runtime bridge), ADR-0006 (paridad visual + auto-deploy DEV)
+
+---
+
 ## 2026-07-14 — MVP automatización + paridad visual exacta
 
 **Contexto:** El sitio DEV no igualaba Lovable y no había trigger automático ante `lovable.commit`.
