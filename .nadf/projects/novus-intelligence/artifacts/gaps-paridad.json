@@ -1,0 +1,139 @@
+{
+  "status": "FAIL",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatio": 0.234509,
+  "nextAgentSuggested": "frontend-integration-agent",
+  "gaps": [
+    {
+      "id": "VP-P0-001",
+      "priority": "P0",
+      "component": "design-system",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "finding": "Tokens semánticos y tipografía no coinciden con referencia Lovable: paleta oklch navy-deep/cyan-neón, gradientes bg-gradient-brand/text-gradient-brand, fuentes Space Grotesk (display) + Inter (body), sombras shadow-glow/shadow-card/shadow-elevated.",
+      "action": "Reconciliar `index.css`, `tailwind.config.js` y variables CSS con tokens de intención Lovable (CHG-002, R-005). Verificar carga de Google Fonts. No copiar `styles.css` de novus-nexus.",
+      "filesHint": ["NovusIntelligenceWEB/src/index.css", "NovusIntelligenceWEB/tailwind.config.js"]
+    },
+    {
+      "id": "VP-P0-002",
+      "priority": "P0",
+      "component": "Header",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.190696,
+      "finding": "Header diverge: logo NovusLogo (imagen + wordmark NOVUS/Intelligence) vs icono genérico; CTA debe ser «Agenda una demo»; indicador activo con underline gradiente; copy nav distinto.",
+      "action": "Reimplementar Header sticky con backdrop-blur, nav 6 ítems, underline gradiente en ruta activa y CTA gradient-brand (CHG-003).",
+      "filesHint": ["NovusIntelligenceWEB/src/components/layout/Header.tsx", "NovusIntelligenceWEB/src/components/marketing/NovusLogo.tsx"]
+    },
+    {
+      "id": "VP-P0-003",
+      "priority": "P0",
+      "component": "Hero",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "finding": "Hero landing con copy, estructura y visual incorrectos: referencia usa badge «Building Autonomous Intelligence», headline «Transformamos empresas con inteligencia que genera resultados», CTAs «Agenda una demo» + «Ver simulación», stats AWS·Azure·GCP / Enterprise B2B / Bogotá CO, y logo foto animado (no icono checkmark).",
+      "action": "Alinear Hero.tsx a intención Lovable (CHG-004): badge, headline gradiente, dual CTA, stats row, logo animado con glow/float.",
+      "filesHint": ["NovusIntelligenceWEB/src/components/sections/Hero.tsx"]
+    },
+    {
+      "id": "VP-P0-004",
+      "priority": "P0",
+      "component": "Testimonials",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "finding": "Sección testimonios/clientes ausente o incorrecta: referencia tiene bloque fondo BLANCO con cards Banco Santa Cruz y doevents.com (logos, bullets, layout 2-col). Productivo mantiene tema oscuro uniforme.",
+      "action": "Implementar Testimonials con fondo claro, gradientes oklch inline según referencia, logos de cliente y estructura card Lovable (CHG-006).",
+      "filesHint": ["NovusIntelligenceWEB/src/components/sections/Testimonials.tsx"]
+    },
+    {
+      "id": "VP-P0-005",
+      "priority": "P0",
+      "component": "sections-landing",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.214702,
+      "finding": "Títulos de sección, copy y grids difieren: «Cinco capacidades que mueven la aguja» vs «Cinco pilares…»; Partners bar; ImpactStats 4 cards; SolutionsGrid 6 productos; CTA final con copy Lovable.",
+      "action": "Sincronizar copy y layout de Partners, ServicesGrid (5 col lg), SolutionsGrid, ImpactStats y CTA con módulos de contenido Lovable (CHG-005, CHG-006).",
+      "filesHint": [
+        "NovusIntelligenceWEB/src/components/sections/Partners.tsx",
+        "NovusIntelligenceWEB/src/components/sections/ServicesGrid.tsx",
+        "NovusIntelligenceWEB/src/components/sections/SolutionsGrid.tsx",
+        "NovusIntelligenceWEB/src/components/sections/ImpactStats.tsx",
+        "NovusIntelligenceWEB/src/components/sections/CTA.tsx",
+        "NovusIntelligenceWEB/src/content/site.ts"
+      ]
+    },
+    {
+      "id": "VP-P0-006",
+      "priority": "P0",
+      "component": "Footer",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.190696,
+      "finding": "Footer productivo usa 3 columnas (Contacto/Navegación/Legal); referencia usa grid 5 columnas (logo+desc, Servicios, Soluciones, Contacto+legales) con redes y copy «Building Autonomous Intelligence».",
+      "action": "Reestructurar Footer a layout Lovable 5 columnas con enlaces servicios/soluciones, datos contacto y legales (CHG-003, CHG-012).",
+      "filesHint": ["NovusIntelligenceWEB/src/components/layout/Footer.tsx"]
+    },
+    {
+      "id": "VP-P0-007",
+      "priority": "P0",
+      "component": "AboutPage",
+      "routes": ["/about"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.12307,
+      "finding": "Página /about: layout hero 2 columnas, founder, misión/visión/valores y espaciado no coinciden con referencia (diff 6.6–12.3%).",
+      "action": "Alinear AboutPage a estructura y copy de novus-nexus/about (CHG-005): hero, founder card, grid misión/visión/valores.",
+      "filesHint": ["NovusIntelligenceWEB/src/pages/AboutPage.tsx", "NovusIntelligenceWEB/src/content/site.ts"]
+    },
+    {
+      "id": "VP-P0-008",
+      "priority": "P0",
+      "component": "ServicesPage",
+      "routes": ["/services"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.105514,
+      "finding": "Página /services: grid de 5 pilares, headings y espaciado de sección difieren (diff 6.6–10.6%).",
+      "action": "Usar ServicesGrid Lovable (5 columnas lg) con copy de services.ts; revisar hero de página servicios.",
+      "filesHint": ["NovusIntelligenceWEB/src/pages/ServicesPage.tsx", "NovusIntelligenceWEB/src/components/sections/ServicesGrid.tsx"]
+    },
+    {
+      "id": "VP-P1-001",
+      "priority": "P1",
+      "component": "ContactPage",
+      "routes": ["/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.073206,
+      "finding": "Página /contact: título «Hablemos sobre tu próximo proyecto» vs referencia; sidebar con 3 cards (contacto/horario/AWS partner); ratio formulario 1:1.4; estilos inputs y botón submit.",
+      "action": "Alinear ContactPage layout, sidebar cards y formulario a intención Lovable (CHG-008). Mantener integración API sin demo.",
+      "filesHint": ["NovusIntelligenceWEB/src/pages/ContactPage.tsx"]
+    },
+    {
+      "id": "VP-P1-002",
+      "priority": "P1",
+      "component": "responsive",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["768x1024", "390x844"],
+      "maxDiffRatio": 0.234509,
+      "finding": "Diferencias móvil/tablet superan desktop en todas las rutas (home móvil 23.45%, tablet 21.47%), indicando breakpoints y menú móvil no alineados.",
+      "action": "Auditar responsive sm/md/lg: menú hamburguesa, stacks de grid, padding de sección py-20–24, tipografía escalada.",
+      "filesHint": ["NovusIntelligenceWEB/src/components/layout/Header.tsx"]
+    }
+  ],
+  "captureDetails": [
+    { "path": "/", "viewport": "1440x900", "diffRatio": 0.190696, "pass": false },
+    { "path": "/about", "viewport": "1440x900", "diffRatio": 0.066117, "pass": false },
+    { "path": "/services", "viewport": "1440x900", "diffRatio": 0.066206, "pass": false },
+    { "path": "/contact", "viewport": "1440x900", "diffRatio": 0.042823, "pass": false },
+    { "path": "/", "viewport": "768x1024", "diffRatio": 0.214702, "pass": false },
+    { "path": "/about", "viewport": "768x1024", "diffRatio": 0.101771, "pass": false },
+    { "path": "/services", "viewport": "768x1024", "diffRatio": 0.087895, "pass": false },
+    { "path": "/contact", "viewport": "768x1024", "diffRatio": 0.061095, "pass": false },
+    { "path": "/", "viewport": "390x844", "diffRatio": 0.234509, "pass": false },
+    { "path": "/about", "viewport": "390x844", "diffRatio": 0.12307, "pass": false },
+    { "path": "/services", "viewport": "390x844", "diffRatio": 0.105514, "pass": false },
+    { "path": "/contact", "viewport": "390x844", "diffRatio": 0.073206, "pass": false }
+  ]
+}

@@ -68,7 +68,7 @@ async function shot(
     deviceScaleFactor: 1,
   });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto(url, { waitUntil: "networkidle", timeout: 90_000 });
+  await page.goto(url, { waitUntil: "load", timeout: 90_000 });
   await page.addStyleTag({
     content: `
       *, *::before, *::after {
