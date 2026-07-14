@@ -1,16 +1,16 @@
 {
   "project": "novus-intelligence",
   "workflowId": "novus-intelligence-lovable-to-web",
-  "step": "paso-16-reflexion",
+  "step": "paso-13-reflexion",
   "agentName": "reflection-agent",
   "pattern": "Reflection",
-  "generatedAt": "2026-07-14T11:15:00Z",
+  "generatedAt": "2026-07-14T21:30:00Z",
   "runtime": "Cursor Cloud Agent (M6)",
   "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
   "workflowRunId": "bc-7db90cca-6bbe-4914-bce2-8b237c3cd973",
   "workflowStatus": "blocked",
-  "qualityScore": 62,
-  "reflectionSummary": "Primera corrida Lovable→Web completó planning y execution (~78%) con gates de intención (sin copia Lovable, sin mocks, sin secrets) en PASS; bloqueada por lint WEB (interfaces vacías shadcn) y seguridad backend (IAM SES wildcard, rate limit no conectado).",
+  "qualityScore": 74,
+  "reflectionSummary": "Primera corrida Lovable→Web mayormente exitosa: implementación mergeada en main, QA y seguridad PASS tras remediación iterativa (QA-001, SEC-001/002), pero paridad visual crítica (0/12 capturas, maxDiffRatio 0.234509) mantiene workflow bloqueado. DevOps pipeline pendiente.",
   "patternsIdentified": [
     {
       "id": "PAT-001",
@@ -52,7 +52,7 @@
       "id": "PAT-005",
       "type": "success",
       "title": "Validación en ramas feature multi-repo",
-      "description": "Implementación en ramas cursor/* con main en scaffold; QA/Security evalúan sin merge prematuro.",
+      "description": "Implementación en ramas cursor/* con validación QA/Security antes y después de merge a main.",
       "evidence": ["artifacts/qa-result.json", "artifacts/security-result.json"],
       "reusability": "high",
       "applicableWorkflows": ["lovable-to-web", "multi-repo"]
@@ -61,10 +61,28 @@
       "id": "PAT-006",
       "type": "success",
       "title": "Blackboard como insumo de reflexión",
-      "description": "resumen-ejecucion.md + metricas-ejecucion.json + informes QA/Security permiten reflexión aun con workflow bloqueado.",
+      "description": "resumen-ejecucion.md + metricas-ejecucion.json + informes QA/Security/Paridad permiten reflexión aun con workflow bloqueado.",
       "evidence": ["artifacts/resumen-ejecucion.md", "artifacts/metricas-ejecucion.json"],
       "reusability": "high",
       "applicableWorkflows": ["*"]
+    },
+    {
+      "id": "PAT-007",
+      "type": "success",
+      "title": "Remediación iterativa post-validación",
+      "description": "Fallos QA-001 y SEC-001/002 corregidos en main productivo y revalidados con PASS. Ciclo: Validator FAIL → Executor fix → Validator re-run → continuar cadena.",
+      "evidence": ["artifacts/informe-qa.md", "artifacts/informe-seguridad.md", "artifacts/metricas-ejecucion.json"],
+      "reusability": "high",
+      "applicableWorkflows": ["lovable-to-web", "feature-implementation"]
+    },
+    {
+      "id": "PAT-008",
+      "type": "success",
+      "title": "Gate visual como verificador objetivo independiente",
+      "description": "visual-parity-agent detectó desalineación que análisis estático y resumen-frontend no capturaron. Valida necesidad de visual_exact_parity como gate bloqueante (ADR-0006).",
+      "evidence": ["artifacts/informe-paridad-visual.md", "artifacts/gaps-paridad.json", "artifacts/resumen-frontend.md"],
+      "reusability": "high",
+      "applicableWorkflows": ["lovable-to-web"]
     }
   ],
   "antiPatterns": [
@@ -76,7 +94,8 @@
       "evidence": ["artifacts/qa-result.json", "artifacts/informe-qa.md"],
       "mitigation": "Usar type ComponentProps = React.ComponentProps<'input'> o añadir props semánticas explícitas.",
       "severity": "critical",
-      "frequency": "first_occurrence"
+      "frequency": "first_occurrence",
+      "status": "remediated"
     },
     {
       "id": "ANTI-002",
@@ -86,7 +105,8 @@
       "evidence": ["artifacts/informe-seguridad.md", "artifacts/security-result.json"],
       "mitigation": "Conectar utilidades de seguridad en handler o eliminar código muerto; validar con security-agent pre-handoff.",
       "severity": "high",
-      "frequency": "first_occurrence"
+      "frequency": "first_occurrence",
+      "status": "remediated"
     },
     {
       "id": "ANTI-003",
@@ -96,7 +116,8 @@
       "evidence": ["artifacts/informe-seguridad.md", "artifacts/propuesta-infra.md"],
       "mitigation": "Checklist obligatorio: comparar serverless.yml con propuesta-infra.md post cloud-agent.",
       "severity": "high",
-      "frequency": "first_occurrence"
+      "frequency": "first_occurrence",
+      "status": "remediated_partial"
     },
     {
       "id": "ANTI-004",
@@ -106,7 +127,8 @@
       "evidence": ["artifacts/resumen-ejecucion.md", "artifacts/metricas-ejecucion.json"],
       "mitigation": "Añadir gate devops_pipeline_documented o prerequisito explícito antes de Validation.",
       "severity": "medium",
-      "frequency": "first_occurrence"
+      "frequency": "first_occurrence",
+      "status": "active"
     },
     {
       "id": "ANTI-005",
@@ -116,33 +138,52 @@
       "evidence": ["artifacts/informe-qa.md", "artifacts/resumen-frontend.md"],
       "mitigation": "Ejecutar npm run lint como criterio de aceptación en tareas-ejecutor.json antes de marcar fase completa.",
       "severity": "medium",
-      "frequency": "first_occurrence"
+      "frequency": "first_occurrence",
+      "status": "remediated"
+    },
+    {
+      "id": "ANTI-006",
+      "type": "anti_pattern",
+      "title": "Desalineación copy/contenido vs referencia Lovable",
+      "description": "Frontend usa copy propio (brand-context/content) que diverge de intención visual novus-nexus: headlines, CTAs, secciones y layout distintos. Funcionalmente correcto; falla paridad visual.",
+      "evidence": ["artifacts/informe-paridad-visual.md", "artifacts/gaps-paridad.json"],
+      "mitigation": "Sincronizar src/content/ y componentes con referencia Lovable antes de pixel-diff; validar contra gaps-paridad.json.",
+      "severity": "critical",
+      "frequency": "first_occurrence",
+      "status": "active"
+    },
+    {
+      "id": "ANTI-007",
+      "type": "anti_pattern",
+      "title": "Declarar remediación completa sin verificación pixel-diff",
+      "description": "resumen-frontend.md indicaba trabajo terminado pero visual-parity-agent reportó 0/12 PASS. Handoff executor→validator incompleto cuando visual_exact_parity está habilitado.",
+      "evidence": ["artifacts/resumen-frontend.md", "artifacts/visual-parity-result.json"],
+      "mitigation": "No marcar fase frontend completa sin PASS de visual-parity-agent o evidencia de comparación objetiva.",
+      "severity": "high",
+      "frequency": "first_occurrence",
+      "status": "active"
+    },
+    {
+      "id": "ANTI-008",
+      "type": "anti_pattern",
+      "title": "Referencia Lovable no fijada en entorno de paridad",
+      "description": "NADF_LOVABLE_REFERENCE_URL ausente; se usó novus-nexus local @746c129 distinto al baseline e3a9819 del plan. Riesgo de drift entre planning y validación visual.",
+      "evidence": ["artifacts/informe-paridad-visual.md", "artifacts/gaps-paridad.json"],
+      "mitigation": "Definir NADF_LOVABLE_REFERENCE_URL obligatoria en project-context y entorno visual-parity-agent.",
+      "severity": "medium",
+      "frequency": "first_occurrence",
+      "status": "active"
     }
   ],
   "failuresDocumented": [
     {
-      "id": "QA-001",
-      "gate": "build_success",
-      "description": "4 errores ESLint @typescript-eslint/no-empty-object-type en Input, Label, Select, Textarea (NovusIntelligenceWEB)",
-      "mitigation": "frontend-integration-agent: reemplazar interfaces vacías por type alias",
+      "id": "VP-001",
+      "gate": "visual_exact_parity",
+      "description": "0/12 capturas PASS; maxDiffRatio=0.234509 (umbral 0.002). Gaps en Hero, Partners, secciones landing, About, Services, Contact, Header y Footer.",
+      "mitigation": "frontend-integration-agent: remediar según gaps-paridad.json; re-ejecutar visual-parity-agent",
       "ownerAgent": "frontend-integration-agent",
-      "blocking": true
-    },
-    {
-      "id": "SEC-001",
-      "gate": "security_pass",
-      "description": "IAM SES Resource wildcard en serverless.yml",
-      "mitigation": "backend-agent: acotar a arn:aws:ses:sa-east-1:${aws:accountId}:identity/novusintelligence.com",
-      "ownerAgent": "backend-agent",
-      "blocking": true
-    },
-    {
-      "id": "SEC-002",
-      "gate": "security_pass",
-      "description": "Rate limiting por IP no implementado; rateLimitResponse() no invocado",
-      "mitigation": "backend-agent + cloud-agent: implementar contador por IP o WAF rate-based en IaC",
-      "ownerAgent": "backend-agent",
-      "blocking": true
+      "blocking": true,
+      "status": "active"
     },
     {
       "id": "DEVOPS-001",
@@ -150,7 +191,44 @@
       "description": "pipeline-config.md ausente — TASK-DEVOPS-001 no ejecutada",
       "mitigation": "devops-agent: documentar pipeline CI con gates no_lovable_code_copy y VITE_DEMO_MODE=false",
       "ownerAgent": "devops-agent",
-      "blocking": false
+      "blocking": false,
+      "status": "active"
+    },
+    {
+      "id": "REV-001",
+      "gate": "reviewer_validation",
+      "description": "reviewer-agent no ejecutado — bloqueado por visual_exact_parity FAIL",
+      "mitigation": "Ejecutar tras VP-001 resuelto",
+      "ownerAgent": "reviewer-agent",
+      "blocking": false,
+      "status": "active"
+    },
+    {
+      "id": "QA-001",
+      "gate": "build_success",
+      "description": "4 errores ESLint @typescript-eslint/no-empty-object-type en Input, Label, Select, Textarea (NovusIntelligenceWEB)",
+      "mitigation": "frontend-integration-agent: reemplazar interfaces vacías por type alias",
+      "ownerAgent": "frontend-integration-agent",
+      "blocking": false,
+      "status": "remediated"
+    },
+    {
+      "id": "SEC-001",
+      "gate": "security_pass",
+      "description": "IAM SES Resource wildcard en serverless.yml",
+      "mitigation": "backend-agent: acotar a arn:aws:ses:sa-east-1:${aws:accountId}:identity/<domain>",
+      "ownerAgent": "backend-agent",
+      "blocking": false,
+      "status": "remediated"
+    },
+    {
+      "id": "SEC-002",
+      "gate": "security_pass",
+      "description": "Rate limiting por IP no implementado; rateLimitResponse() no invocado",
+      "mitigation": "backend-agent: conectar isIpRateLimited() en handler",
+      "ownerAgent": "backend-agent",
+      "blocking": false,
+      "status": "remediated"
     }
   ],
   "kbUpdatesRecommended": [
@@ -163,7 +241,8 @@
       "content": "Patrón incorrecto: interface InputProps extends React.ComponentProps<'input'> {}. Patrón correcto: type InputProps = React.ComponentProps<'input'>. Aplica a Input, Label, Select, Textarea y componentes similares en proyectos React+TypeScript con @typescript-eslint/no-empty-object-type habilitado.",
       "tags": ["eslint", "typescript", "shadcn", "frontend", "lovable-to-web"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
-      "sourceArtifact": "artifacts/informe-qa.md"
+      "sourceArtifact": "artifacts/informe-qa.md",
+      "status": "already_in_kb"
     },
     {
       "id": "KB-002",
@@ -174,7 +253,8 @@
       "content": "En serverless.yml, reemplazar Resource: '*' por arn:aws:ses:<region>:${aws:accountId}:identity/<domain>. Incluir permisos secretsmanager:GetSecretValue y ssm:GetParameter si se adoptan referencias SSM. Validar alineación con propuesta-infra.md del mismo workflow.",
       "tags": ["iam", "ses", "serverless", "security", "aws"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
-      "sourceArtifact": "artifacts/informe-seguridad.md"
+      "sourceArtifact": "artifacts/informe-seguridad.md",
+      "status": "already_in_kb"
     },
     {
       "id": "KB-003",
@@ -185,7 +265,8 @@
       "content": "Opciones: (A) Handler in-app con DynamoDB/ElastiCache y TTL; (B) AWS WAF rate-based rule en API Gateway; (C) combinación. El throttle de stage (burst/rate) es complementario, no sustituto. Verificar que utilidades definidas (rateLimitResponse) estén conectadas en el handler.",
       "tags": ["rate-limit", "api-gateway", "waf", "security", "serverless"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
-      "sourceArtifact": "artifacts/especificacion-backend.md"
+      "sourceArtifact": "artifacts/especificacion-backend.md",
+      "status": "already_in_kb"
     },
     {
       "id": "KB-004",
@@ -193,10 +274,11 @@
       "priority": "medium",
       "title": "Checklist pre-handoff executor → validation",
       "summary": "Antes de activar qa-agent: lint OK, alineación serverless.yml ↔ propuesta-infra.md, artefactos resumen publicados en Blackboard.",
-      "content": "1) npm run lint en repos productivos; 2) diff serverless.yml vs propuesta-infra.md (IAM, CORS, region); 3) resumen-{frontend,backend,cloud}.md mergeados; 4) pipeline-config.md si aplica DevOps.",
+      "content": "1) npm run lint en repos productivos; 2) diff serverless.yml vs propuesta-infra.md (IAM, CORS, region); 3) resumen-{frontend,backend,cloud}.md mergeados; 4) pipeline-config.md si aplica DevOps; 5) si visual_exact_parity habilitado: ejecutar visual-parity-agent antes de declarar fase frontend completa.",
       "tags": ["workflow", "quality-gates", "handoff", "validation"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
-      "sourceArtifact": "artifacts/reflexion-ejecucion.md"
+      "sourceArtifact": "artifacts/reflexion-ejecucion.md",
+      "status": "update_required"
     },
     {
       "id": "KB-005",
@@ -207,7 +289,8 @@
       "content": "Convención: /solutions/$slug → /solutions/:slug; lazy loading por ruta; PageMetaTags (Helmet) por página; query params (interest) preservados en navegación a /contact. Referencia: port-map.yml adaptado, no copiado.",
       "tags": ["react-router", "routing", "lovable-to-web", "seo"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
-      "sourceArtifact": "artifacts/plan-implementacion.md"
+      "sourceArtifact": "artifacts/plan-implementacion.md",
+      "status": "already_in_kb"
     },
     {
       "id": "KB-006",
@@ -218,7 +301,8 @@
       "content": "Frontend: submitContact() falla con mensaje claro sin VITE_NOVUS_API_URL. Backend: crypto.randomUUID() para requestId. VITE_DEMO_MODE solo en .env.example, nunca en lógica productiva. Gate no_mock_data_in_production verificable en QA y Security.",
       "tags": ["mock-policy", "contact-form", "security", "frontend", "backend"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
-      "sourceArtifact": "artifacts/riesgos.md"
+      "sourceArtifact": "artifacts/riesgos.md",
+      "status": "already_in_kb"
     },
     {
       "id": "KB-007",
@@ -229,21 +313,58 @@
       "content": "Verificar breakpoints sm/md/lg en código, menú móvil, prefers-reduced-motion, un h1 por página, og:* en Helmet. Marcar method: static_code_review en qa-result.json.",
       "tags": ["qa", "responsive", "seo", "cloud-agent"],
       "sourceWorkflow": "novus-intelligence-lovable-to-web",
-      "sourceArtifact": "artifacts/informe-qa.md"
+      "sourceArtifact": "artifacts/informe-qa.md",
+      "status": "already_in_kb"
+    },
+    {
+      "id": "KB-008",
+      "type": "technical",
+      "priority": "high",
+      "title": "Checklist pre-paridad visual Lovable→Web",
+      "summary": "Antes de pixel-diff, sincronizar copy, tokens, layout y componentes con referencia Lovable en rutas gate.",
+      "content": "Áreas críticas identificadas en VP-001: Hero (headline, dual CTA, stats, asset marca), Partners (logos AWS/Azure/GCP), secciones landing (ServicesGrid, SolutionsGrid, ImpactStats con iconos, Testimonials fondo claro), About (misión/visión/valores 3-col), Services (grid 5-col), Header/Footer (5 columnas). Usar gaps-paridad.json como checklist; reimplementar intención sin copiar JSX/CSS literal. Umbral: maxDiffRatio ≤ 0.002.",
+      "tags": ["visual-parity", "lovable-to-web", "frontend", "design-system", "copy"],
+      "sourceWorkflow": "novus-intelligence-lovable-to-web",
+      "sourceArtifact": "artifacts/gaps-paridad.json",
+      "status": "new"
+    },
+    {
+      "id": "KB-009",
+      "type": "operational",
+      "priority": "high",
+      "title": "No declarar fase frontend completa sin PASS visual_exact_parity",
+      "summary": "Cuando visual_exact_parity está habilitado (ADR-0006), resumen-frontend.md no debe indicar remediación completa sin evidencia de visual-parity-agent.",
+      "content": "Patrón incorrecto: marcar fases 0-4 completas en resumen-frontend sin ejecutar pixel-diff. Patrón correcto: incluir resultado visual-parity-result.json o declarar explícitamente paridad pendiente. El análisis estático QA no sustituye comparación visual objetiva.",
+      "tags": ["visual-parity", "workflow", "handoff", "quality-gates"],
+      "sourceWorkflow": "novus-intelligence-lovable-to-web",
+      "sourceArtifact": "artifacts/informe-paridad-visual.md",
+      "status": "new"
+    },
+    {
+      "id": "KB-010",
+      "type": "operational",
+      "priority": "medium",
+      "title": "Patrón remediación iterativa post-validación",
+      "summary": "Ciclo efectivo: Validator FAIL → Executor fix en main → Validator re-run → documentar en reflexión.",
+      "content": "Demostrado con QA-001 (lint ESLint) y SEC-001/002 (IAM + rate limit). Registrar en metricas-ejecucion.json el estado remediated y qualityScore incrementado. Aplicable a cualquier gate bloqueante excepto cuando requiere aprobación humana (deploy).",
+      "tags": ["workflow", "remediation", "validation", "quality-gates"],
+      "sourceWorkflow": "novus-intelligence-lovable-to-web",
+      "sourceArtifact": "artifacts/metricas-ejecucion.json",
+      "status": "new"
     }
   ],
   "adrRecommendations": [
     {
       "id": "ADR-REC-001",
       "title": "Estrategia de rate limiting por IP en API contacto serverless",
-      "context": "SEC-002 bloqueante; especificación requiere 10 req/5min por IP pero implementación incompleta",
+      "context": "SEC-002 remediado con isIpRateLimited(); ventana 60s vs 5 min de spec; decisión arquitectónica no formalizada",
       "options": [
         "DynamoDB con TTL para contadores por IP",
         "AWS WAF rate-based rule en API Gateway",
         "ElastiCache/Redis para ventana deslizante"
       ],
       "suggestedOwner": "adr-agent",
-      "urgency": "before_dev_deploy"
+      "urgency": "before_prod_deploy"
     },
     {
       "id": "ADR-REC-002",
@@ -269,21 +390,33 @@
       "id": "WF-002",
       "title": "Pre-check lint en tareas-ejecutor.json",
       "description": "Añadir criterio de aceptación npm run lint para frontend-integration-agent y backend-agent",
-      "impact": "high"
+      "impact": "high",
+      "validated": true
     },
     {
       "id": "WF-003",
-      "title": "Reviewer advisory en validación fallida",
-      "description": "Permitir reviewer-agent en modo documental cuando QA/Security fallan, sin bloquear reflection",
-      "impact": "low"
+      "title": "Visual-parity antes de declarar frontend completo",
+      "description": "Ejecutar visual-parity-agent antes de publicar resumen-frontend.md con status completado",
+      "impact": "high"
+    },
+    {
+      "id": "WF-004",
+      "title": "Fijar NADF_LOVABLE_REFERENCE_URL obligatoria",
+      "description": "Variable de entorno para commit/URL de referencia Lovable en visual-parity-agent",
+      "impact": "medium"
+    },
+    {
+      "id": "WF-005",
+      "title": "KB update post-reflexión con aprendizajes de paridad",
+      "description": "knowledge-base-agent debe re-ejecutarse tras reflexión consolidada para KB-008, KB-009, KB-010",
+      "impact": "medium"
     }
   ],
   "nextAgentSuggested": "knowledge-base-agent",
   "blockers": [
-    "QA-001: lint WEB bloqueante",
-    "SEC-001: IAM SES wildcard",
-    "SEC-002: rate limit por IP no implementado",
-    "reviewer-agent no ejecutado por validación fallida"
+    "VP-001: visual_exact_parity FAIL — 0/12 capturas",
+    "REV-001: reviewer-agent pendiente tras paridad visual",
+    "DEVOPS-001: pipeline-config.md ausente (no bloqueante inmediato)"
   ],
   "artifactsProduced": [
     "artifacts/reflexion-ejecucion.md",
