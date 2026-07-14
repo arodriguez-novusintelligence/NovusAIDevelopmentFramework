@@ -41,12 +41,34 @@ nextAgentSuggested: <id o none>
       return `${common}
 DEBES implementar el sitio productivo en NovusIntelligenceWEB según plan aprobado y
 ${a}/frontend-impact.md, ${a}/cambios-lovable.json, ${a}/impacto-arquitectonico.md.
+Si existe ${a}/gaps-paridad.json o ${a}/informe-paridad-visual.md, REMEDIA esos gaps primero.
+
 Stack: React + TypeScript + Tailwind + Vite + React Router.
-Traducir intención Lovable SIN copiar código. Scaffold desde repo vacío si hace falta.
-Incluye rutas, layout, landing, about, services, contact UI (API real cuando exista; sin mocks de prod).
-MultiAgentDemo como UI animada front-only.
-NO desplegar. Escribe ${a}/resumen-frontend.md en el repo FRAMEWORK (checkout/push artifacts allí).
-Commit/PR en NovusIntelligenceWEB con la app.
+Traducir intención Lovable SIN copiar código (no_lovable_code_copy).
+OBLIGATORIO: paridad visual EXACTA con Lovable (layout, tipografía, color, espaciado, hero, CTAs, footer)
+en rutas /, /about, /services, /contact y viewports desktop/tablet/móvil.
+Inspecciona novus-nexus solo como referencia visual/funcional; reimplementa en código propio.
+Incluye formularios con API real (sin mocks de prod).
+NO desplegar. Escribe ${a}/resumen-frontend.md en el repo FRAMEWORK.
+Commit/PR en NovusIntelligenceWEB.
+${footer}`;
+
+    case "visual-parity-agent":
+      return `${common}
+Eres visual-parity-agent. Lee .claude/agents/visual-parity-agent.md y
+.nadf/projects/${inv.projectId}/rules/visual-parity-rules.md.
+
+Compara la intención visual de novus-nexus / referencia Lovable contra el frontend productivo
+(y URL DEV si está disponible: ${process.env.NADF_DEV_FRONTEND_URL || "https://d1bfu6klutpp8m.cloudfront.net"}).
+Umbral exacto: maxDiffRatio <= 0.002 por captura. Rutas: /, /about, /services, /contact.
+
+DEBES generar:
+- ${a}/visual-parity-result.json (status PASS|FAIL, routes[], thresholdMaxDiffRatio)
+- ${a}/informe-paridad-visual.md
+- ${a}/gaps-paridad.json (lista accionable P0/P1)
+
+PROHIBIDO copiar código Lovable. PROHIBIDO aprobar con diferencias materiales.
+Si FAIL → status blocked y nextAgentSuggested: frontend-integration-agent.
 ${footer}`;
 
     case "backend-agent":

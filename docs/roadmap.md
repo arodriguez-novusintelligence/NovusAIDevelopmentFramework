@@ -271,14 +271,15 @@ Este roadmap define **15 módulos independientes** (M0–M14) con interfaces cla
 
 | Atributo | Detalle |
 |----------|---------|
-| **Estado** | ⏳ Acoplado a `.claude/` |
+| **Estado** | 🔄 **Iniciado** (ADR-0005 Accepted; adaptador `cursor-cloud` v0.1 + prototipo paso 1) |
 | **Objetivo** | Abstraer la invocación de agentes sobre motores de ejecución externos (Claude Code, Cloud Agent, Cursor SDK) con contrato uniforme de prompt, contexto y artefactos. |
-| **Dependencias** | M1, M4, M5 (parcial) |
+| **Dependencias** | M1, M4, M5 (parcial) — el prototipo v0.1 puede operar sin M5 para un solo paso |
 | **Prioridad** | P1 |
 | **Complejidad** | Muy alta |
 | **Agentes involucrados** | Todos (como unidades invocables); Framework Architect (diseño) |
 | **Entregables** | `AgentRuntime` interface; adaptadores: Claude Code, Cloud Agent, Cursor SDK; inyección de `project-context.yml`, reglas y memoria; restricciones por patrón (Planner/Executor/Validator); registro de invocaciones en métricas |
 | **Criterios de finalización** | ≥2 runtimes soportados; invocación de agente desde M5 sin acoplamiento directo a `.claude/`; permisos de patrón enforced (Planner no escribe código productivo) |
+| **Hecho en v0.1** | Contrato `docs/runtime/agent-runtime-contract.md`; guía `docs/cloud-agent-integration.md`; prototipo `prototypes/m6-cloud-agent/` (`lovable-analyzer`) |
 
 **Interfaces expuestas:**
 - `AgentRuntime.invoke(agentId, stepContract, context)` → `AgentResult`

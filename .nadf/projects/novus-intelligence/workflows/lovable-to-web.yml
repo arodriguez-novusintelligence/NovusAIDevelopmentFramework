@@ -1,7 +1,7 @@
 id: novus-intelligence-lovable-to-web
 name: Novus Intelligence — Lovable to Web
-version: "2.0.1"
-description: Workflow de 18 pasos para sincronizar cambios novus-nexus al stack productivo. Extiende el workflow canónico global con mapeo y reglas específicas del proyecto.
+version: "2.1.0"
+description: Workflow de 19 pasos (incluye visual-parity) para sincronizar cambios novus-nexus al stack productivo con paridad visual exacta y deploy automático DEV.
 project: novus-intelligence
 extends: lovable-to-web
 triggers:
@@ -27,6 +27,7 @@ agents:
   - database-agent
   - cloud-agent
   - qa-agent
+  - visual-parity-agent
   - security-agent
   - reviewer-agent
   - documentation-agent
@@ -177,8 +178,25 @@ steps:
       - artifacts/informe-qa.md
       - artifacts/qa-result.json
 
-  - id: paso-12-revision-seguridad
+  - id: paso-12-paridad-visual
     order: 12
+    phase: validation
+    agent: visual-parity-agent
+    action: Comparar Lovable vs productivo; bloquear si no hay paridad exacta
+    inputs:
+      - artifacts/cambios-lovable.json
+      - artifacts/resumen-frontend.md
+      - rules/visual-parity-rules.md
+      - env:NADF_LOVABLE_REFERENCE_URL
+      - env:NADF_DEV_FRONTEND_URL
+    outputs:
+      - artifacts/visual-parity-result.json
+      - artifacts/informe-paridad-visual.md
+      - artifacts/gaps-paridad.json
+    on_fail: remediate_frontend_then_recheck
+
+  - id: paso-13-revision-seguridad
+    order: 13
     phase: validation
     agent: security-agent
     action: Security Agent revisa seguridad
@@ -186,8 +204,8 @@ steps:
       - artifacts/informe-seguridad.md
       - artifacts/security-result.json
 
-  - id: paso-13-revision-coherencia
-    order: 13
+  - id: paso-14-revision-coherencia
+    order: 14
     phase: validation
     agent: reviewer-agent
     action: Reviewer Agent verifica coherencia con plan, convenciones y diff review
@@ -195,12 +213,13 @@ steps:
       - artifacts/plan-implementacion.md
       - artifacts/informe-qa.md
       - artifacts/informe-seguridad.md
+      - artifacts/visual-parity-result.json
     outputs:
       - artifacts/informe-revision.md
       - artifacts/checklist-cursor-review.md
 
-  - id: paso-14-documentar
-    order: 14
+  - id: paso-15-documentar
+    order: 15
     phase: documentation
     agent: documentation-agent
     action: Documentation Agent documenta ejecución
@@ -210,8 +229,8 @@ steps:
       - artifacts/resumen-ejecucion.md
       - memory/decision-log.md
 
-  - id: paso-15-metricas
-    order: 15
+  - id: paso-16-metricas
+    order: 16
     phase: metrics
     agent: metrics-agent
     action: Metrics Agent registra métricas
@@ -219,8 +238,8 @@ steps:
       - artifacts/metricas-ejecucion.json
       - artifacts/resumen-metricas.md
 
-  - id: paso-16-reflexion
-    order: 16
+  - id: paso-17-reflexion
+    order: 17
     phase: reflection
     agent: reflection-agent
     action: Reflection Agent genera aprendizaje
@@ -228,8 +247,8 @@ steps:
       - artifacts/reflexion-ejecucion.md
       - artifacts/recomendaciones-kb.json
 
-  - id: paso-17-actualizar-kb
-    order: 17
+  - id: paso-18-actualizar-kb
+    order: 18
     phase: knowledge_base_update
     agent: knowledge-base-agent
     action: Knowledge Base Agent actualiza patrones o errores frecuentes
@@ -238,8 +257,8 @@ steps:
     outputs:
       - artifacts/actualizacion-kb.md
 
-  - id: paso-18-registrar-adrs
-    order: 18
+  - id: paso-19-registrar-adrs
+    order: 19
     phase: knowledge_base_update
     agent: adr-agent
     action: ADR Agent registra decisiones relevantes
@@ -259,8 +278,14 @@ quality_gates:
   - build_success
   - responsive_validation
   - seo_basic_validation
+  - visual_exact_parity
   - security_pass
   - plan_approved
+
+post_validation:
+  auto_merge_dev: true
+  auto_deploy_dev: true
+  auto_deploy_prod: false
 
 metrics:
   enabled: true

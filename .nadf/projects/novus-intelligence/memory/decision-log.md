@@ -4,6 +4,19 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-14 — MVP automatización + paridad visual exacta
+
+**Contexto:** El sitio DEV no igualaba Lovable y no había trigger automático ante `lovable.commit`.
+
+**Decisión:**
+- Añadir `visual-parity-agent` y gate `visual_exact_parity` (diff ≤ 0.2%)
+- Activar MVP event-driven: notify novus-nexus → `Lovable sync DEV` → pipeline → merge → deploy **solo DEV**
+- Mantener `no_lovable_code_copy`; paridad = resultado visual, no clon de código
+
+**ADR:** ADR-0006-visual-parity-and-auto-dev-deploy
+
+---
+
 ## 2026-07-04 — Incorporación del proyecto a NADF
 
 **Contexto:** Novus Intelligence Solutions es el primer proyecto bajo el NovusAIDevelopmentFramework.
@@ -73,28 +86,15 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
-## 2026-07-14 — Primera corrida workflow Lovable → Web (M6)
+## 2026-07-14 — Agent Runtime Bridge (M6) con Cursor Cloud Agent
 
-**Contexto:** Ejecución piloto del workflow `novus-intelligence-lovable-to-web` sobre baseline Lovable `novus-nexus@e3a9819` (13 cambios, `backendRequired: true`). Runtime Cursor Cloud Agent (M6), target DEV AWS `sa-east-1`.
+**Contexto:** El equipo dispone de cuenta Cursor Cloud Agent y necesita un puente formal entre roles NADF y el motor de ejecución cloud, sin reinventar los 19 agentes en la UI.
 
-**Decisión:** Documentar la corrida como **parcialmente completada con bloqueos de validación**. No proceder a merge de ramas productivas ni despliegue DEV hasta resolver hallazgos bloqueantes.
+**Decisión:** Adoptar contrato `AgentRuntime` (ADR-0005), adaptar primero Cursor Cloud vía `@cursor/sdk`, y entregar prototipo del paso 1 (`lovable-analyzer-agent`) en `prototypes/m6-cloud-agent/`. Documentar la operación en `docs/cloud-agent-integration.md`.
 
-**Resultados clave:**
+**Rationale:** Separar definición de agente (NADF) de motor (Cloud Agent); habilitar automatización incremental hacia M5 sin acoplar el Meta Model a un proveedor.
 
-- Plan `PLAN-NOVUS-LOVABLE-2026-07-14` aprobado por architect-agent.
-- Frontend implementado en `NovusIntelligenceWEB@cursor/implement-novus-frontend-2d22` (Fases 0–4 + UI contacto).
-- Backend implementado en `NovusIntelligenceBack@cursor/implement-contact-api-04c8` (`POST /api/v1/contact`).
-- Infra propuesta en `propuesta-infra.md`; región DEV reconciliada a `sa-east-1`.
-- QA FAIL: 4 errores ESLint en componentes UI WEB (`qualityScore: 0`).
-- Security FAIL: IAM SES wildcard + rate limit por IP ausente (`securityScore: 72`).
-- 8 PRs draft en Framework (#1–#8); ningún merge a `main` en repos productivos.
-- `NO_DEPLOY` respetado en toda la corrida.
-
-**Rationale:** La documentación consolida evidencia auditable para corrección dirigida. Los gates `build_success` y `security_pass` bloquean avance a reviewer, métricas y reflexión según workflow canónico NADF.
-
-**Artefacto:** `artifacts/resumen-ejecucion.md`
-
-**Próximos agentes:** frontend-integration-agent (lint) → backend-agent (IAM + rate limit) → qa-agent → security-agent → reviewer-agent.
+**ADR:** ADR-0005-agent-runtime-bridge
 
 ---
 

@@ -1,13 +1,15 @@
 /**
  * Post-pipeline DEV automation (M6 companion).
  *
- * After Cloud Agents finish:
- * 1) Mark gated PRs ready + squash-merge when QA/Security no longer FAIL
- * 2) Optionally dispatch Deploy DEV on WEB/Back
+ * Tras agentes (+ visual parity):
+ * 1) Exige qa + security + visual_exact_parity PASS
+ * 2) Auto-merge PRs productivos cursor/* → main
+ * 3) Dispatch Deploy DEV (WEB + Back) — nunca PROD
  *
- * Controlled by:
+ * Env:
  *   NADF_AUTO_MERGE_DEV=true|false
  *   NADF_AUTO_DEPLOY_DEV=true|false
+ *   NADF_REQUIRE_VISUAL_PARITY=true|false (default true)
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -28,51 +30,62 @@ function readJsonSafe(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8"));
 }
 
+function artifactPath(name: string): string {
+  return resolve(
+    process.cwd(),
+    `../../.nadf/projects/novus-intelligence/artifacts/${name}`,
+  );
+}
+
+function isPass(obj: { status?: string; result?: string } | null): boolean {
+  if (!obj) return true;
+  const v = String(obj.status ?? obj.result ?? "").toUpperCase();
+  if (v.includes("FAIL")) return false;
+  return ["PASS", "PASSED", "OK", "FINISHED"].includes(v) || v === "";
+}
+
 function validationPassed(): boolean {
-  // Prefer artifacts from workspace if present; otherwise assume human/CI previously fixed.
-  const qaPath = resolve(
-    process.cwd(),
-    "../../.nadf/projects/novus-intelligence/artifacts/qa-result.json",
-  );
-  const secPath = resolve(
-    process.cwd(),
-    "../../.nadf/projects/novus-intelligence/artifacts/security-result.json",
-  );
-  const qa = readJsonSafe(qaPath) as { status?: string; result?: string } | null;
-  const sec = readJsonSafe(secPath) as { status?: string; result?: string } | null;
+  const qa = readJsonSafe(artifactPath("qa-result.json")) as {
+    status?: string;
+    result?: string;
+  } | null;
+  const sec = readJsonSafe(artifactPath("security-result.json")) as {
+    status?: string;
+    result?: string;
+  } | null;
+  const visual = readJsonSafe(artifactPath("visual-parity-result.json")) as {
+    status?: string;
+    result?: string;
+  } | null;
 
-  const qaOk =
-    !qa ||
-    ["PASS", "pass", "passed", "ok"].includes(
-      String(qa.status ?? qa.result ?? "").toUpperCase(),
-    );
-  const secOk =
-    !sec ||
-    ["PASS", "pass", "passed", "ok"].includes(
-      String(sec.status ?? sec.result ?? "").toUpperCase(),
-    );
+  const requireVisual = flag("NADF_REQUIRE_VISUAL_PARITY", true);
+  const qaOk = isPass(qa);
+  const secOk = isPass(sec);
+  const visualOk = !requireVisual || isPass(visual);
 
-  // If artifacts still say FAIL from an older run, do not auto-merge.
-  const qaFail = String(qa?.status ?? qa?.result ?? "")
-    .toUpperCase()
-    .includes("FAIL");
-  const secFail = String(sec?.status ?? sec?.result ?? "")
-    .toUpperCase()
-    .includes("FAIL");
-
-  if (qaFail || secFail) {
+  if (requireVisual && !visual) {
     console.log(
       JSON.stringify({
         event: "post_pipeline_blocked",
-        reason: "qa_or_security_fail_artifact",
-        qa,
-        sec,
+        reason: "visual_parity_result_missing",
       }),
     );
     return false;
   }
 
-  return qaOk && secOk;
+  if (!qaOk || !secOk || !visualOk) {
+    console.log(
+      JSON.stringify({
+        event: "post_pipeline_blocked",
+        reason: "gate_fail",
+        qa,
+        sec,
+        visual,
+      }),
+    );
+    return false;
+  }
+  return true;
 }
 
 function mergeOpenProductPrs(): void {
@@ -140,7 +153,7 @@ function triggerDeployDev(): void {
   ]) {
     try {
       gh(["workflow", "run", "Deploy DEV", "--repo", repo]);
-      console.log(JSON.stringify({ event: "deploy_dispatched", repo }));
+      console.log(JSON.stringify({ event: "deploy_dispatched", repo, env: "dev" }));
     } catch (e) {
       console.warn(`deploy dispatch failed ${repo}`, e);
     }
@@ -156,28 +169,25 @@ function main(): void {
       event: "post_pipeline_start",
       autoMerge,
       autoDeploy,
+      requireVisualParity: flag("NADF_REQUIRE_VISUAL_PARITY", true),
+      prodForbidden: true,
     }),
   );
 
-  if (autoMerge) {
-    if (!validationPassed()) {
-      console.log(
-        JSON.stringify({
-          event: "skip_merge",
-          reason: "validation_not_pass",
-        }),
-      );
-    } else {
-      mergeOpenProductPrs();
-    }
+  if (!validationPassed()) {
+    console.log(
+      JSON.stringify({
+        event: "skip_merge_and_deploy",
+        reason: "validation_not_pass",
+      }),
+    );
+    process.exit(5);
   }
 
-  if (autoDeploy) {
-    // Deploy workflows fire on merge to main; still allow explicit dispatch.
-    triggerDeployDev();
-  }
+  if (autoMerge) mergeOpenProductPrs();
+  if (autoDeploy) triggerDeployDev();
 
-  console.log(JSON.stringify({ event: "post_pipeline_done" }));
+  console.log(JSON.stringify({ event: "post_pipeline_done", env: "dev_only" }));
 }
 
 main();

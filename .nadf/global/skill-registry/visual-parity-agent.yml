@@ -1,0 +1,42 @@
+agent:
+  name: visual-parity-agent
+  pattern: Validator
+  layer: Validation
+  description: Garantiza paridad visual exacta Lovable↔productivo sin copiar código
+  definition: .claude/agents/visual-parity-agent.md
+  responsibilities:
+    - Comparar screenshots referencia vs productivo
+    - Evaluar layout tipografía espaciado color breakpoints
+    - Generar visual-parity-result.json e informe
+    - Bloquear merge/deploy DEV si falla umbral exacto
+    - Emitir gaps-paridad.json para remediación frontend
+  forbidden_actions:
+    - copy_lovable_code
+    - deploy_production
+    - approve_with_material_visual_diff
+    - skip_visual_exact_parity_gate
+  allowed_tools:
+    - playwright_screenshot
+    - pixel_diff
+    - scan_design_tokens
+  mcp_servers:
+    - github
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/rules/visual-parity-rules.md
+    - .nadf/projects/*/artifacts/cambios-lovable.json
+    - .nadf/projects/*/artifacts/resumen-frontend.md
+  input_contract:
+    lovable_reference_url: required
+    productive_candidate_url: required
+    frontend_artifacts: required
+  output_contract:
+    artifacts:
+      - visual-parity-result.json
+      - informe-paridad-visual.md
+      - gaps-paridad.json
+  quality_gates:
+    - visual_exact_parity
+    - no_lovable_code_copy
+  escalation_rules:
+    - visual_parity_fail: block_merge_and_request_frontend_remediation

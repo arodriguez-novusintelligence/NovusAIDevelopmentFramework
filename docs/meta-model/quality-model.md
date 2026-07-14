@@ -82,6 +82,7 @@ Regla **operativa y verificable** derivada de una Policy o Decision (ADR).
 | ID | Regla | Policy | Violation |
 |----|-------|--------|-----------|
 | `no_lovable_code_copy` | Prohibido copiar código Lovable a repos productivos | intent_not_implementation | block |
+| `visual_exact_parity` | Paridad visual exacta Lovable↔productivo (diff ≤ umbral; sin copia de código) | design_fidelity | block |
 | `no_mock_data_in_production` | Prohibido mocks en producción | intent_not_implementation | block |
 | `planner_no_code_changes` | Planner no modifica repos productivos | separation_planning_execution | block |
 | `executor_no_architecture_change` | Executor no cambia arquitectura sin ADR | adr_for_architecture | block |

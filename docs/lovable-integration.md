@@ -78,6 +78,15 @@ El Lovable Analyzer Agent extrae de `novus-nexus` vía MCP GitHub:
 | Lógica de routing Lovable | React Router del proyecto |
 | Dependencias de Lovable | Solo stack productivo |
 
+## Paridad visual exacta (ADR-0006)
+
+Aunque no se copia código, el resultado visual del frontend productivo debe ser **exacto** respecto a Lovable.
+
+- Agente: `visual-parity-agent`
+- Checker: `prototypes/m6-cloud-agent/src/visual-parity-check.ts`
+- Gate bloqueante: `visual_exact_parity` (maxDiffRatio ≤ 0.002)
+- Remediación: `frontend-integration-agent` itera con `gaps-paridad.json`
+
 ## Artefactos generados (Planning)
 
 | Artefacto | Productor |

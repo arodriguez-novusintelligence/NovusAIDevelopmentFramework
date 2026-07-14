@@ -31,6 +31,11 @@ repositories:
   lovable_source: novus-nexus
   frontend: NovusIntelligenceWEB
   backend: NovusIntelligenceBack
+  urls:
+    framework: https://github.com/arodriguez-novusintelligence/NovusAIDevelopmentFramework.git
+    lovable_source: https://github.com/arodriguez-novusintelligence/novus-nexus.git
+    frontend: https://github.com/arodriguez-novusintelligence/NovusIntelligenceWEB.git
+    backend: https://github.com/arodriguez-novusintelligence/NovusIntelligenceBack.git
 
 frontend:
   repo: NovusIntelligenceWEB
@@ -47,25 +52,51 @@ backend:
   runtime: Node.js 20
   language: TypeScript
   cloud: AWS
-  region: us-east-1
+  region: sa-east-1
   package_manager: npm
 
 design_source:
   tool: Lovable
   repo: novus-nexus
+  url: https://github.com/arodriguez-novusintelligence/novus-nexus.git
   role: visual_and_functional_intent_only
   event_trigger: lovable.commit
   forbidden:
     - copy_lovable_code_directly
     - use_mock_data_in_production
 
+runtime_bridge:
+  primary_engine: cursor-cloud
+  adapter: cursor-cloud
+  adr: ADR-0005-agent-runtime-bridge
+  prototype: prototypes/m6-cloud-agent/
+  guide: docs/cloud-agent-integration.md
+  first_runbook: docs/runbooks/novus-intelligence-first-run.md
+
+environments:
+  default: dev
+  path: .nadf/projects/novus-intelligence/environments/
+  dev:
+    region: sa-east-1
+    deploy_requires_approval: false
+    auto_deploy_after_gates: true
+    frontend_url: https://d1bfu6klutpp8m.cloudfront.net
+
 multiagent:
-  orchestrator: conceptual
-  orchestrator_mode: manual
+  orchestrator: mvp-github-actions
+  orchestrator_mode: event_driven_mvp
+  execution_engine: cursor-cloud
   primary_workflow: lovable-to-web
   canonical_workflow: .nadf/global/workflow-library/lovable-to-web.yml
-  workflow_steps: 18
+  workflow_steps: 19
   workflow_phases: 9
+  automation:
+    trigger: lovable.commit
+    github_workflow: .github/workflows/lovable-sync-dev.yml
+    notify_template: Documentacion/templates/novus-nexus-notify-nadf.yml
+    auto_merge_dev: true
+    auto_deploy_dev: true
+    auto_deploy_prod: false
   agents_enabled:
     - framework-architect-agent
     - lovable-analyzer-agent
@@ -79,6 +110,7 @@ multiagent:
     - cloud-agent
     - devops-agent
     - qa-agent
+    - visual-parity-agent
     - security-agent
     - reviewer-agent
     - documentation-agent
@@ -105,17 +137,39 @@ quality_gates:
   - build_success
   - responsive_validation
   - seo_basic_validation
+  - visual_exact_parity
   - security_pass
   - metrics_registered
   - reflection_generated
   - adr_if_architectural
 
+visual_parity:
+  enabled: true
+  agent: visual-parity-agent
+  gate: visual_exact_parity
+  threshold_max_diff_ratio: 0.002
+  routes:
+    - /
+    - /about
+    - /services
+    - /contact
+  viewports:
+    - 1440x900
+    - 768x1024
+    - 390x844
+  candidate_url_default: https://d1bfu6klutpp8m.cloudfront.net
+  reference_url_env: NADF_LOVABLE_REFERENCE_URL
+  adr: ADR-0006-visual-parity-and-auto-dev-deploy
+
 metadata:
   created: "2026-07-04"
-  updated: "2026-07-04"
+  updated: "2026-07-14"
   updated_by: framework-architect-agent
-  nadf_version: "2.0.0"
+  nadf_version: "2.1.0"
   primary_workflow: lovable-to-web
   canonical_workflow: .nadf/global/workflow-library/lovable-to-web.yml
   primary_command: novus-lovable-sync
   adr_workflow_reconciliation: ADR-0003-lovable-to-web-canonicalization
+  runtime_bridge: ADR-0005-agent-runtime-bridge
+  visual_parity_adr: ADR-0006-visual-parity-and-auto-dev-deploy
+  target_dev_region: sa-east-1

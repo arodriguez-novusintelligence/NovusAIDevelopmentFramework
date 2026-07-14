@@ -18,7 +18,7 @@ Antes de ejecutar cualquier tarea:
 
 ## Responsabilidad
 
-Implementar cambios en `NovusIntelligenceWEB` según plan aprobado y artefactos de impacto, traduciendo intención Lovable al stack productivo **sin copiar código de Lovable**.
+Implementar cambios en `NovusIntelligenceWEB` según plan aprobado y artefactos de impacto, traduciendo intención Lovable al stack productivo **sin copiar código de Lovable**, con **paridad visual exacta** respecto a la referencia Lovable (gate `visual_exact_parity`).
 
 ## Patrón arquitectónico usado
 
@@ -28,8 +28,9 @@ Implementar cambios en `NovusIntelligenceWEB` según plan aprobado y artefactos 
 
 - Traducir intención a componentes React/TypeScript productivos
 - Reutilizar componentes y patrones existentes en NovusIntelligenceWEB
-- Aplicar Tailwind según convenciones del proyecto
+- Aplicar Tailwind según convenciones del proyecto **igualando tipografía, color, espaciado y layout de Lovable**
 - Configurar React Router según plan
+- Consumir `gaps-paridad.json` / `informe-paridad-visual.md` para remediación hasta PASS
 - Generar resumen-frontend.md
 - Crear PR vía MCP GitHub
 

@@ -98,12 +98,30 @@ NovusAIDevelopmentFramework/
     └── projects/
 ```
 
+## Cursor Cloud Agent (runtime M6)
+
+NADF define **roles** (`.claude/agents/`). **Cursor Cloud Agent** es un **motor de ejecución** que interpreta esos roles (no recrees 19 agentes en la UI Cloud).
+
+| Documento | Contenido |
+|-----------|-----------|
+| [docs/cloud-agent-integration.md](docs/cloud-agent-integration.md) | Guía operativa: onboarding de apps, prompts, anti-patrones |
+| [docs/runtime/agent-runtime-contract.md](docs/runtime/agent-runtime-contract.md) | Contrato `AgentRuntime` (M6) |
+| [ADR-0005](.nadf/global/decision-history/adr/ADR-0005-agent-runtime-bridge.md) | Decisión de adopción del puente runtime |
+| [prototypes/m6-cloud-agent/](prototypes/m6-cloud-agent/) | Prototipo: paso 1 `lovable-analyzer` vía Cloud Agent |
+
+```bash
+cd prototypes/m6-cloud-agent
+cp .env.example .env   # CURSOR_API_KEY + URLs de repos
+npm install
+npm run invoke:lovable-analyzer
+```
+
 ## Cómo empezar
 
-1. Leer `CLAUDE.md` y `docs/multiagent-architecture.md`
+1. Leer `CLAUDE.md`, Meta Model y `docs/multiagent-architecture.md`
 2. Revisar `.nadf/projects/novus-intelligence/project-context.yml`
-3. Ejecutar `novus-lovable-sync` (18 pasos)
-4. Consultar `docs/project-onboarding.md` para nuevos proyectos
+3. Ejecutar `novus-lovable-sync` (18 pasos) **o** el prototipo Cloud Agent del paso 1
+4. Consultar `docs/project-onboarding.md` y `docs/cloud-agent-integration.md` para nuevas apps
 
 ## Principios fundamentales
 

@@ -52,6 +52,13 @@ NADF opera con **19 agentes especializados** organizados en 7 capas y 7 patrones
 | Blackboard (KB, ADR, Metrics, Docs) | Publican en rutas definidas del skill registry |
 | Reflection | Obligatorio tras workflows de implementación relevantes |
 
+## Runtime: Cursor Cloud Agent (M6)
+
+- **Cloud Agent de Cursor** es un *motor de ejecución*, no un rol NADF. El rol NADF `cloud-agent` es el Executor de infraestructura/IaC.
+- Para invocar un rol en Cloud Agent: leer [docs/cloud-agent-integration.md](docs/cloud-agent-integration.md), aplicar plantilla de prompt y el contrato [AgentRuntime](docs/runtime/agent-runtime-contract.md) (ADR-0005).
+- Prototipo mínimo: `prototypes/m6-cloud-agent/` (`npm run invoke:lovable-analyzer`).
+- Un Cloud Agent = **un** rol NADF por invocación (salvo orquestación M5 futura). No saltar Planning.
+
 ## Integración MCP
 
 - **Todo acceso externo** a GitHub, AWS, bases de datos, Terraform, Jira, Docker/Kubernetes debe realizarse **vía MCP** cuando el servidor esté disponible.

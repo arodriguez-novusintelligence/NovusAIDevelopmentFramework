@@ -83,6 +83,17 @@ const STEPS: Step[] = [
     repos: ["framework", "frontend", "backend"],
   },
   {
+    agentId: "visual-parity-agent",
+    stepId: "paso-12-paridad-visual",
+    pattern: "validator",
+    expectedOutputs: [
+      `${ART}/visual-parity-result.json`,
+      `${ART}/informe-paridad-visual.md`,
+      `${ART}/gaps-paridad.json`,
+    ],
+    repos: ["framework", "frontend", "lovable"],
+  },
+  {
     agentId: "security-agent",
     stepId: "paso-10-revision-seguridad",
     pattern: "validator",
