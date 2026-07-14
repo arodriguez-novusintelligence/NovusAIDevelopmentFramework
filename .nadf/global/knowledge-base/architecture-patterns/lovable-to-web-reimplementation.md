@@ -18,6 +18,7 @@ Workflows `lovable-to-web` que traducen intención visual y funcional de un prot
 Primera corrida **novus-intelligence-lovable-to-web** (2026-07-14):
 - 10 rutas, design system dark-first, `MultiAgentDemo` lazy-loaded.
 - Gates `no_lovable_code_copy` y `no_mock_data_in_production` en PASS.
+- Paridad visual pendiente (VP-001) — gate independiente documentado en `visual-exact-parity-gate.md`.
 - Evidencia: `artifacts/resumen-frontend.md`, `artifacts/informe-qa.md`, `artifacts/informe-seguridad.md`.
 
 ## Proyectos donde se usa
