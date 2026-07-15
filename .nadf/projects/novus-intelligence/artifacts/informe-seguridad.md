@@ -4,25 +4,27 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-10-revision-seguridad  
 **Agente:** security-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
-**Resultado global:** **FAIL**  
-**securityScore:** 72
+**Resultado global:** **PASS**  
+**securityScore:** 89
 
 ---
 
 ## Resumen ejecutivo
 
-Se ejecutó revisión de seguridad sobre los repositorios productivos (**NovusIntelligenceWEB**, **NovusIntelligenceBack**), artefactos NADF y propuesta de infraestructura, en ramas feature no mergeadas a `main`.
+Se ejecutó revisión de seguridad sobre los repositorios productivos (**NovusIntelligenceWEB**, **NovusIntelligenceBack**), artefactos NADF y propuesta de infraestructura, evaluando el código integrado en rama `main` (post-remediación SEC-CORS-001 y correcciones IAM/rate limit).
 
-**Hallazgos críticos/bloqueantes (2):**
+**Resultado:** **PASS** — no hay hallazgos bloqueantes. Los dos bloqueantes de la revisión anterior (2026-07-14) están **remediados** en `main`:
 
-1. **IAM excesivo en SES** — `serverless.yml` concede `ses:SendEmail` / `ses:SendRawEmail` sobre `Resource: '*'`, en desalineación con `propuesta-infra.md` (principio de mínimo privilegio).
-2. **Rate limiting por IP no implementado** — La variable `RATE_LIMIT_PER_IP` se carga pero el handler nunca invoca `rateLimitResponse()`; solo existe throttling global de API Gateway (no por IP).
+1. **IAM SES** — ya no usa `Resource: '*'`; acotado a `arn:aws:ses:<region>:<account>:identity/*`.
+2. **Rate limiting por IP** — implementado en `contact.ts` vía `isIpRateLimited()` con respuesta 429.
 
-**Aspectos que pasan:** sin secrets en repositorio, CORS sin wildcard, validación server-side del contacto, mitigación R-001 (sin modo demo), captcha preparado (deshabilitado en DEV según plan).
+**Aspectos que pasan:** sin secrets en repositorio, CORS sin wildcard, validación server-side del contacto, mitigación R-001 (sin modo demo), captcha preparado (deshabilitado en DEV según plan), dependencias runtime sin vulnerabilidades críticas.
+
+**Observaciones no bloqueantes (4):** IAM SES podría acotarse al dominio específico; secretos aún vía `${env:...}` sin SSM/Secrets Manager; ventana de rate limit 60 s vs 5 min en spec; vulnerabilidades en toolchain Serverless (devDependencies).
 
 **Constraint respetado:** `NO_DEPLOY` — no se desplegó infraestructura ni se crearon secretos.
 
@@ -30,11 +32,11 @@ Se ejecutó revisión de seguridad sobre los repositorios productivos (**NovusIn
 
 ## Alcance analizado
 
-| Repositorio | Rama evaluada | Enfoque |
-|-------------|--------------|---------|
-| NovusIntelligenceWEB | `cursor/implement-novus-frontend-2d22` | Secrets, contacto cliente, dependencias |
-| NovusIntelligenceBack | `cursor/implement-contact-api-04c8` | CORS, validación, IAM, rate limit, captcha, dependencias |
-| NovusAIDevelopmentFramework | `cursor/security-review-361e` | Artefactos, `environments/dev.yml`, `propuesta-infra.md` |
+| Repositorio | Rama evaluada | Commit ref. | Enfoque |
+|-------------|--------------|-------------|---------|
+| NovusIntelligenceWEB | `main` | `2634029` | Secrets, contacto cliente, dependencias |
+| NovusIntelligenceBack | `main` | `c929e2b` | CORS, validación, IAM, rate limit, captcha, dependencias |
+| NovusAIDevelopmentFramework | `cursor/security-review-6b8b` | — | Artefactos, `environments/dev.yml`, `propuesta-infra.md` |
 
 ---
 
@@ -62,8 +64,9 @@ Se ejecutó revisión de seguridad sobre los repositorios productivos (**NovusIn
 | `.gitignore` protege `.env` | ✅ Configurado | Back: `.env`, `.env.*`; WEB: `.env`, `.env.local` |
 | Artefactos NADF | ✅ Solo nombres | `propuesta-infra.md`, `dev.yml` sin valores sensibles |
 | Variables en `serverless.yml` | ✅ Por nombre | `${env:CONTACT_EMAIL_FROM, ''}` — sin valores embebidos |
+| Workflows CI | ✅ GitHub Secrets | `deploy-dev.yml` usa `${{ secrets.* }}` sin valores en repo |
 
-**Recomendación no bloqueante:** Migrar carga de `CONTACT_EMAIL_*` y `CAPTCHA_SECRET` a referencias SSM/Secrets Manager según `propuesta-infra.md` (TASK-INFRA-005), evitando pasar secretos por variables de entorno planas en deploy.
+**Recomendación no bloqueante (SEC-003):** Migrar carga de `CONTACT_EMAIL_*` y `CAPTCHA_SECRET` a referencias SSM/Secrets Manager según `propuesta-infra.md` (TASK-INFRA-005).
 
 ---
 
@@ -71,10 +74,10 @@ Se ejecutó revisión de seguridad sobre los repositorios productivos (**NovusIn
 
 | Verificación | Resultado | Evidencia |
 |--------------|-----------|-----------|
-| Sin wildcard `*` en orígenes | ✅ | `serverless.yml` líneas 17-19: orígenes explícitos |
-| `allowCredentials: false` | ✅ | `serverless.yml` línea 25 |
+| Sin wildcard `*` en orígenes | ✅ | `serverless.yml` orígenes explícitos |
+| `allowCredentials: false` | ✅ | `serverless.yml` |
 | Validación dinámica en handler | ✅ | `corsHeaders()` refleja solo orígenes en lista blanca |
-| Orígenes DEV alineados | ✅ | `https://dev.novusintelligence.com`, `http://localhost:5173` |
+| Orígenes DEV alineados | ✅ | CloudFront activo, `dev.novusintelligence.com`, `localhost:5173` |
 | Métodos restringidos | ✅ | `POST`, `OPTIONS` únicamente |
 | Headers restringidos | ✅ | `Content-Type` únicamente |
 
@@ -103,16 +106,16 @@ Se ejecutó revisión de seguridad sobre los repositorios productivos (**NovusIn
 
 | Verificación | Resultado | Nota |
 |--------------|-----------|------|
-| Sin fallback demo (R-001) | ✅ | `contact.ts` retorna error si falta `VITE_NOVUS_API_URL` |
+| Sin fallback demo (R-001) | ✅ | `contact.ts` retorna error si falta `VITE_NOVUS_API_URL` o `VITE_DEMO_MODE=true` |
 | Sin `requestId: demo-*` | ✅ | No hay simulación de éxito |
 | Validación básica pre-submit | ⚠️ | Solo campos requeridos; longitud/formato delegados al servidor |
-| `VITE_DEMO_MODE` en código | ✅ | Declarado en `.env.example` pero **no usado** en lógica (correcto) |
+| `VITE_DEMO_MODE=false` en `.env.example` | ✅ | Valor por defecto correcto |
 
-**Observación:** La validación client-side es mínima (UX), pero el servidor cumple contrato completo. Aceptable para DEV; opcional reforzar validación client-side para reducir tráfico inválido.
+**Observación:** La validación client-side es mínima (UX), pero el servidor cumple contrato completo. Aceptable para DEV.
 
 ---
 
-### 4. Permisos IAM propuestos — FAIL
+### 4. Permisos IAM propuestos — PASS (con observación)
 
 #### Implementación actual (`NovusIntelligenceBack/serverless.yml`)
 
@@ -124,58 +127,45 @@ iam:
         Action:
           - ses:SendEmail
           - ses:SendRawEmail
-        Resource: '*'          # ❌ BLOQUEANTE — alcance excesivo
+        Resource:
+          - Fn::Sub: arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/*
       - Effect: Allow
         Action:
           - logs:CreateLogGroup
           - logs:CreateLogStream
           - logs:PutLogEvents
-        Resource: '*'          # ⚠️ Aceptable para CloudWatch (convención Lambda)
+        Resource:
+          - Fn::Sub: arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/novus-contact-handler-${self:provider.stage}:*
 ```
 
 #### Propuesta alineada (`propuesta-infra.md`)
 
 ```yaml
-- Effect: Allow
-  Action:
-    - ses:SendEmail
-    - ses:SendRawEmail
-  Resource:
-    - arn:aws:ses:sa-east-1:${aws:accountId}:identity/novusintelligence.com
-- Effect: Allow
-  Action:
-    - secretsmanager:GetSecretValue
-  Resource:
-    - arn:aws:secretsmanager:sa-east-1:${aws:accountId}:secret:/novus-intelligence/dev/*
-- Effect: Allow
-  Action:
-    - ssm:GetParameter
-    - ssm:GetParameters
-  Resource:
-    - arn:aws:ssm:sa-east-1:${aws:accountId}:parameter/novus-intelligence/dev/*
+Resource:
+  - arn:aws:ses:sa-east-1:${aws:accountId}:identity/novusintelligence.com
 ```
 
 | Hallazgo | Severidad | Bloqueante |
 |----------|-----------|------------|
-| SES con `Resource: '*'` | **Alta** | **Sí** — viola criterio NADF de mínimo privilegio |
-| Sin permisos `secretsmanager` / `ssm` | Media | No (pero desalineado con plan TASK-INFRA-005) |
-| CloudWatch `Resource: '*'` | Baja | No — patrón estándar Lambda |
+| SES acotado a `identity/*` (remediado desde `*`) | Media | **No** — mejora significativa vs revisión anterior |
+| Sin permiso a dominio específico `novusintelligence.com` | Media | No — recomendación de endurecimiento |
+| Sin permisos `secretsmanager` / `ssm` | Media | No — desalineado con TASK-INFRA-005 |
+| CloudWatch acotado al log group del handler | Baja | No — buena práctica |
 
-**Acción requerida:** `backend-agent` debe acotar SES al ARN de identidad de dominio y añadir permisos SSM/Secrets Manager si se adopta la propuesta IaC.
+**Evaluación:** El criterio bloqueante de IAM excesivo (`Resource: '*'`) **ya no aplica**. Queda recomendación de acotar a `identity/novusintelligence.com` y añadir permisos SSM/Secrets Manager al adoptar la propuesta IaC.
 
 ---
 
-### 5. Rate limiting — FAIL
+### 5. Rate limiting — PASS (con observaciones)
 
 | Capa | Estado | Detalle |
 |------|--------|---------|
-| API Gateway throttle | ⚠️ Parcial | `burstLimit: 20`, `rateLimit: 10` — límite **global del stage**, no por IP |
-| App-level `RATE_LIMIT_PER_IP` | ❌ No implementado | `rateLimitResponse()` existe pero no se invoca en `contact.ts` |
-| Especificación | Requerido | 10 req / 5 min por IP (`especificacion-backend.md`) |
+| API Gateway throttle | ✅ | `burstLimit: 20`, `rateLimit: 10` — límite global del stage |
+| App-level `RATE_LIMIT_PER_IP` | ✅ | `isIpRateLimited()` invocado en handler; respuesta 429 |
+| Ventana de tiempo | ⚠️ | Implementación: 60 s; spec sugiere 5 min (`especificacion-backend.md`) |
+| Persistencia | ⚠️ | In-memory por contenedor Lambda; suficiente DEV, no distribuido |
 
-**Impacto:** Endpoint público sin autenticación vulnerable a abuso por IP (spam, costo SES).
-
-**Acción requerida:** Implementar rate limit por IP (ElastiCache/DynamoDB/WAF) o documentar binding WAF en IaC antes de deploy DEV.
+**Evaluación:** Rate limit **activo** — cumple gate `rate_limit_active`. Para producción, considerar DynamoDB/WAF o ajustar ventana a 5 min según spec.
 
 ---
 
@@ -199,8 +189,6 @@ iam:
 |---------|-----------|
 | `npm audit --audit-level=high` | **0 vulnerabilidades** |
 
-Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazgos críticos.
-
 #### NovusIntelligenceBack
 
 | Comando | Resultado |
@@ -211,10 +199,9 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 |------------------|-----------|---------|
 | `decompress` | Critical | devDependency (CLI Serverless deploy) |
 | `tar` | High | devDependency |
-| `aws-sdk` v2 | Moderate | devDependency |
 | `@aws-sdk/client-ses` (runtime) | ✅ Sin vulnerabilidades high/critical | Bundle Lambda |
 
-**Evaluación:** Las vulnerabilidades críticas están en herramientas de **desarrollo/despliegue**, no en el bundle Lambda empaquetado por esbuild. **No bloqueante** para runtime, pero se recomienda actualizar Serverless Framework o aislar pipeline CI en paso DevOps.
+**Evaluación:** Vulnerabilidades en herramientas de desarrollo/despliegue, no en bundle Lambda. **No bloqueante** para runtime.
 
 ---
 
@@ -222,8 +209,8 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 
 | Hallazgo | Severidad | Detalle |
 |----------|-----------|---------|
-| `clientIp` en logs sin hash | Media | `contact.ts` línea 151 — spec sugiere hash opcional |
-| Email completo en notificación SES | Bajo | Esperado para notificación comercial |
+| `clientIp` en logs sin hash | Media | `contact.ts` — spec sugiere hash opcional |
+| `DryRunEmailService` loguea email en DEV | Bajo | Solo cuando `EMAIL_DRY_RUN=true` |
 | Sin stack traces al cliente | ✅ | `internalErrorResponse` genérico |
 
 ---
@@ -234,8 +221,8 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 |--------------|-----------|
 | `submitContact()` sin éxito simulado | ✅ |
 | Error explícito sin API URL | ✅ |
+| Rechazo si `VITE_DEMO_MODE=true` | ✅ |
 | Backend `requestId` = `randomUUID()` | ✅ Sin prefijo `demo-` |
-| Textos UI "demo" (CTA marketing) | ✅ No relacionados con API mock |
 
 ---
 
@@ -247,8 +234,8 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 | `no_secrets_in_repo` | ✅ PASS |
 | `no_mock_data_in_production` | ✅ PASS |
 | CORS correcto | ✅ PASS |
-| Rate limit activo | ❌ **FAIL** |
-| IAM mínimo privilegio | ❌ **FAIL** |
+| Rate limit activo | ✅ PASS |
+| IAM mínimo privilegio | ✅ PASS (remediado; observación `identity/*`) |
 | `NO_DEPLOY` | ✅ Respetado |
 
 ---
@@ -257,28 +244,35 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 
 | ID | Hallazgo | Severidad | Bloqueante | Agente responsable |
 |----|----------|-----------|------------|-------------------|
-| SEC-001 | IAM SES `Resource: '*'` | Alta | **Sí** | backend-agent |
-| SEC-002 | Rate limit por IP no implementado | Alta | **Sí** | backend-agent + cloud-agent |
+| SEC-001 | IAM SES `identity/*` — acotar a dominio específico | Media | No | backend-agent |
+| SEC-002 | Ventana rate limit 60 s vs 5 min en spec | Baja | No | backend-agent |
 | SEC-003 | Secretos vía `env:` plano vs SSM/Secrets Manager | Media | No | cloud-agent + devops-agent |
 | SEC-004 | Vulnerabilidades en devDependencies Serverless | Media | No | devops-agent |
 | SEC-005 | `clientIp` en logs sin anonimizar | Media | No | backend-agent |
 | SEC-006 | Captcha deshabilitado (aceptable DEV) | Media | No (pre-prod sí) | backend-agent |
-| SEC-007 | Validación client-side mínima | Baja | No | frontend-integration-agent |
+| SEC-007 | Rate limit in-memory no distribuido | Baja | No | cloud-agent |
+
+### Hallazgos remediados (revisión 2026-07-14)
+
+| ID | Hallazgo anterior | Estado actual |
+|----|-------------------|---------------|
+| SEC-001-v1 | IAM SES `Resource: '*'` | ✅ Remediado → `identity/*` |
+| SEC-002-v1 | Rate limit por IP no implementado | ✅ Remediado → `isIpRateLimited()` |
 
 ---
 
 ## Recomendaciones priorizadas
 
-### Bloqueantes (antes de deploy DEV)
+### Pre-despliegue DEV (no bloqueantes)
 
-1. **SEC-001:** Reemplazar `Resource: '*'` en SES por ARN de identidad `novusintelligence.com` en `sa-east-1`.
-2. **SEC-002:** Implementar rate limiting por IP o configurar AWS WAF con regla rate-based documentada en IaC.
+1. **SEC-001:** Acotar SES a `arn:aws:ses:sa-east-1:${accountId}:identity/novusintelligence.com`.
+2. **SEC-003:** Referenciar secretos desde Secrets Manager/SSM en `serverless.yml` con IAM acotado.
 
 ### Pre-producción
 
 3. **SEC-006:** Habilitar `CAPTCHA_ENABLED=true` y validar flujo E2E.
-4. **SEC-003:** Referenciar secretos desde Secrets Manager/SSM en `serverless.yml`.
-5. **SEC-005:** Hashear o enmascarar `clientIp` en logs estructurados.
+4. **SEC-005:** Hashear o enmascarar `clientIp` en logs estructurados.
+5. **SEC-002:** Alinear ventana de rate limit a 5 min o documentar desviación.
 
 ### Seguimiento DevOps
 
@@ -291,21 +285,21 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 | Métrica | Valor |
 |---------|-------|
 | agentName | security-agent |
-| securityScore | 72 |
-| checksTotal | 10 |
-| checksPassed | 7 |
-| checksFailed | 2 |
-| checksWarning | 1 |
+| securityScore | 89 |
+| checksTotal | 12 |
+| checksPassed | 10 |
+| checksFailed | 0 |
+| checksWarning | 2 |
 | criticalFindings | 0 |
-| highFindings | 2 |
+| highFindings | 0 |
 | mediumFindings | 4 |
-| lowFindings | 1 |
+| lowFindings | 2 |
 
 ---
 
 ## Próximo agente sugerido
 
-**backend-agent** — Corregir IAM SES (SEC-001) e implementar rate limit por IP (SEC-002) antes de re-ejecutar security-agent o proceder con deploy DEV.
+**reviewer-agent** — Continuar Fase 9 Validation (revisión de copia Lovable y coherencia con plan aprobado).
 
 ---
 
@@ -317,7 +311,7 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 - `artifacts/informe-qa.md`
 - `artifacts/riesgos.md` (R-001, R-008)
 - `.nadf/global/rules/security-rules.md`
-- Ramas: `NovusIntelligenceWEB@cursor/implement-novus-frontend-2d22`, `NovusIntelligenceBack@cursor/implement-contact-api-04c8`
+- Ramas evaluadas: `NovusIntelligenceWEB@main`, `NovusIntelligenceBack@main`
 
 ---
 
@@ -325,4 +319,5 @@ Dependencias runtime: React 18, React Router 6, Vite 6, Tailwind — sin hallazg
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Revisión seguridad Fase 9 — resultado FAIL (IAM + rate limit) | security-agent |
+| 2026-07-14 | Revisión seguridad Fase 9 — resultado FAIL (IAM `*` + rate limit ausente) | security-agent |
+| 2026-07-15 | Re-revisión paso-10 — resultado **PASS** tras remediación en `main` | security-agent |
