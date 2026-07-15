@@ -4,6 +4,25 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-15 — Primera corrida Lovable→Web — consolidación y bloqueo por paridad visual
+
+**Contexto:** Se completó la primera ejecución end-to-end del workflow `novus-intelligence-lovable-to-web` (plan `PLAN-NOVUS-LOVABLE-2026-07-14`, baseline novus-nexus @ `e3a9819`). La corrida evolucionó en dos ciclos de validación: inicial (2026-07-14) con QA/Security FAIL, y re-validación (2026-07-15) con remediación exitosa.
+
+**Decisión:**
+- **Aceptar** implementación frontend y backend en `main` de NovusIntelligenceWEB y NovusIntelligenceBack tras QA PASS (qualityScore 100) y Security PASS (securityScore 88).
+- **Bloquear** auto-deploy DEV y reviewer-agent hasta cumplir gate `visual_exact_parity` (umbral ≤ 0,2 %; resultado actual maxDiffRatio 0,486653 en `/contact`).
+- **Mantener** `NO_DEPLOY` en ejecuciones de agentes; despliegue DEV solo tras paridad visual + `deploy_human_approval`.
+- **Documentar** remediaciones QA-001, SEC-001 y SEC-002 como cerradas; VP-001 a VP-003 como bloqueantes activos.
+- **Registrar** 17 de 19 agentes ejecutados; devops-agent (`pipeline-config.md`) y reviewer-agent pendientes.
+
+**Rationale:** Los gates de intención (sin copia Lovable, sin mocks, sin secrets) y calidad de código (build/lint) están cumplidos. La paridad visual exacta (ADR-0006) es prerequisito explícito para auto-merge/auto-deploy DEV. Consolidar estado en `resumen-ejecucion.md` habilita trazabilidad y handoff a `frontend-integration-agent`.
+
+**Artefactos:** `artifacts/resumen-ejecucion.md`, PRs #84–#92 (Framework), `informe-paridad-visual.md`
+
+**ADR:** ADR-0006-visual-parity-and-auto-dev-deploy
+
+---
+
 ## 2026-07-14 — MVP automatización + paridad visual exacta
 
 **Contexto:** El sitio DEV no igualaba Lovable y no había trigger automático ante `lovable.commit`.
