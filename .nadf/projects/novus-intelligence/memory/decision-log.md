@@ -4,6 +4,25 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-15 — Primera corrida Lovable→Web documentada (estado parcial)
+
+**Contexto:** Se completó la primera ejecución end-to-end del workflow `novus-intelligence-lovable-to-web` sobre baseline Lovable `novus-nexus@e3a9819`, con plan `PLAN-NOVUS-LOVABLE-2026-07-14` aprobado por architect-agent.
+
+**Decisión (consolidada por documentation-agent):**
+- Registrar la corrida como **parcialmente completada**: Planning y Execution exitosos; repos productivos (NovusIntelligenceWEB, NovusIntelligenceBack) integrados en `main`.
+- Aceptar re-validaciones QA (qualityScore: 100) y Security (securityScore: 89) del 2026-07-15 como evidencia vigente de gates `build_success` y `security_pass`.
+- Mantener el workflow **bloqueado** por gate `visual_exact_parity` (0/12 capturas PASS; maxDiffRatio 0.449 en `/contact` móvil).
+- No desplegar a DEV (`NO_DEPLOY`); infraestructura permanece como propuesta documentada en `sa-east-1`.
+- Diferir `reviewer-agent`, E2E contacto y cierre de métricas/reflexión hasta remediación de paridad visual.
+
+**Rationale:** La documentación refleja hechos verificables en artefactos NADF y repos productivos, sin inventar decisiones. Los bloqueantes iniciales (lint WEB, IAM SES wildcard, rate limit ausente) quedaron remediados en `main`; el cuello de botella actual es paridad visual exacta, no calidad de código ni seguridad.
+
+**Artefactos:** `artifacts/resumen-ejecucion.md`, `informe-qa.md`, `informe-seguridad.md`, `informe-paridad-visual.md`, `gaps-paridad.json`
+
+**PRs Framework relevantes:** #1–#8 (corrida inicial), `cursor/qa-validation-47b5`, `cursor/security-review-6b8b`, ramas `cursor/visual-parity-paso12-*`
+
+---
+
 ## 2026-07-14 — MVP automatización + paridad visual exacta
 
 **Contexto:** El sitio DEV no igualaba Lovable y no había trigger automático ante `lovable.commit`.
