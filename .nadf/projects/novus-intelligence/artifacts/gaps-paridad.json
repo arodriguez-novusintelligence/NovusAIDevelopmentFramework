@@ -1,0 +1,201 @@
+{
+  "status": "FAIL",
+  "gate": "visual_exact_parity",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatioObserved": 0.096091,
+  "generatedAt": "2026-07-15T20:30:28.517Z",
+  "nextAgentSuggested": "frontend-integration-agent",
+  "summary": "12/12 capturas superan el umbral 0.002. Remediación P0 en tokens/gradientes, tipografía, hero móvil y contacto.",
+  "consolidatedGaps": [
+    {
+      "id": "VP-GAP-TOKENS",
+      "priority": "P0",
+      "category": "design-tokens",
+      "scope": "global",
+      "component": "index.css / tailwind.config.js",
+      "description": "Gradientes y colores de marca (oklch en Lovable vs HSL en WEB) producen divergencia pixel en text-gradient-brand, bg-gradient-brand, fondos navy-deep y sombras glow.",
+      "action": "Re-mapear tokens desde novus-nexus/reglasDiseno/tokens.yml a variables CSS productivas con valores oklch-equivalentes verificados contra capturas; no copiar styles.css literal.",
+      "affectedRoutes": ["/", "/about", "/services", "/contact"]
+    },
+    {
+      "id": "VP-GAP-TYPO",
+      "priority": "P0",
+      "category": "typography",
+      "scope": "global",
+      "component": "fonts + headings",
+      "description": "Space Grotesk / Inter renderizan con métricas distintas (tracking, line-height, peso) en headlines y navegación.",
+      "action": "Auditar carga de fuentes y clases font-display/body en Header, Hero y títulos de sección; igualar métricas a referencia Lovable.",
+      "affectedRoutes": ["/", "/about", "/services", "/contact"]
+    },
+    {
+      "id": "VP-GAP-HERO-MOBILE",
+      "priority": "P0",
+      "category": "layout",
+      "scope": "route",
+      "component": "Hero.tsx + NovusDevFrameworkDemo.tsx",
+      "description": "Landing móvil (390×844) diffRatio=0.096091 — peor captura. Stack hero/demo, badges y márgenes verticales no coinciden.",
+      "action": "Ajustar grid responsive, padding y dimensiones del panel NADF demo en breakpoint sm; re-validar / @ 390×844.",
+      "affectedRoutes": ["/"]
+    },
+    {
+      "id": "VP-GAP-CONTACT-LAYOUT",
+      "priority": "P0",
+      "category": "layout",
+      "scope": "route",
+      "component": "ContactPage.tsx",
+      "description": "Grid 2-col (sidebar cards + formulario) desalineado en desktop/tablet; campos y botón submit con offsets. diffRatio hasta 0.047789 desktop, 0.061399 mobile.",
+      "action": "Igualar ratio columnas, padding de cards contacto/horario/partner, alturas de inputs y ancho del formulario.",
+      "affectedRoutes": ["/contact"]
+    },
+    {
+      "id": "VP-GAP-HEADER-MOBILE",
+      "priority": "P0",
+      "category": "layout",
+      "scope": "global",
+      "component": "Header.tsx",
+      "description": "Header sticky móvil desplaza contenido subsiguiente; ghosting en diffs de todas las rutas @ 390×844.",
+      "action": "Igualar altura, padding horizontal y menú hamburger al breakpoint móvil de referencia.",
+      "affectedRoutes": ["/", "/about", "/services", "/contact"]
+    },
+    {
+      "id": "VP-GAP-SECTION-SPACING",
+      "priority": "P1",
+      "category": "spacing",
+      "scope": "global",
+      "component": "Partners, ServicesGrid, SolutionsGrid, Testimonials, CTA",
+      "description": "Altura total de página distinta (fullPage scroll) por py/gap/card heights; amplifica diff en landing y páginas internas.",
+      "action": "Revisar espaciado vertical y min-heights de secciones compartidas hasta alinear scroll height con referencia.",
+      "affectedRoutes": ["/", "/about", "/services"]
+    },
+    {
+      "id": "VP-GAP-ABOUT-PAGE",
+      "priority": "P1",
+      "category": "layout",
+      "scope": "route",
+      "component": "AboutPage.tsx",
+      "description": "Hero 2-col founder + cards misión/visión/valores con offsets; diffRatio 0.033486 desktop, 0.050972 mobile.",
+      "action": "Ajustar grid founder, cards corporativas y CTA inferior según estructura Lovable.",
+      "affectedRoutes": ["/about"]
+    },
+    {
+      "id": "VP-GAP-SERVICES-PAGE",
+      "priority": "P1",
+      "category": "layout",
+      "scope": "route",
+      "component": "ServicesPage.tsx + ServicesGrid",
+      "description": "Menor diff relativo (0.026615 desktop) pero aún >> umbral; grid de 5 pilares y hero de página con spacing distinto.",
+      "action": "Fine-tune ServicesGrid columnas, icon boxes y copy block del hero de /services.",
+      "affectedRoutes": ["/services"]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "VP-1",
+      "priority": "P1",
+      "path": "/",
+      "viewport": "1440x900",
+      "diffRatio": 0.042495,
+      "componentAreas": ["Hero", "NovusDevFrameworkDemo", "tokens-gradientes", "secciones-landing"],
+      "action": "Ajustar tokens, hero y espaciado de secciones hasta diffRatio ≤ 0.002"
+    },
+    {
+      "id": "VP-2",
+      "priority": "P1",
+      "path": "/about",
+      "viewport": "1440x900",
+      "diffRatio": 0.033486,
+      "componentAreas": ["AboutPage-hero", "founder-card", "mision-vision-valores"],
+      "action": "Igualar layout 2-col y cards corporativas"
+    },
+    {
+      "id": "VP-3",
+      "priority": "P1",
+      "path": "/services",
+      "viewport": "1440x900",
+      "diffRatio": 0.026615,
+      "componentAreas": ["ServicesPage-hero", "ServicesGrid"],
+      "action": "Fine-tune grid 5 pilares y hero"
+    },
+    {
+      "id": "VP-4",
+      "priority": "P1",
+      "path": "/contact",
+      "viewport": "1440x900",
+      "diffRatio": 0.047789,
+      "componentAreas": ["ContactPage-grid", "sidebar-cards", "contact-form"],
+      "action": "Corregir ratio columnas y campos del formulario"
+    },
+    {
+      "id": "VP-5",
+      "priority": "P0",
+      "path": "/",
+      "viewport": "768x1024",
+      "diffRatio": 0.066087,
+      "componentAreas": ["Hero-tablet", "NovusDevFrameworkDemo", "Header"],
+      "action": "Remediar layout tablet landing — diff crítico"
+    },
+    {
+      "id": "VP-6",
+      "priority": "P1",
+      "path": "/about",
+      "viewport": "768x1024",
+      "diffRatio": 0.037322,
+      "componentAreas": ["AboutPage-tablet"],
+      "action": "Ajustar stack/grid tablet en about"
+    },
+    {
+      "id": "VP-7",
+      "priority": "P1",
+      "path": "/services",
+      "viewport": "768x1024",
+      "diffRatio": 0.030922,
+      "componentAreas": ["ServicesGrid-tablet"],
+      "action": "Ajustar columnas ServicesGrid en tablet"
+    },
+    {
+      "id": "VP-8",
+      "priority": "P0",
+      "path": "/contact",
+      "viewport": "768x1024",
+      "diffRatio": 0.05272,
+      "componentAreas": ["ContactPage-tablet", "form-fields"],
+      "action": "Corregir layout tablet contacto — diff crítico"
+    },
+    {
+      "id": "VP-9",
+      "priority": "P0",
+      "path": "/",
+      "viewport": "390x844",
+      "diffRatio": 0.096091,
+      "componentAreas": ["Hero-mobile", "Header-mobile", "NovusDevFrameworkDemo-mobile"],
+      "action": "Remediación urgente landing móvil — max diffRatio del run"
+    },
+    {
+      "id": "VP-10",
+      "priority": "P0",
+      "path": "/about",
+      "viewport": "390x844",
+      "diffRatio": 0.050972,
+      "componentAreas": ["AboutPage-mobile"],
+      "action": "Stack móvil about — diff crítico"
+    },
+    {
+      "id": "VP-11",
+      "priority": "P1",
+      "path": "/services",
+      "viewport": "390x844",
+      "diffRatio": 0.039585,
+      "componentAreas": ["ServicesGrid-mobile"],
+      "action": "Ajustar grid móvil services"
+    },
+    {
+      "id": "VP-12",
+      "priority": "P0",
+      "path": "/contact",
+      "viewport": "390x844",
+      "diffRatio": 0.061399,
+      "componentAreas": ["ContactPage-mobile", "form-mobile"],
+      "action": "Corregir stack móvil contacto — diff crítico"
+    }
+  ]
+}
