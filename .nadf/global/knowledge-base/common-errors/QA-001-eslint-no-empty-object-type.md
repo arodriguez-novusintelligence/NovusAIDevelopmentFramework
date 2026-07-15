@@ -45,4 +45,5 @@ Alternativa: añadir al menos una prop semántica explícita a la interface.
 | IDs reflexión | ANTI-001, KB-001 |
 | Severidad | critical |
 | Gate bloqueante | build_success |
+| Status | remediated (2026-07-15) |
 | Fecha | 2026-07-14 |

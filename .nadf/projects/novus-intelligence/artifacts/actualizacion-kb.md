@@ -5,59 +5,90 @@
 **Paso:** paso-14-actualizar-kb (fase Knowledge)  
 **Agente:** knowledge-base-agent  
 **Patrón:** Blackboard Pattern  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
-**Workflow status al actualizar:** blocked (qualityScore: 62)
+**Workflow status al actualizar:** blocked (qualityScore: 78, anterior: 62)
 
 ---
 
 ## Resumen
 
-Consolidación de 7 recomendaciones KB (`recomendaciones-kb.json`), 6 patrones exitosos y 5 anti-patrones documentados en `reflexion-ejecucion.md` en entradas reutilizables de `.nadf/global/knowledge-base/`.
+Actualización **incremental** de la Knowledge Base global a partir de la re-reflexión post re-validaciones QA/Security (2026-07-15). Se consolidan 4 recomendaciones pendientes (KB-008–KB-011), 1 error bloqueante activo (VP-001) y actualizaciones de estado en entradas previamente creadas (2026-07-14).
 
-Todas las entradas están respaldadas por evidencia en artefactos del Blackboard. No se incluyen secrets ni código productivo.
+Todas las entradas están respaldadas por `reflexion-ejecucion.md`, `recomendaciones-kb.json` y `metricas-ejecucion.json`. Sin secrets ni código productivo.
 
 ---
 
-## Entradas creadas
+## Entradas creadas (incremento 2026-07-15)
 
-### architecture-patterns/ (7 archivos)
+### architecture-patterns/ (4 archivos nuevos)
 
 | Archivo | IDs origen | Descripción |
 |---------|------------|-------------|
-| `lovable-to-web-reimplementation.md` | PAT-001, PAT-002, PAT-003, KB-006 | Plan approved, reimplementación sin copia Lovable, política anti-mock |
-| `multi-repo-feature-branch-validation.md` | PAT-005 | Validación QA/Security en ramas `cursor/*` |
-| `cloud-region-reconciliation.md` | PAT-004 | Alineación región IaC con planning constraints |
-| `pre-handoff-executor-validation.md` | KB-004, ANTI-005 | Checklist antes de activar qa-agent |
-| `tanstack-to-react-router-mapping.md` | KB-005 | Mapeo rutas TanStack → React Router v6 |
-| `rate-limiting-serverless-public-apis.md` | KB-003, ANTI-002 | Matriz decisión rate limit por IP |
-| `static-qa-responsive-seo.md` | KB-007 | Validación responsive/SEO sin browser automation |
+| `visual-parity-brand-assets-checklist.md` | KB-008, ANTI-007, GAP-P0-001 | Checklist logo, favicon, OG antes de visual-parity-agent |
+| `hybrid-theme-section-alternation.md` | KB-009, ANTI-006, GAP-P0-002/003 | Alternancia claro/oscuro por sección en sitios híbridos |
+| `visual-parity-gate-independence.md` | KB-010, ANTI-008 | Gate visual desacoplado de build/lint/security |
+| `remediate-frontend-then-recheck.md` | KB-011, PAT-007 | Plantilla desbloqueo: remediar → re-check paridad → reviewer |
 
-### common-errors/ (5 archivos)
+### common-errors/ (1 archivo nuevo)
 
 | Archivo | IDs origen | Gate | Severidad |
 |---------|------------|------|-----------|
-| `QA-001-eslint-no-empty-object-type.md` | ANTI-001, KB-001 | build_success | critical |
-| `SEC-001-iam-ses-wildcard.md` | ANTI-003, KB-002 | security_pass | high |
-| `SEC-002-rate-limit-not-connected.md` | ANTI-002, KB-003 | security_pass | high |
-| `DEVOPS-001-pipeline-config-missing.md` | ANTI-004 | execution_completion | medium |
-| `EXEC-001-handoff-without-lint.md` | ANTI-005 | build_success (indirecto) | medium |
+| `VP-001-visual-exact-parity-fail.md` | ANTI-006/007/008, KB-008–010 | visual_exact_parity | critical |
 
 ---
 
-## Mapeo recomendaciones → entradas
+## Entradas actualizadas (incremento 2026-07-15)
 
-| ID recomendación | Título | Destino KB |
-|------------------|--------|------------|
-| KB-001 | ESLint no-empty-object-type shadcn/ui | `common-errors/QA-001-eslint-no-empty-object-type.md` |
-| KB-002 | IAM least-privilege SES Serverless | `common-errors/SEC-001-iam-ses-wildcard.md` |
-| KB-003 | Rate limiting APIs públicas serverless | `architecture-patterns/rate-limiting-serverless-public-apis.md` + `common-errors/SEC-002-rate-limit-not-connected.md` |
-| KB-004 | Checklist pre-handoff executor | `architecture-patterns/pre-handoff-executor-validation.md` |
-| KB-005 | TanStack Router → React Router v6 | `architecture-patterns/tanstack-to-react-router-mapping.md` |
-| KB-006 | Política anti-mock contacto | `architecture-patterns/lovable-to-web-reimplementation.md` (sección mitigación R-001) |
-| KB-007 | QA responsive/SEO estático | `architecture-patterns/static-qa-responsive-seo.md` |
+| Archivo | Cambio |
+|---------|--------|
+| `multi-repo-feature-branch-validation.md` | Sección re-validación post-merge sobre `main` (PAT-005, PAT-006) |
+| `pre-handoff-executor-validation.md` | Items 6–7: assets de marca y mapeo tema por ruta |
+| `QA-001-eslint-no-empty-object-type.md` | Status: remediated (2026-07-15) |
+| `SEC-001-iam-ses-wildcard.md` | Status: remediated (2026-07-15) |
+| `SEC-002-rate-limit-not-connected.md` | Status: remediated (2026-07-15) |
+
+---
+
+## Mapeo recomendaciones → entradas (completo)
+
+| ID | Título | Destino KB | Status |
+|----|--------|------------|--------|
+| KB-001 | ESLint no-empty-object-type shadcn/ui | `common-errors/QA-001-eslint-no-empty-object-type.md` | consolidated (remediated) |
+| KB-002 | IAM least-privilege SES Serverless | `common-errors/SEC-001-iam-ses-wildcard.md` | consolidated (remediated) |
+| KB-003 | Rate limiting APIs públicas serverless | `architecture-patterns/rate-limiting-serverless-public-apis.md` + `SEC-002` | consolidated (remediated) |
+| KB-004 | Checklist pre-handoff executor | `architecture-patterns/pre-handoff-executor-validation.md` | consolidated (ampliado) |
+| KB-005 | TanStack Router → React Router v6 | `architecture-patterns/tanstack-to-react-router-mapping.md` | consolidated |
+| KB-006 | Política anti-mock contacto | `architecture-patterns/lovable-to-web-reimplementation.md` | consolidated |
+| KB-007 | QA responsive/SEO estático | `architecture-patterns/static-qa-responsive-seo.md` | consolidated |
+| KB-008 | Checklist assets antes de paridad visual | `architecture-patterns/visual-parity-brand-assets-checklist.md` | **nuevo** |
+| KB-009 | Alternancia tema claro/oscuro por sección | `architecture-patterns/hybrid-theme-section-alternation.md` | **nuevo** |
+| KB-010 | Gate visual desacoplado de gates técnicos | `architecture-patterns/visual-parity-gate-independence.md` | **nuevo** |
+| KB-011 | Flujo remediate_frontend_then_recheck | `architecture-patterns/remediate-frontend-then-recheck.md` | **nuevo** |
+
+---
+
+## Estado de la KB tras actualización
+
+| Métrica | Valor |
+|---------|-------|
+| Entradas totales en KB global | 17 |
+| Creadas en 2026-07-14 | 12 |
+| Creadas en 2026-07-15 | 5 |
+| Actualizadas en 2026-07-15 | 5 |
+| Recomendaciones pendientes | 0 (KB-001–KB-011 consolidadas) |
+
+---
+
+## Bloqueantes activos documentados
+
+| ID | Gate | Entrada KB | Agente responsable |
+|----|------|------------|-------------------|
+| VP-001 | visual_exact_parity | `common-errors/VP-001-visual-exact-parity-fail.md` | frontend-integration-agent |
+| DEVOPS-001 | execution_completion | `common-errors/DEVOPS-001-pipeline-config-missing.md` | devops-agent |
+| REV-001 | reviewer_validation | Bloqueado por VP-001 | reviewer-agent |
 
 ---
 
@@ -65,18 +96,8 @@ Todas las entradas están respaldadas por evidencia en artefactos del Blackboard
 
 | Tipo | Razón |
 |------|-------|
-| `reusable-components/` | Sin componentes genéricos cross-proyecto identificados en reflexión; implementación específica de Novus Intelligence |
+| `reusable-components/` | Sin componentes genéricos cross-proyecto; `MultiAgentDemo` es específico de Novus Intelligence |
 | ADRs | Fuera de alcance — responsabilidad de adr-agent (ADR-REC-001, ADR-REC-002 pendientes) |
-
----
-
-## Patrones consolidados no duplicados
-
-Los siguientes patrones de reflexión se integraron en entradas existentes en lugar de archivos separados:
-
-| ID | Integrado en |
-|----|--------------|
-| PAT-006 (Blackboard como insumo reflexión) | Referenciado en `pre-handoff-executor-validation.md` y este artefacto |
 
 ---
 
@@ -92,24 +113,25 @@ Los siguientes patrones de reflexión se integraron en entradas existentes en lu
 
 ---
 
-## Entradas de entrada consultadas
+## Entradas consultadas
 
-- `artifacts/reflexion-ejecucion.md` ✅
+- `artifacts/reflexion-ejecucion.md` ✅ (re-reflexión 2026-07-15)
 - `artifacts/recomendaciones-kb.json` ✅
 - `artifacts/metricas-ejecucion.json` ✅
 - `artifacts/plan-implementacion.md` ✅ (approved)
 - `.nadf/global/knowledge-base/README.md` ✅
 - `docs/reflection-learning.md` ✅
+- Entradas KB previas (2026-07-14) ✅
 
 ---
 
 ## Próximos pasos sugeridos
 
-1. **adr-agent** — Registrar ADR-REC-001 (rate limiting) y ADR-REC-002 (gestión secretos) si aplica.
-2. **frontend-integration-agent** — Corregir QA-001 antes de re-validación.
-3. **backend-agent** — Corregir SEC-001 y SEC-002.
-4. **devops-agent** — Completar DEVOPS-001 (`pipeline-config.md`).
-5. Re-ejecutar cadena qa-agent → security-agent → reviewer-agent tras correcciones.
+1. **frontend-integration-agent** — Remediar GAP-P0-001 a GAP-P0-004 según entradas KB-008, KB-009 y VP-001.
+2. **visual-parity-agent** — Re-ejecutar capturas tras remediación frontend.
+3. **reviewer-agent** — Tras PASS de paridad visual.
+4. **devops-agent** — Completar DEVOPS-001 (`pipeline-config.md`) en paralelo.
+5. **adr-agent** — ADR-REC-001 (rate limiting) y ADR-REC-002 (secretos SSM) antes de deploy.
 
 ---
 
@@ -118,11 +140,12 @@ Los siguientes patrones de reflexión se integraron en entradas existentes en lu
 | Campo | Valor |
 |-------|-------|
 | `agentName` | knowledge-base-agent |
-| `entriesCreated` | 12 |
-| `patternsDocumented` | 7 |
-| `errorsDocumented` | 5 |
+| `entriesCreated` | 5 (incremento) |
+| `entriesUpdated` | 5 |
+| `patternsDocumented` | 4 nuevos + 2 ampliados |
+| `errorsDocumented` | 1 nuevo (VP-001) + 3 status actualizados |
 | `evidenceBacked` | true |
-| `reflectionSummary` | KB consolidada con 12 entradas desde reflexión Lovable→Web bloqueada; patrones de reimplementación, pre-handoff y errores lint/IAM/rate-limit documentados |
+| `reflectionSummary` | KB incrementada post re-reflexión: paridad visual, alternancia tema y flujo remediate_frontend_then_recheck documentados; QA/SEC remediados |
 
 ---
 
@@ -130,4 +153,5 @@ Los siguientes patrones de reflexión se integraron en entradas existentes en lu
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Creación inicial KB desde reflexión paso-16 | knowledge-base-agent |
+| 2026-07-14 | Creación inicial KB (12 entradas) desde reflexión paso-13 | knowledge-base-agent |
+| 2026-07-15 | Actualización incremental KB-008–KB-011 + VP-001 post re-reflexión QA/SEC PASS | knowledge-base-agent |

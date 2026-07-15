@@ -33,4 +33,5 @@ Patrón «dead code security»: utilidades de protección definidas durante desa
 | IDs reflexión | ANTI-002, KB-003 |
 | Severidad | high |
 | Gate bloqueante | security_pass |
+| Status | remediated (2026-07-15) |
 | Fecha | 2026-07-14 |

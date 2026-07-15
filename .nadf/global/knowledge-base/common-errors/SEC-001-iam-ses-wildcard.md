@@ -41,4 +41,5 @@ Verificar alineación con `propuesta-infra.md` del mismo workflow.
 | IDs reflexión | ANTI-003, KB-002 |
 | Severidad | high |
 | Gate bloqueante | security_pass |
+| Status | remediated (2026-07-15) |
 | Fecha | 2026-07-14 |
