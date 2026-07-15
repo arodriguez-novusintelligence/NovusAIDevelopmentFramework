@@ -1,0 +1,79 @@
+{
+  "status": "FAIL",
+  "gate": "visual_exact_parity",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatioObserved": 0.486653,
+  "nextAgentSuggested": "frontend-integration-agent",
+  "gaps": [
+    {
+      "id": "GAP-VP-001",
+      "priority": "P0",
+      "route": "/contact",
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.486653,
+      "component": "ContactPage",
+      "symptom": "Zona de contenido principal en tema claro (cards blancas, fondo lavanda) vs referencia dark-first con cards semitransparentes navy y grid-bg",
+      "action": "Reimplementar ContactPage con fondo oscuro continuo, cards `bg-surface`/glass, inputs dark, sidebar 3 cards y ratio columna formulario 1:1.4 como Lovable; sin copiar JSX/CSS literal",
+      "filesSuggested": ["NovusIntelligenceWEB/src/pages/ContactPage.tsx", "NovusIntelligenceWEB/src/index.css"]
+    },
+    {
+      "id": "GAP-VP-002",
+      "priority": "P0",
+      "route": "/",
+      "viewports": ["390x844", "768x1024", "1440x900"],
+      "maxDiffRatio": 0.199459,
+      "component": "Landing sections",
+      "symptom": "Desalineación estructural en hero (badge, stats, CTAs), secciones Solutions/Impact/Testimonials con copy, orden o estilos distintos; testimonios en cards blancas vs referencia dark",
+      "action": "Alinear Hero (badge, headline gradiente, dual CTA, stats pills, demo card), Partners, ServicesGrid, SolutionsGrid, ImpactStats, Testimonials y CTA final con tokens y espaciado de referencia novus-nexus",
+      "filesSuggested": [
+        "NovusIntelligenceWEB/src/components/Hero.tsx",
+        "NovusIntelligenceWEB/src/components/sections/*",
+        "NovusIntelligenceWEB/src/pages/LandingPage.tsx"
+      ]
+    },
+    {
+      "id": "GAP-VP-003",
+      "priority": "P1",
+      "route": "/services",
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.081773,
+      "component": "ServicesPage",
+      "symptom": "Grid de pilares, tipografía de encabezado y espaciado vertical difieren de la referencia",
+      "action": "Igualar hero de servicios y grid de 5 pilares (columnas, iconos, hover, sombras) al layout Lovable usando ServicesGrid o equivalente productivo",
+      "filesSuggested": ["NovusIntelligenceWEB/src/pages/ServicesPage.tsx", "NovusIntelligenceWEB/src/components/sections/ServicesGrid.tsx"]
+    },
+    {
+      "id": "GAP-VP-004",
+      "priority": "P1",
+      "route": "/about",
+      "viewports": ["390x844", "1440x900", "768x1024"],
+      "maxDiffRatio": 0.113666,
+      "component": "AboutPage",
+      "symptom": "Hero 2 columnas, cards misión/visión/valores y bloque founder con proporciones y fondos distintos",
+      "action": "Ajustar AboutPage: hero con imagen/texto 2-col, cards de valores con bordes/sombras dark-first, espaciado entre secciones",
+      "filesSuggested": ["NovusIntelligenceWEB/src/pages/AboutPage.tsx"]
+    },
+    {
+      "id": "GAP-VP-005",
+      "priority": "P1",
+      "route": "global",
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.090383,
+      "component": "Header / Footer",
+      "symptom": "Footer copyright 2024 vs 2026, email contacto distinto en footer, underline activo nav y columnas footer pueden diferir",
+      "action": "Sincronizar Header (underline activo, CTA gradient) y Footer (5 columnas, copy brand-context, año 2026, email arodiguez@novusintelligencesolutions.com)",
+      "filesSuggested": ["NovusIntelligenceWEB/src/components/Header.tsx", "NovusIntelligenceWEB/src/components/Footer.tsx"]
+    },
+    {
+      "id": "GAP-VP-006",
+      "priority": "P1",
+      "route": "global",
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "maxDiffRatio": 0.199459,
+      "component": "Design tokens",
+      "symptom": "Paleta dark-first inconsistente: candidato alterna bloques claros donde referencia mantiene navy-deep + gradient-brand",
+      "action": "Auditar tokens semánticos (navy-deep, surface, shadow-card, shadow-glow, gradient-brand) y aplicarlos de forma uniforme en todas las rutas gate",
+      "filesSuggested": ["NovusIntelligenceWEB/src/index.css", "NovusIntelligenceWEB/tailwind.config.js"]
+    }
+  ]
+}
