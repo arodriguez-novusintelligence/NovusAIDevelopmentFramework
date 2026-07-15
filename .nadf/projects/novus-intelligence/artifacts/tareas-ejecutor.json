@@ -1,9 +1,9 @@
 {
-  "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
+  "planId": "PLAN-NOVUS-LOVABLE-2026-07-15",
   "workflow": "novus-intelligence-lovable-to-web",
   "step": "paso-02-generar-plan",
   "producer": "planner-agent",
-  "createdAt": "2026-07-14T09:01:00Z",
+  "createdAt": "2026-07-15T18:25:00Z",
   "status": "draft",
   "baseline": {
     "sourceRepo": "novus-nexus",
@@ -13,9 +13,10 @@
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1",
-    "frontendUrl": "https://dev.novusintelligence.com",
+    "frontendUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+    "frontendUrlDnsPending": "https://dev.novusintelligence.com",
     "apiUrl": "https://api-dev.novusintelligence.com",
-    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+    "note": "Región sa-east-1 confirmada en environments/dev.yml"
   },
   "scope": {
     "requiresBackend": true,
@@ -548,14 +549,14 @@
       "id": "TASK-INFRA-001",
       "agent": "cloud-agent",
       "phase": 7,
-      "title": "Reconciliar environments/dev.yml a región sa-east-1",
-      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "title": "Validar environments/dev.yml alineado a sa-east-1",
+      "description": "Confirmar que configuración DEV (región sa-east-1, stack, URLs y buckets) coincide con el target del plan antes de IaC.",
       "changeIds": ["CHG-011"],
       "dependencies": ["TASK-BI-001"],
       "priority": "high",
       "acceptanceCriteria": [
-        "dev.yml actualizado con region sa-east-1",
-        "URLs DEV documentadas sin secrets"
+        "dev.yml verificado con region sa-east-1",
+        "URLs DEV y nombres de bucket documentados sin secrets"
       ],
       "blockedByPlanApproval": true,
       "requiresHumanApprovalForDeploy": false

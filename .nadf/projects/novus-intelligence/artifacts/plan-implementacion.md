@@ -4,23 +4,23 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-02-generar-plan  
 **Agente:** planner-agent  
-**Fecha:** 2026-07-14  
-**Status:** `approved`  
+**Fecha:** 2026-07-15  
+**Status:** `draft`  
 **Runtime:** Cursor Cloud Agent (adaptador M6 cursor-cloud)  
 **Target environment:** DEV — AWS `sa-east-1`  
-**Baseline Lovable:** novus-nexus @ `e3a9819`  
-**Aprobado por:** architect-agent  
-**Fecha aprobación:** 2026-07-14
+**Baseline Lovable:** novus-nexus @ `e3a9819`
 
 ---
 
 ## Resumen ejecutivo
 
-Este plan traduce la intención visual y funcional del prototipo Lovable (13 cambios detectados, `backendRequired: true`) al stack productivo **NovusIntelligenceWEB** (React + TypeScript + Tailwind + React Router + Vite) y **NovusIntelligenceBack** (Serverless Framework, Node.js 20, AWS).
+Este plan traduce la intención visual y funcional del prototipo Lovable (13 cambios detectados, `backendRequired: true`) al stack productivo **NovusIntelligenceWEB** (React + TypeScript + Tailwind + React Router + Vite) y **NovusIntelligenceBack** (Serverless Framework, Node.js 20, AWS sa-east-1).
 
 El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10 rutas navegables, 6 slugs de soluciones, componente interactivo `MultiAgentDemo`, formulario de contacto con API real y páginas legales.
 
 **Delta principal del commit `e3a9819`:** integración condicional de `MultiAgentDemo` en `/solutions/ai-agents`.
+
+> **Estado del plan:** `draft` — pendiente de Plan Review por **architect-agent** (paso 6). No iniciar Execution hasta `status: approved`.
 
 ---
 
@@ -28,11 +28,9 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 
 | Campo | Valor |
 |-------|-------|
-| `plan_id` | PLAN-NOVUS-LOVABLE-2026-07-14 |
+| `plan_id` | PLAN-NOVUS-LOVABLE-2026-07-15 |
 | `intent_source` | cambios-lovable.json (lovable-analyzer-agent) |
-| `status` | **approved** — Plan Review completado por architect-agent |
-| `approved_by` | architect-agent |
-| `approved_at` | 2026-07-14 |
+| `status` | **draft** — aprobación humana vía architect-agent |
 | `requires_backend` | true |
 | `requires_database` | false |
 | `requires_infra` | true |
@@ -53,10 +51,11 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 ### Constraints adicionales de esta ejecución
 
 - `NO_PRODUCTIVE_CODE` — Este paso solo planifica; no modifica NovusIntelligenceWEB ni NovusIntelligenceBack.
+- `NO_LOVABLE_CODE_COPY` — Traducir intención; nunca copiar código de novus-nexus.
 - `NO_DEPLOY` — Infraestructura se propone; despliegue queda bloqueado hasta aprobación.
-- `TARGET_DEV_REGION_SA_EAST_1` — Toda propuesta cloud DEV apunta a región **sa-east-1**.
-
-> **Nota de alineación:** `environments/dev.yml` actualmente declara `region: us-east-1`. El target operativo de esta planificación es **sa-east-1** según constraints del workflow. El **backend-impact-agent** y **cloud-agent** deben reconciliar `dev.yml` y stacks Serverless en pasos posteriores.
+- `NO_SECRETS_IN_REPO` — Solo nombres de variables documentados.
+- `PLAN_STATUS_MUST_BE_DRAFT` — Este artefacto permanece en draft hasta Plan Review.
+- `TARGET_DEV_REGION_SA_EAST_1` — Toda propuesta cloud DEV apunta a región **sa-east-1** (confirmado en `environments/dev.yml`).
 
 ---
 
@@ -135,7 +134,7 @@ flowchart TD
 1. **Design tokens + routing (Fase 0)** bloquean todo el frontend.
 2. **Backend `POST /api/v1/contact` (Fase 5)** bloquea habilitación productiva del formulario (CHG-008, CHG-011).
 3. **MultiAgentDemo (Fase 4)** es independiente del backend; puede paralelizarse con Fase 5 tras Fase 3.
-4. **Infra DEV (Fase 7)** requiere artefactos de backend-impact-agent y especificación backend; **despliegue solo con aprobación humana**.
+4. **Infra DEV (Fase 7)** requiere artefactos de backend-impact-agent; **despliegue solo con aprobación humana**.
 5. **Validation (Fase 8)** requiere build exitoso y plan `approved`.
 
 ---
@@ -231,7 +230,7 @@ flowchart TD
 | 5.1 | Implementar Lambda `novus-contact-handler` | CHG-011 | Handler Node.js 20; timeout 10s |
 | 5.2 | Exponer `POST /api/v1/contact` en API Gateway | CHG-011 | Contrato OpenAPI cumplido |
 | 5.3 | Validación server-side de ContactRequest | CHG-008, CHG-011 | 400 en campos inválidos |
-| 5.4 | Integración AWS SES (email notificación) | CHG-011 | Email enviado a `CONTACT_SES_TO` desde `CONTACT_SES_FROM` |
+| 5.4 | Integración AWS SES (email notificación) | CHG-011 | Email enviado a destino configurado vía Secrets/SSM |
 | 5.5 | Rate limiting (429) | CHG-011, R-008 | Límite configurable documentado |
 | 5.6 | Sanitización de inputs | CHG-011 | Sin inyección en email/logs |
 | 5.7 | CORS configurado para origen frontend DEV/prod | CHG-011 | Preflight exitoso desde dominio WEB |
@@ -249,7 +248,7 @@ flowchart TD
 ### Fase 6 — Frontend contacto + integración API (CHG-008, R-001)
 
 **Agente:** frontend-integration-agent  
-**Dependencias:** Fase 5 completada (API desplegada en DEV) o mock **solo en entorno local explícito** marcado como dev-only (nunca en build prod)
+**Dependencias:** Fase 5 completada (API desplegada en DEV)
 
 | # | Tarea | Cambios | Criterios de aceptación |
 |---|-------|---------|-------------------------|
@@ -261,7 +260,9 @@ flowchart TD
 | 6.6 | Error claro si API no disponible | **R-001** | Mensaje explícito; `ok: false`; nunca `requestId: demo-*` |
 | 6.7 | `VITE_DEMO_MODE=false` en builds productivos | **R-001** | Documentado en pipeline; verificado en CI |
 
-**API DEV esperada:** `https://api-dev.novusintelligence.com` (según `environments/dev.yml`, ajustar región a sa-east-1).
+**Mitigación R-001 (modo demo):** El fallback de Lovable (`VITE_DEMO_MODE` + éxito simulado con `requestId: demo-{timestamp}`) **no se replica** en NovusIntelligenceWEB. Si la API no responde, el usuario ve error explícito — nunca confirmación falsa.
+
+**API DEV esperada:** `https://api-dev.novusintelligence.com` (región sa-east-1 según `environments/dev.yml`).
 
 ---
 
@@ -273,22 +274,24 @@ flowchart TD
 
 | # | Tarea | Agente | Criterios de aceptación |
 |---|-------|--------|-------------------------|
-| 7.1 | Reconciliar `environments/dev.yml` → región `sa-east-1` | cloud-agent | Archivo alineado con target DEV |
+| 7.1 | Validar `environments/dev.yml` alineado a sa-east-1 | cloud-agent | Región, stack y URLs DEV coherentes |
 | 7.2 | Propuesta IaC: API Gateway + Lambda + SES en sa-east-1 | cloud-agent | `propuesta-infra.md` generado |
-| 7.3 | Configurar S3 + CloudFront para frontend DEV | cloud-agent | Bucket `novus-intelligence-web-dev`; CDN habilitado |
+| 7.3 | Configurar S3 + CloudFront para frontend DEV | cloud-agent | Bucket `novus-intelligence-web-dev-519010577666`; CDN habilitado |
 | 7.4 | Bucket assets `novus-intelligence-assets-dev` | cloud-agent | Assets de marca servidos |
 | 7.5 | Secrets en AWS Secrets Manager / SSM (sin valores en repo) | cloud-agent | Nombres documentados; sin secrets versionados |
 | 7.6 | Pipeline CI: lint + build frontend y backend | devops-agent | `pipeline-config.md`; gates no_lovable_code_copy |
 | 7.7 | Variables build: `VITE_NOVUS_API_URL`, `VITE_DEMO_MODE=false` | devops-agent | Config DEV documentada |
 | 7.8 | **Despliegue DEV** | devops-agent + cloud-agent | **Solo tras aprobación humana explícita** |
 
-**URLs DEV objetivo:**
+**URLs DEV objetivo (según `environments/dev.yml`):**
 
 | Servicio | URL |
 |----------|-----|
-| Frontend | `https://dev.novusintelligence.com` |
+| Frontend (CloudFront activo) | `https://d1bfu6klutpp8m.cloudfront.net` |
+| Frontend (DNS pendiente) | `https://dev.novusintelligence.com` |
 | API | `https://api-dev.novusintelligence.com` |
 | Email from | `noreply-dev@novusintelligence.com` |
+| Región AWS | `sa-east-1` |
 
 ---
 
@@ -316,6 +319,7 @@ El formulario de contacto no persiste en BD; usa SES (+ webhook CRM opcional). `
 | 9.6 | Sin copia Lovable (R-002) | reviewer-agent confirma reimplementación |
 | 9.7 | Seguridad | Sin secrets expuestos; CORS correcto; rate limit activo |
 | 9.8 | MultiAgentDemo accesible | reduced-motion; lazy-load; mobile usable |
+| 9.9 | Paridad visual exacta | visual-parity-agent; diff ≤ 0.2% en rutas definidas |
 
 ---
 
@@ -336,6 +340,8 @@ El formulario de contacto no persiste en BD; usa SES (+ webhook CRM opcional). `
 
 | Orden | Agente | Fase plan | Paralelo |
 |-------|--------|-----------|----------|
+| — | backend-impact-agent | planning (paso 5) | Antes de Execution |
+| — | architect-agent | Plan Review (paso 6) | Tras backend-impact |
 | 1 | frontend-integration-agent | 0 | — |
 | 2 | frontend-integration-agent | 1 | — |
 | 3 | frontend-integration-agent | 2 | — |
@@ -348,37 +354,15 @@ El formulario de contacto no persiste en BD; usa SES (+ webhook CRM opcional). `
 
 ---
 
-## Autorización de Execution (architect-agent)
-
-**Estado:** `approved` — Execution **autorizada** con gates NADF.
-
-Los agentes ejecutores pueden proceder según la secuencia de fases definida en este plan:
-
-| Agente | Autorización | Condición |
-|--------|--------------|-----------|
-| **frontend-integration-agent** | Fases 0–4 inmediatas; Fase 6 tras API DEV | Gates `no_lovable_code_copy`, `no_mock_data_in_production` |
-| **backend-agent** | Fase 5 (`POST /api/v1/contact`) | Seguir `especificacion-backend.md` |
-| **cloud-agent** | Fase 7 (preparación IaC) | **TASK-INFRA-001 obligatoria:** reconciliar `environments/dev.yml` a `sa-east-1` antes de despliegue |
-| **devops-agent** | Fase 7 (CI/pipeline) | Sin despliegue sin aprobación humana |
-
-**Tareas previas de infra (no bloquean inicio de código):**
-
-1. Reconciliar región DEV `us-east-1` → `sa-east-1` en `environments/dev.yml` (TASK-INFRA-001).
-2. Normalizar nombres de variables email a `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` (coherencia con especificación backend).
-3. Despliegue DEV bloqueado hasta `deploy_human_approval` explícita.
-
-Referencia completa: `artifacts/impacto-arquitectonico.md`.
-
----
-
 ## Handoff y próximos pasos del workflow
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 5 (completado) | **backend-impact-agent** | `evaluacion-backend.md` + `especificacion-backend.md` |
-| 6 (completado) | **architect-agent** | Plan Review → `approved`; `impacto-arquitectonico.md` |
-| 7+ | **frontend-integration-agent**, **backend-agent** | Execution autorizada (paralelo Fases 0–4 + Fase 5) |
-| 7 (infra) | **cloud-agent**, **devops-agent** | Preparación; reconciliar región; deploy con aprobación humana |
+| 2 (este paso) | **planner-agent** | `plan-implementacion.md` + `tareas-ejecutor.json` en status `draft` |
+| 5 | **backend-impact-agent** | `evaluacion-backend.md` + `especificacion-backend.md` |
+| 6 | **architect-agent** | Plan Review → cambiar status a `approved` |
+| 7+ | **frontend-integration-agent**, **backend-agent** | Execution (tras aprobación) |
+| 7 (infra) | **cloud-agent**, **devops-agent** | Preparación; deploy con aprobación humana |
 | 11–13 | **qa-agent**, **security-agent**, **reviewer-agent** | Validation post-ejecución |
 
 ---
@@ -393,10 +377,8 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 - `.nadf/projects/novus-intelligence/environments/dev.yml`
 - `.nadf/projects/novus-intelligence/memory/brand-context.md`
 - `.nadf/projects/novus-intelligence/memory/technical-context.md`
-- ADR-0001, ADR-0002, ADR-0003, ADR-0004
-- `artifacts/impacto-arquitectonico.md`
-- `artifacts/evaluacion-backend.md`
-- `artifacts/especificacion-backend.md`
+- `docs/cloud-agent-integration.md`
+- ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0006
 
 ---
 
@@ -404,6 +386,4 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Plan generado en status `draft` | planner-agent |
-| 2026-07-14 | Evaluación y especificación backend generadas | backend-impact-agent |
-| 2026-07-14 | Plan Review completado; status `approved` | architect-agent |
+| 2026-07-15 | Plan regenerado en status `draft` | planner-agent |
