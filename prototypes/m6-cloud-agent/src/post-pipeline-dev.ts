@@ -407,12 +407,24 @@ function listProductCursorPrs(repo: string): ProductPr[] {
 }
 
 function isPrMergeable(pr: ProductPr): boolean {
-  // mergeable: MERGEABLE | CONFLICTING | UNKNOWN
-  if (pr.mergeable === "CONFLICTING") return false;
-  if (pr.mergeStateStatus === "DIRTY" || pr.mergeStateStatus === "BLOCKED") {
+  // Solo MERGEABLE explícito. UNKNOWN/CONFLICTING no cuentan como pendientes mergeables.
+  if (pr.mergeable !== "MERGEABLE") return false;
+  if (
+    pr.mergeStateStatus === "DIRTY" ||
+    pr.mergeStateStatus === "BLOCKED" ||
+    pr.mergeStateStatus === "DRAFT"
+  ) {
     return false;
   }
   return true;
+}
+
+function isPrStaleConflict(pr: ProductPr): boolean {
+  return (
+    pr.mergeable === "CONFLICTING" ||
+    pr.mergeStateStatus === "DIRTY" ||
+    pr.mergeStateStatus === "BLOCKED"
+  );
 }
 
 /**
@@ -506,10 +518,10 @@ function mergeOpenProductPrs(): {
       }
     }
 
-    // Tras merge exitoso, cerrar PRs cursor/* con conflicto (stale de corridas previas)
+    // Tras merge exitoso, cerrar leftovers no-mergeables (conflicto/UNKNOWN stale).
     if (repoMerged > 0) {
       for (const pr of listProductCursorPrs(repo)) {
-        if (isPrMergeable(pr)) continue;
+        if (isPrMergeable(pr)) continue; // quedan para exit 7
         const closed = ghSoft([
           "pr",
           "close",
@@ -524,6 +536,9 @@ function mergeOpenProductPrs(): {
             event: closed.ok ? "pr_closed_superseded" : "pr_close_failed",
             repo,
             number: pr.number,
+            mergeable: pr.mergeable,
+            mergeStateStatus: pr.mergeStateStatus,
+            staleConflict: isPrStaleConflict(pr),
             detail: closed.out,
           }),
         );
