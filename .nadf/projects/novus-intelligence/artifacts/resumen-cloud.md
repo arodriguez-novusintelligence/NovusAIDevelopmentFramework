@@ -4,19 +4,19 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-08-propuesta-infra  
 **Agente:** cloud-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
-**Rama:** `cursor/propuesta-infra-dev-1385`
+**Rama:** `cursor/propuesta-infra-dev-36c4`
 
 ---
 
 ## Resumen ejecutivo
 
-Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **sa-east-1**, reconciliando la configuración de `environments/dev.yml` (previamente `us-east-1`) con el target operativo del workflow.
+Se actualizó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **sa-east-1**, alineada con `environments/dev.yml` ya reconciliado (TASK-INFRA-001 completado). La propuesta distingue recursos **existentes** (frontend S3 + CloudFront) de recursos **propuestos** (backend API, SES, secrets).
 
-**Despliegue:** No realizado (`NO_DEPLOY`). La publicación requiere aprobación humana explícita y ejecución del checklist en `propuesta-infra.md`.
+**Despliegue:** No realizado (`NO_DEPLOY`). La publicación de recursos pendientes requiere aprobación humana explícita y ejecución del checklist en `propuesta-infra.md`.
 
 ---
 
@@ -29,9 +29,18 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 ---
 
-## Recursos propuestos (DEV sa-east-1)
+## Recursos DEV sa-east-1
 
-### Backend
+### Existentes (frontend)
+
+| Componente | Nombre / identificador |
+|------------|----------------------|
+| Bucket SPA | **`novus-intelligence-web-dev-519010577666`** |
+| CloudFront | **`E8IN00J3MFCNO`** |
+| URL activa | `https://d1bfu6klutpp8m.cloudfront.net` |
+| URL DNS pendiente | `https://dev.novusintelligence.com` |
+
+### Propuestos (backend + servicios)
 
 | Componente | Nombre / identificador |
 |------------|----------------------|
@@ -39,25 +48,10 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | HTTP API Gateway | **`novus-intelligence-api-dev`** |
 | Lambda | **`novus-contact-handler`** (Node.js 20, arm64, 256 MB, 10 s) |
 | Endpoint | `POST /api/v1/contact` |
-| URL pública | `https://api-dev.novusintelligence.com` |
+| URL pública API | `https://api-dev.novusintelligence.com` |
 | Email | AWS SES — `noreply-dev@novusintelligence.com` |
-| Logs | `/aws/lambda/novus-contact-handler` |
-
-### Frontend
-
-| Componente | Nombre / identificador |
-|------------|----------------------|
-| Bucket SPA | **`novus-intelligence-web-dev`** |
-| CloudFront | `novus-intelligence-web-dev-cdn` |
-| URL pública | `https://dev.novusintelligence.com` |
-| Certificado ACM (CloudFront) | `dev.novusintelligence.com` (us-east-1) |
-
-### Assets
-
-| Componente | Nombre / identificador |
-|------------|----------------------|
 | Bucket assets | **`novus-intelligence-assets-dev`** |
-| Alternativa MVP | Assets en bucket SPA (`public/assets/novus/`) |
+| Logs | `/aws/lambda/novus-contact-handler` |
 
 ### Secrets y configuración
 
@@ -68,17 +62,17 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Secrets Manager | `/novus-intelligence/dev/crm` (opcional) |
 | SSM | `/novus-intelligence/dev/*` (CORS, rate limit, captcha flags, log level) |
 
-**Variables normalizadas (canónicas):** `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO` (reemplazan variantes `CONTACT_SES_*`).
+**Variables normalizadas (canónicas):** `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO`.
 
 ---
 
 ## Reconciliación regional (TASK-INFRA-001)
 
-| Campo | Antes | Después |
-|-------|-------|---------|
-| `environments/dev.yml` → `region` | `us-east-1` | **`sa-east-1`** |
-| Recursos compute/API/SES/S3 | — | sa-east-1 |
-| Certificado CloudFront | — | us-east-1 (requisito AWS) |
+| Campo | Estado |
+|-------|--------|
+| `environments/dev.yml` → `region` | ✅ **`sa-east-1`** (completado) |
+| Recursos compute/API/SES/S3 | sa-east-1 |
+| Certificado CloudFront (alias DNS) | us-east-1 (requisito AWS) |
 
 ---
 
@@ -86,9 +80,9 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 | Tarea | Estado | Evidencia |
 |-------|--------|-----------|
-| TASK-INFRA-001 | ✅ Documentada + `dev.yml` actualizado | Región sa-east-1 |
+| TASK-INFRA-001 | ✅ Completado | `dev.yml` en sa-east-1 |
 | TASK-INFRA-002 | ✅ | API Gateway + Lambda + SES en propuesta |
-| TASK-INFRA-003 | ✅ | S3 + CloudFront frontend documentado |
+| TASK-INFRA-003 | ✅ | S3 + CloudFront frontend (existente + DNS pendiente) |
 | TASK-INFRA-004 | ✅ | Bucket assets documentado |
 | TASK-INFRA-005 | ✅ | Secrets/SSM — solo nombres, sin valores |
 
@@ -99,7 +93,7 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Gate | Estado | Evidencia |
 |------|--------|-----------|
 | `plan_approved` | ✅ | Plan status `approved` |
-| `NO_DEPLOY` | ✅ | Sin apply ni recursos creados |
+| `NO_DEPLOY` | ✅ | Sin apply ni recursos backend creados |
 | `NO_SECRETS_IN_REPO` | ✅ | Solo nombres y paths documentados |
 | `deploy_human_approval` | ✅ | Checklist explícito para humano |
 | `TARGET_DEV_REGION_SA_EAST_1` | ✅ | Propuesta alineada a sa-east-1 |
@@ -113,9 +107,10 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Backend implementado (`TASK-BE-*`) | Pendiente ejecución backend-agent | Deploy API requiere handler listo |
 | Secrets creados en AWS | Pendiente humano | Lambda no puede enviar email sin secrets |
 | SES dominio verificado | Pendiente humano | Bloqueante para envío real |
+| Alias DNS `dev.novusintelligence.com` | Pendiente humano | No bloquea pruebas en URL CloudFront |
 | Frontend build CI | Pendiente devops-agent | Deploy SPA requiere pipeline |
 
-**Despliegue DEV bloqueado hasta:** `deploy_human_approval` + prerrequisitos Fase A del checklist.
+**Despliegue backend bloqueado hasta:** `deploy_human_approval` + prerrequisitos Fases A–C del checklist.
 
 ---
 
@@ -167,3 +162,4 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Propuesta infra DEV sa-east-1 + resumen cloud | cloud-agent |
+| 2026-07-15 | Actualización: TASK-INFRA-001 completado, recursos frontend existentes | cloud-agent |
