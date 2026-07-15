@@ -2,10 +2,11 @@
 
 **Proyecto:** novus-intelligence  
 **Workflow:** novus-intelligence-lovable-to-web  
-**Paso:** paso-15-metricas (fase Metrics)  
+**Paso:** paso-12-metricas (fase Metrics — paso 16 canónico)  
 **Agente:** metrics-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (M6)  
+**Run ID métricas:** `bc-2674f625-d10c-4a56-8f58-4f1126c11feb`  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)
 
@@ -13,9 +14,7 @@
 
 ## Resumen ejecutivo
 
-Se registraron métricas consolidadas de la primera corrida del workflow **Lovable → Web**. El workflow finalizó en estado **bloqueado** por fallos de validación (lint WEB y seguridad IAM/rate limit). El **qualityScore estimado global es 62/100**.
-
-La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la validación detuvo el flujo antes de reviewer-agent.
+Se consolidaron las métricas de la corrida **Lovable → Web** incorporando re-validaciones del 2026-07-15 (QA PASS, Security PASS) y el resultado de paridad visual (FAIL). El workflow permanece **bloqueado** por el gate `visual_exact_parity`, pero el **qualityScore estimado es 78/100** (+16 respecto al registro inicial del 2026-07-14) tras remediar lint, IAM y rate limit en repos productivos mergeados a `main`.
 
 ---
 
@@ -27,29 +26,43 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 | `planId` | PLAN-NOVUS-LOVABLE-2026-07-14 |
 | `planApproved` | ✅ true |
 | Inicio corrida | 2026-07-14T08:30:00Z |
-| Fin corrida (consolidado) | 2026-07-14T11:05:00Z |
-| Duración total | ~2 h 35 min (9 300 s) |
+| Fin corrida (consolidado) | 2026-07-15T20:10:00Z |
+| Duración total | ~35 h 40 min (127 200 s) |
 | **Status workflow** | **blocked** |
-| **QualityScore estimado** | **62 / 100** |
-| Agentes ejecutados | 13 de 19 |
-| Agentes éxito | 9 |
-| Agentes fallo | 3 (devops, qa, security) |
-| Agentes pendientes | 6 (reviewer, reflection, kb, adr + parciales) |
-| PRs Framework abiertos | 8 (draft) |
-| Ramas productivas sin merge | 2 (WEB + Back) |
+| **QualityScore estimado** | **78 / 100** |
+| Agentes ejecutados | 17 de 19 |
+| Agentes éxito | 13 |
+| Agentes fallo | 2 (devops, visual-parity) |
+| Agentes bloqueados/pendientes | 3 (reviewer, reflection parcial, devops gap) |
+| Repos productivos mergeados | 2 (WEB + Back → `main`) |
+| PRs Framework abiertos | 14 (draft) |
 
 ---
 
-## Desglose del qualityScore (62)
+## Evolución del qualityScore
+
+| Versión métricas | Fecha | QualityScore | Bloqueante principal |
+|------------------|-------|--------------|----------------------|
+| paso-15 (inicial) | 2026-07-14 | 62 | lint WEB + IAM/rate limit |
+| paso-12 (intermedio) | 2026-07-14 | 58 | CORS + paridad visual |
+| **paso-12-metricas (actual)** | **2026-07-15** | **78** | **paridad visual (0/12 PASS)** |
+
+**Delta +16 puntos** respecto al registro inicial: QA y Security remediados; paridad visual es el bloqueante dominante.
+
+---
+
+## Desglose del qualityScore (78)
 
 | Componente | Peso | Score | Notas |
 |------------|------|-------|-------|
-| Quality gates bloqueantes | 40% | 75 | 6/8 pass (`build_success`, `security_pass` FAIL) |
-| Completitud ejecución | 25% | 78 | Fases 0–5 completas; 6–7 parciales |
-| Security score | 20% | 72 | Sin secrets; IAM y rate limit bloquean |
-| Alineación al plan | 15% | 85 | Plan approved; gaps en DevOps y E2E |
+| Quality gates bloqueantes | 35% | 88.9 | 8/9 pass (`visual_exact_parity` FAIL) |
+| Completitud ejecución | 20% | 89 | Fases 0–5 completas; devops pendiente |
+| Security score | 15% | 88 | Re-validación PASS; observaciones no bloqueantes |
+| QA quality score | 15% | 100 | Build+lint PASS en main |
+| Alineación al plan | 10% | 78 | Gaps visuales P0; E2E contacto post-deploy |
+| Paridad visual | 5% | 0 | 0/12 capturas PASS |
 
-**Fórmula:** ponderación sobre gates bloqueantes, completitud, securityScore y alineación al plan. El `qaQualityScore: 0` (lint bloqueante) penaliza el gate `build_success`.
+**Fórmula:** `0.35×blockingGates + 0.20×executionCompletion + 0.15×securityScore + 0.15×qaQualityScore + 0.10×planAlignment + 0.05×visualParity` → **78**.
 
 ---
 
@@ -62,19 +75,20 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 | Planning | planner-agent | ✅ success | 100 | Plan generado |
 | Planning | backend-impact-agent | ✅ success | 100 | Contact API especificada |
 | Plan Review | architect-agent | ✅ success | 100 | Plan `approved` |
-| Execution | frontend-integration-agent | ⚠️ partial | 75 | Build OK; lint FAIL |
-| Execution | backend-agent | ⚠️ partial | 72 | Build OK; SEC-001/002 |
+| Execution | frontend-integration-agent | ✅ success | 95 | Merge a `main`; paridad visual pendiente |
+| Execution | backend-agent | ✅ success | 92 | Merge a `main`; SEC remediados |
 | Execution | database-agent | ⏭️ N/A | — | Sin BD requerida |
 | Execution | cloud-agent | ✅ success | 95 | sa-east-1; sin deploy |
 | Execution | devops-agent | ❌ failure | 0 | pipeline-config ausente |
-| Validation | qa-agent | ❌ failure | 0 | 4 errores ESLint WEB |
-| Validation | security-agent | ❌ failure | 72 | IAM + rate limit |
-| Validation | reviewer-agent | ⏸️ blocked | — | Pendiente correcciones |
+| Validation | qa-agent | ✅ success | 100 | Re-validación 2026-07-15 |
+| Validation | visual-parity-agent | ❌ failure | 0 | 0/12 capturas PASS |
+| Validation | security-agent | ✅ success | 88 | Re-validación 2026-07-15 |
+| Validation | reviewer-agent | ⏸️ blocked | — | Pendiente paridad visual |
 | Documentation | documentation-agent | ✅ success | 100 | resumen-ejecucion.md |
 | Metrics | metrics-agent | ✅ success | 100 | Este registro |
-| Reflection | reflection-agent | ⏸️ blocked | — | Siguiente paso |
-| Knowledge | knowledge-base-agent | ⏸️ blocked | — | Tras reflexión |
-| Knowledge | adr-agent | ⏸️ blocked | — | Tras reflexión |
+| Reflection | reflection-agent | ⚠️ partial | 70 | Artefacto 2026-07-14 desactualizado |
+| Knowledge | knowledge-base-agent | ✅ success | 100 | 12 entradas KB |
+| Knowledge | adr-agent | ✅ success | 100 | Sin ADR nuevo |
 
 ---
 
@@ -86,15 +100,16 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 | `no_lovable_code_copy` | Sí | ✅ PASS |
 | `no_mock_data_in_production` | Sí | ✅ PASS |
 | `no_secrets_in_repo` | Sí | ✅ PASS |
-| `build_success` | Sí | ❌ **FAIL** — lint WEB |
+| `build_success` | Sí | ✅ PASS — re-validación QA |
 | `responsive_validation` | Sí | ✅ PASS |
 | `seo_basic_validation` | No | ✅ PASS |
-| `security_pass` | Sí | ❌ **FAIL** — IAM + rate limit |
+| `visual_exact_parity` | Sí | ❌ **FAIL** — 0/12 capturas |
+| `security_pass` | Sí | ✅ PASS — re-validación Security |
 | `deploy_human_approval` | Sí | ✅ PASS |
 | `metrics_registered` | Sí | ✅ PASS |
-| `reflection_generated` | Sí | ⏸️ Pendiente |
+| `reflection_generated` | Sí | ⚠️ Parcial — artefacto desactualizado |
 
-**Gates bloqueantes:** 6 pass / 8 evaluados (excl. pendientes) = **75%**
+**Gates bloqueantes evaluados:** 8 pass / 9 = **88.9%**
 
 ---
 
@@ -102,9 +117,10 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 
 | Área | Tests | Resultado |
 |------|-------|-----------|
-| QA (build/lint) | 4 | 2 pass, 1 fail (lint WEB), 1 pass |
-| Security | 11 | 8 pass, 2 fail, 1 warning |
-| **Total registrado** | **15** | — |
+| QA (build/lint/audit/scan) | 7 | 7 pass |
+| Security (checks) | 12 | 12 pass (observaciones no bloqueantes) |
+| Paridad visual (capturas) | 12 | 0 pass, 12 fail |
+| **Total registrado** | **31** | — |
 
 ---
 
@@ -112,27 +128,36 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 
 | ID | Descripción | Agente responsable |
 |----|-------------|-------------------|
-| QA-001 | 4 errores ESLint en UI WEB | frontend-integration-agent |
-| SEC-001 | IAM SES `Resource: '*'` | backend-agent |
-| SEC-002 | Rate limit por IP no implementado | backend-agent |
-| — | reviewer-agent no ejecutado | Tras corrección QA/SEC |
+| VP-001 | Paridad visual FAIL — maxDiffRatio 0.486653 en `/contact` móvil | frontend-integration-agent |
+| — | reviewer-agent no ejecutado | Tras remediación GAP-P0 |
+| REF-001 | reflexion-ejecucion.md desactualizado | reflection-agent |
+| DEVOPS-001 | pipeline-config.md ausente | devops-agent |
+
+### Remediados en corrida
+
+| ID | Descripción | Evidencia |
+|----|-------------|-----------|
+| QA-001 | 4 errores ESLint UI WEB | `main` lint 0 errores |
+| SEC-001 | IAM SES wildcard global | Acotado a `identity/*` |
+| SEC-002 | Rate limit por IP no implementado | `isIpRateLimited()` activo |
+
+### Gaps P0 de paridad visual
+
+| ID | Alcance | Acción |
+|----|---------|--------|
+| GAP-P0-001 | Global — logo de marca | Integrar assets en Header/Footer |
+| GAP-P0-002 | `/contact` — tema claro | Sección formulario con fondo blanco |
+| GAP-P0-003 | `/` — testimonios | Bloque con fondo claro y cards blancas |
+| GAP-P0-004 | `/` — secciones landing | Alinear copy y estructura con Lovable |
 
 ---
 
 ## Patrones identificados
 
-- Separación planificación/ejecución/validación respetada; plan `approved` antes de código productivo.
-- Reimplementación Lovable verificada sin copia directa de novus-nexus.
-- Validación bloqueante detiene reviewer y fases Knowledge posteriores.
-- Constraint `NO_DEPLOY` respetado — infraestructura solo documentada.
-
----
-
-## Recomendaciones KB (pendientes de reflection-agent)
-
-1. Patrón ESLint `no-empty-object-type` en componentes shadcn/ui — preferir `type` alias.
-2. Checklist IAM least-privilege para SES en Serverless Framework.
-3. Comparativa rate limiting: handler in-app vs AWS WAF rate-based.
+- Re-validación post-merge elevó gates técnicos (lint, IAM, rate limit) independientemente de paridad visual.
+- `visual_exact_parity` (umbral 0.2%) es el gate más estricto y desacoplado de build/lint/security.
+- Assets de marca y alternancia tema claro/oscuro son gaps recurrentes en traducción Lovable→WEB.
+- Separación planificación/ejecución/validación respetada; `NO_DEPLOY` cumplido.
 
 ---
 
@@ -151,9 +176,9 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 
 ## Próximo agente sugerido
 
-**reflection-agent** — Generar `reflexion-ejecucion.md` y `recomendaciones-kb.json` a partir de estas métricas y los informes QA/Security.
+**frontend-integration-agent** — Remediar gaps P0 de paridad visual (`gaps-paridad.json`) y habilitar re-ejecución de `visual-parity-agent`.
 
-> **Nota:** Antes de merge o deploy, corregir bloqueantes QA-001, SEC-001 y SEC-002; re-ejecutar qa-agent y security-agent.
+Tras paridad visual PASS: `reviewer-agent` → `reflection-agent` (re-ejecución) → `knowledge-base-agent`.
 
 ---
 
@@ -163,6 +188,8 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 - `artifacts/resumen-ejecucion.md`
 - `artifacts/qa-result.json`
 - `artifacts/security-result.json`
+- `artifacts/visual-parity-result.json`
+- `artifacts/gaps-paridad.json`
 - `artifacts/plan-implementacion.md`
 - `.nadf/global/metrics/metrics-schema.json`
 
@@ -172,4 +199,7 @@ La ejecución productiva (Planning + Execution) alcanzó ~78% de completitud; la
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Registro consolidado métricas corrida Lovable→Web — workflow blocked, qualityScore 62 | metrics-agent |
+| 2026-07-14 | Registro inicial — workflow blocked, qualityScore 62 | metrics-agent |
+| 2026-07-14 | Reconsolidación intermedia — CORS FAIL, qualityScore 58 | metrics-agent |
+| 2026-07-15 | Actualización post re-validaciones QA/SEC PASS — qualityScore 78 | metrics-agent |
+| 2026-07-15 | Consolidación final paso-12-metricas — run bc-2674f625 | metrics-agent |

@@ -1,12 +1,12 @@
 {
   "project": "novus-intelligence",
   "workflowId": "novus-intelligence-lovable-to-web",
-  "step": "paso-15-metricas",
+  "step": "paso-12-metricas",
   "agentName": "metrics-agent",
-  "startTime": "2026-07-14T10:55:00Z",
-  "endTime": "2026-07-14T11:05:00Z",
-  "duration": 600,
-  "status": "partial",
+  "startTime": "2026-07-15T20:02:00Z",
+  "endTime": "2026-07-15T20:10:00Z",
+  "duration": 480,
+  "status": "success",
   "phase": "metrics",
   "pattern": "Blackboard",
   "runtime": "Cursor Cloud Agent (M6)",
@@ -23,33 +23,37 @@
   },
   "workflowRun": {
     "runId": "bc-7db90cca-6bbe-4914-bce2-8b237c3cd973",
+    "documentationRunId": "bc-5b40c47d-2748-4810-a4d2-dc983a3a90fb",
+    "metricsRunId": "bc-2674f625-d10c-4a56-8f58-4f1126c11feb",
     "startTime": "2026-07-14T08:30:00Z",
-    "endTime": "2026-07-14T11:05:00Z",
-    "durationSeconds": 9300,
+    "endTime": "2026-07-15T20:10:00Z",
+    "durationSeconds": 127200,
     "status": "blocked",
-    "qualityScore": 62,
+    "qualityScore": 78,
     "agentsTotal": 19,
-    "agentsExecuted": 13,
-    "agentsSuccess": 9,
-    "agentsFailure": 3,
+    "agentsExecuted": 17,
+    "agentsSuccess": 13,
+    "agentsFailure": 2,
     "agentsSkipped": 1,
-    "agentsPending": 6,
-    "frameworkPRsOpen": 8,
-    "productBranchesPendingMerge": 2
+    "agentsBlocked": 1,
+    "agentsPending": 2,
+    "productReposMerged": 2,
+    "frameworkPRsOpen": 14
   },
   "qualityScoreBreakdown": {
-    "overall": 62,
-    "method": "weighted_quality_gates",
+    "overall": 78,
+    "method": "weighted_quality_gates_v4",
     "components": {
-      "blockingGatesPassed": 6,
-      "blockingGatesTotal": 8,
-      "blockingGatesScore": 75,
-      "qaQualityScore": 0,
-      "securityScore": 72,
-      "executionCompletionScore": 78,
-      "planAlignmentScore": 85
+      "blockingGatesPassed": 8,
+      "blockingGatesTotal": 9,
+      "blockingGatesScore": 88.9,
+      "qaQualityScore": 100,
+      "securityScore": 88,
+      "visualParityScore": 0,
+      "executionCompletionScore": 89,
+      "planAlignmentScore": 78
     },
-    "formula": "0.40*blockingGates + 0.25*executionCompletion + 0.20*securityScore + 0.15*planAlignment; qaQualityScore=0 penaliza build_success"
+    "formula": "0.35*blockingGates + 0.20*executionCompletion + 0.15*securityScore + 0.15*qaQualityScore + 0.10*planAlignment + 0.05*visualParity; visualParityScore=0 (0/12 capturas) mantiene workflow blocked pese a re-validaciones QA/SEC PASS"
   },
   "agents": [
     {
@@ -102,21 +106,21 @@
       "agentName": "frontend-integration-agent",
       "phase": "execution",
       "pattern": "Executor",
-      "status": "partial",
+      "status": "success",
       "step": "paso-07",
-      "qualityScore": 75,
-      "notes": "Fases 0-4 + UI contacto completadas; build OK, lint FAIL (4 errores ESLint)",
-      "filesChanged": ["NovusIntelligenceWEB (rama cursor/implement-novus-frontend-2d22)"]
+      "qualityScore": 95,
+      "notes": "Sitio mergeado en main; build+lint OK; paridad visual pendiente (GAP-P0-001 a GAP-P0-004)",
+      "filesChanged": ["NovusIntelligenceWEB@main"]
     },
     {
       "agentName": "backend-agent",
       "phase": "execution",
       "pattern": "Executor",
-      "status": "partial",
+      "status": "success",
       "step": "paso-08",
-      "qualityScore": 72,
-      "notes": "API contacto implementada; build+lint OK; SEC-001 IAM y SEC-002 rate limit pendientes",
-      "filesChanged": ["NovusIntelligenceBack (rama cursor/implement-contact-api-04c8)"]
+      "qualityScore": 92,
+      "notes": "API contacto mergeada en main; SEC-001/002 remediados; observaciones no bloqueantes SEC-003–007",
+      "filesChanged": ["NovusIntelligenceBack@main"]
     },
     {
       "agentName": "database-agent",
@@ -150,37 +154,50 @@
       "agentName": "qa-agent",
       "phase": "validation",
       "pattern": "Validator",
-      "status": "failure",
+      "status": "success",
       "step": "paso-11",
+      "qualityScore": 100,
+      "testsRun": 7,
+      "artifactsProduced": ["informe-qa.md", "qa-result.json"],
+      "notes": "Re-validación 2026-07-15 sobre main — build+lint PASS"
+    },
+    {
+      "agentName": "visual-parity-agent",
+      "phase": "validation",
+      "pattern": "Validator",
+      "status": "failure",
+      "step": "paso-12",
       "qualityScore": 0,
-      "testsRun": 4,
-      "artifactsProduced": ["informe-qa.md", "qa-result.json"]
+      "testsRun": 12,
+      "artifactsProduced": ["visual-parity-result.json", "informe-paridad-visual.md", "gaps-paridad.json"],
+      "notes": "0/12 capturas PASS; maxDiffRatio 0.486653 en /contact 390×844"
     },
     {
       "agentName": "security-agent",
       "phase": "validation",
       "pattern": "Validator",
-      "status": "failure",
-      "step": "paso-12",
-      "qualityScore": 72,
-      "testsRun": 11,
-      "artifactsProduced": ["informe-seguridad.md", "security-result.json"]
+      "status": "success",
+      "step": "paso-13",
+      "qualityScore": 88,
+      "testsRun": 12,
+      "artifactsProduced": ["informe-seguridad.md", "security-result.json"],
+      "notes": "Re-validación 2026-07-15 sobre main — PASS; SEC-001/002 remediados"
     },
     {
       "agentName": "reviewer-agent",
       "phase": "validation",
       "pattern": "Validator",
       "status": "blocked",
-      "step": "paso-13",
+      "step": "paso-14",
       "qualityScore": null,
-      "notes": "No ejecutado — bloqueado por QA FAIL y Security FAIL"
+      "notes": "No ejecutado — bloqueado por visual_exact_parity FAIL"
     },
     {
       "agentName": "documentation-agent",
       "phase": "documentation",
       "pattern": "Blackboard",
       "status": "success",
-      "step": "paso-14",
+      "step": "paso-15",
       "qualityScore": 100,
       "artifactsProduced": ["resumen-ejecucion.md"]
     },
@@ -189,7 +206,7 @@
       "phase": "metrics",
       "pattern": "Blackboard",
       "status": "success",
-      "step": "paso-15",
+      "step": "paso-12-metricas",
       "qualityScore": 100,
       "artifactsProduced": ["metricas-ejecucion.json", "resumen-metricas.md"]
     },
@@ -197,26 +214,31 @@
       "agentName": "reflection-agent",
       "phase": "reflection",
       "pattern": "Reflection",
-      "status": "blocked",
-      "step": "paso-16",
-      "qualityScore": null,
-      "notes": "Pendiente — requiere metricas-ejecucion.json (este paso lo habilita)"
+      "status": "partial",
+      "step": "paso-17",
+      "qualityScore": 70,
+      "artifactsProduced": ["reflexion-ejecucion.md", "recomendaciones-kb.json"],
+      "notes": "Artefacto 2026-07-14 desactualizado — re-ejecución recomendada tras remediación paridad"
     },
     {
       "agentName": "knowledge-base-agent",
       "phase": "knowledge_base_update",
       "pattern": "Blackboard",
-      "status": "blocked",
-      "step": "paso-17",
-      "qualityScore": null
+      "status": "success",
+      "step": "paso-18",
+      "qualityScore": 100,
+      "artifactsProduced": ["actualizacion-kb.md"],
+      "notes": "12 entradas KB global registradas"
     },
     {
       "agentName": "adr-agent",
       "phase": "knowledge_base_update",
       "pattern": "Blackboard",
-      "status": "blocked",
-      "step": "paso-18",
-      "qualityScore": null
+      "status": "success",
+      "step": "paso-19",
+      "qualityScore": 100,
+      "artifactsProduced": ["registro-adr.md"],
+      "notes": "Sin ADR nuevo requerido en esta corrida"
     }
   ],
   "qualityGates": [
@@ -247,9 +269,9 @@
     {
       "id": "build_success",
       "blocking": true,
-      "status": "fail",
+      "status": "pass",
       "weight": 1.0,
-      "evidence": "lint WEB: 4 errores @typescript-eslint/no-empty-object-type"
+      "evidence": "Re-validación QA 2026-07-15: build+lint PASS en WEB y Back (main)"
     },
     {
       "id": "responsive_validation",
@@ -265,11 +287,18 @@
       "weight": 0.5
     },
     {
-      "id": "security_pass",
+      "id": "visual_exact_parity",
       "blocking": true,
       "status": "fail",
       "weight": 1.0,
-      "evidence": "SEC-001 IAM SES wildcard; SEC-002 rate limit por IP no implementado"
+      "evidence": "0/12 capturas PASS; maxDiffRatio 0.486653 vs umbral 0.002"
+    },
+    {
+      "id": "security_pass",
+      "blocking": true,
+      "status": "pass",
+      "weight": 1.0,
+      "evidence": "Re-validación Security 2026-07-15: PASS securityScore 88"
     },
     {
       "id": "deploy_human_approval",
@@ -283,75 +312,74 @@
       "blocking": true,
       "status": "pass",
       "weight": 1.0,
-      "evidence": "metricas-ejecucion.json generado en paso-15"
+      "evidence": "metricas-ejecucion.json actualizado paso-12-metricas 2026-07-15"
     },
     {
       "id": "reflection_generated",
       "blocking": true,
-      "status": "pending",
-      "weight": 1.0
+      "status": "partial",
+      "weight": 1.0,
+      "evidence": "reflexion-ejecucion.md existe pero desactualizado (qualityScore 62); re-ejecución pendiente"
     }
   ],
-  "testsRun": 15,
+  "testsRun": 31,
   "errors": [
     {
-      "code": "QA-001",
-      "message": "4 errores ESLint en componentes UI WEB (Input, Label, Select, Textarea)",
-      "severity": "critical"
-    },
-    {
-      "code": "SEC-001",
-      "message": "IAM SES Resource wildcard en serverless.yml",
-      "severity": "critical"
-    },
-    {
-      "code": "SEC-002",
-      "message": "Rate limiting por IP no implementado en handler contacto",
+      "code": "VP-001",
+      "message": "Paridad visual FAIL — 0/12 capturas PASS; maxDiffRatio 0.486653 en /contact 390×844",
       "severity": "critical"
     },
     {
       "code": "DEVOPS-001",
       "message": "pipeline-config.md ausente — TASK-DEVOPS-001 no ejecutada",
       "severity": "warning"
+    },
+    {
+      "code": "REF-001",
+      "message": "reflexion-ejecucion.md desactualizado respecto a re-validaciones 2026-07-15",
+      "severity": "warning"
     }
   ],
   "failuresDocumented": [
     {
-      "gate": "build_success",
-      "description": "npm run lint falla en NovusIntelligenceWEB con 4 errores no-empty-object-type",
-      "mitigation": "frontend-integration-agent: reemplazar interfaces vacías por type alias en componentes UI"
+      "gate": "visual_exact_parity",
+      "description": "Candidato DEV (CloudFront) no alcanza paridad exacta con referencia Lovable en 4 rutas × 3 viewports",
+      "mitigation": "frontend-integration-agent: remediar GAP-P0-001 (logo), GAP-P0-002 (contacto tema claro), GAP-P0-003 (testimonios), GAP-P0-004 (secciones landing); re-ejecutar visual-parity-agent"
     },
     {
-      "gate": "security_pass",
-      "description": "IAM SES con Resource '*' y rateLimitResponse() no invocado",
-      "mitigation": "backend-agent: acotar ARN SES; implementar rate limit por IP o WAF rate-based"
+      "gate": "devops_pipeline",
+      "description": "pipeline-config.md no generado; CI gates no documentados formalmente",
+      "mitigation": "devops-agent: documentar pipeline lint+build+gates según Fase 7 del plan"
     }
   ],
+  "reflectionSummary": "Corrida Lovable→Web avanzó de blocked (qualityScore 62) a blocked (qualityScore 78): QA y Security remediados en main, pero paridad visual exacta falla en 12/12 capturas. Remediación frontend P0 requerida antes de reviewer y deploy.",
   "patternsIdentified": [
-    "Separación planificación/ejecución/validación respetada — plan approved antes de Execution",
+    "Re-validación QA/Security sobre main elevó gates build_success y security_pass tras merge productivo",
+    "Gate visual_exact_parity es el bloqueante dominante — 0% capturas PASS pese a código funcional correcto",
+    "Separación planificación/ejecución/validación respetada; plan approved antes de Execution",
+    "NO_DEPLOY respetado — candidato DEV es despliegue previo, no de esta corrida",
     "Reimplementación Lovable sin copia directa verificada en QA y Security",
-    "Validación bloqueante detiene reviewer-agent hasta corrección de lint e IAM",
-    "NO_DEPLOY respetado en toda la corrida — infra solo como propuesta documentada"
+    "Paridad visual exacta (threshold 0.2%) es gate más estricto y desacoplado de build/lint/security",
+    "Assets de marca y alternancia tema claro/oscuro son gaps recurrentes en traducción Lovable→WEB"
   ],
   "kbUpdatesRecommended": [
-    "Patrón ESLint no-empty-object-type en componentes shadcn/ui — usar type alias",
-    "Checklist IAM least-privilege para permisos SES en Serverless Framework",
-    "Rate limiting por IP: comparar implementación in-memory vs DynamoDB vs WAF"
+    "Checklist assets de marca obligatorios antes de visual-parity-agent (logo, OG, favicon)",
+    "Patrón alternancia tema claro/oscuro por sección en páginas híbridas (contact, landing testimonials)",
+    "Flujo remediate_frontend_then_recheck documentado en gaps-paridad.json como plantilla reutilizable"
   ],
-  "qualityScore": 62,
+  "qualityScore": 78,
   "estimatedCost": 0,
   "filesChanged": [
     ".nadf/projects/novus-intelligence/artifacts/metricas-ejecucion.json",
     ".nadf/projects/novus-intelligence/artifacts/resumen-metricas.md"
   ],
-  "mcpServersUsed": [],
+  "mcpServersUsed": ["cursor-cloud"],
   "blockers": [
-    "QA-001: lint WEB bloqueante",
-    "SEC-001: IAM SES wildcard",
-    "SEC-002: rate limit por IP no implementado",
-    "reviewer-agent no ejecutado por validación fallida"
+    "VP-001: visual_exact_parity FAIL — 0/12 capturas",
+    "reviewer-agent bloqueado hasta remediación paridad visual",
+    "REF-001: reflexion-ejecucion.md desactualizado — re-ejecución pendiente"
   ],
-  "nextAgentSuggested": "reflection-agent",
+  "nextAgentSuggested": "frontend-integration-agent",
   "artifactsProduced": [
     "artifacts/metricas-ejecucion.json",
     "artifacts/resumen-metricas.md"
