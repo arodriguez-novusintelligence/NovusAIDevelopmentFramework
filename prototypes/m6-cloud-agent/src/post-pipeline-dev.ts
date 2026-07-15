@@ -5,22 +5,38 @@
  * - smoke (NADF_SMOKE_TEST=true): verifica que el pipeline corrió; NO merge/deploy; exit 0.
  * - full: lee gates desde artifacts FRESCOS (PR Cloud del Framework), no stale del checkout.
  *
- * Arquetipo: NADF_PROTECT_ARCHETYPE=true bloquea merge/deploy WEB/Back.
- * En piloto DEV el workflow full usa NADF_PROTECT_ARCHETYPE=false + auto merge/deploy.
+ * Contrato piloto DEV:
+ * - Si gates PASS → merge de PRs productivos cursor/* pendientes + Deploy DEV.
+ * - Código WEB/Back solo debe quedar pendiente si este post falla (gates o merge bloqueado).
  *
  * Env:
  *   NADF_SMOKE_TEST=true|false
  *   NADF_AUTO_MERGE_DEV=true|false
  *   NADF_AUTO_DEPLOY_DEV=true|false
  *   NADF_REQUIRE_VISUAL_PARITY=true|false
- *   NADF_PROTECT_ARCHETYPE=true|false (default true)
+ *   NADF_PROTECT_ARCHETYPE=true|false (default true en callers; workflow full usa false)
  *   NADF_FRAMEWORK_REPO=owner/repo
+ *   NADF_ARTIFACTS_REMOTE_ONLY=true|false
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
-type GateJson = { status?: string; result?: string } | null;
+type GateJson = {
+  status?: string;
+  result?: string;
+  timestamp?: string;
+} | null;
+
+type ProductPr = {
+  number: number;
+  title: string;
+  isDraft: boolean;
+  headRefName: string;
+  updatedAt: string;
+  mergeable?: string;
+  mergeStateStatus?: string;
+};
 
 function flag(name: string, defaultValue = false): boolean {
   const v = process.env[name]?.trim().toLowerCase();
@@ -30,6 +46,16 @@ function flag(name: string, defaultValue = false): boolean {
 
 function gh(args: string[]): string {
   return execFileSync("gh", args, { encoding: "utf8" }).trim();
+}
+
+/** Como gh(), pero no lanza: para merges conflictivos opcionales. */
+function ghSoft(args: string[]): { ok: boolean; out: string } {
+  try {
+    return { ok: true, out: gh(args) };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, out: msg.split("\n")[0] ?? msg };
+  }
 }
 
 function frameworkRepo(): string {
@@ -73,41 +99,65 @@ function isFail(obj: GateJson): boolean {
     .includes("FAIL");
 }
 
-/** Lista branches candidatas (PRs abiertos cursor/* del Framework, más recientes primero). */
+function gateTimestamp(obj: GateJson): number {
+  const t = obj?.timestamp;
+  if (!t) return 0;
+  const ms = Date.parse(t);
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+/**
+ * Branches candidatas: PRs cursor/* abiertos primero, luego cerrados recientes
+ * (los agentes a veces dejan PASS en PRs que ya no están abiertos).
+ */
 function candidateFrameworkRefs(): string[] {
   const repo = frameworkRepo();
   const refs: string[] = [];
-  try {
-    const listRaw = gh([
-      "pr",
-      "list",
-      "--repo",
-      repo,
-      "--state",
-      "open",
-      "--limit",
-      "20",
-      "--json",
-      "number,updatedAt,headRefName,isDraft",
-    ]);
-    const prs = JSON.parse(listRaw) as Array<{
-      number: number;
-      updatedAt: string;
-      headRefName: string;
-      isDraft: boolean;
-    }>;
-    prs
-      .filter((p) => p.headRefName.startsWith("cursor/"))
-      .sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-      )
-      .forEach((p) => refs.push(p.headRefName));
-  } catch (e) {
-    console.warn("candidateFrameworkRefs pr list failed", e);
-  }
+  const seen = new Set<string>();
+
+  const pushRef = (ref: string) => {
+    if (!ref || seen.has(ref)) return;
+    seen.add(ref);
+    refs.push(ref);
+  };
+
+  const load = (state: "open" | "closed", limit: number) => {
+    try {
+      const listRaw = gh([
+        "pr",
+        "list",
+        "--repo",
+        repo,
+        "--state",
+        state,
+        "--limit",
+        String(limit),
+        "--json",
+        "number,updatedAt,headRefName,isDraft",
+      ]);
+      const prs = JSON.parse(listRaw) as Array<{
+        number: number;
+        updatedAt: string;
+        headRefName: string;
+        isDraft: boolean;
+      }>;
+      prs
+        .filter((p) => p.headRefName.startsWith("cursor/"))
+        .sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        )
+        .forEach((p) => pushRef(p.headRefName));
+    } catch (e) {
+      console.warn(`candidateFrameworkRefs pr list (${state}) failed`, e);
+    }
+  };
+
+  load("open", 30);
+  load("closed", 40);
+
   const envRef = process.env.NADF_REF_FRAMEWORK?.trim();
-  if (envRef && !refs.includes(envRef)) refs.push(envRef);
+  if (envRef) pushRef(envRef);
   return refs;
 }
 
@@ -136,27 +186,62 @@ function fetchArtifactFromRef(
   }
 }
 
+function persistArtifact(fileName: string, data: GateJson): void {
+  try {
+    const local = localArtifactPath(fileName);
+    mkdirSync(dirname(local), { recursive: true });
+    writeFileSync(local, JSON.stringify(data, null, 2), "utf8");
+  } catch {
+    /* ignore */
+  }
+}
+
 function resolveGateArtifact(fileName: string): {
   data: GateJson;
   source: string;
 } {
-  // 1) Preferir PR/branch Cloud reciente (fresco)
+  // Preferir el PASS más reciente (timestamp) entre PRs cursor/*; nunca un FAIL stale
+  // solo porque el último agente (p.ej. ADR) reabrió un branch con JSON viejo.
+  let bestPass: { data: GateJson; source: string; ts: number } | null = null;
+  let bestFail: { data: GateJson; source: string } | null = null;
+
   for (const ref of candidateFrameworkRefs()) {
     const hit = fetchArtifactFromRef(ref, fileName);
-    if (hit?.data) {
-      // Persistir localmente para auditoría del run CI
-      try {
-        const local = localArtifactPath(fileName);
-        mkdirSync(dirname(local), { recursive: true });
-        writeFileSync(local, JSON.stringify(hit.data, null, 2), "utf8");
-      } catch {
-        /* ignore */
+    if (!hit?.data) continue;
+    if (isPass(hit.data)) {
+      const ts = gateTimestamp(hit.data);
+      if (!bestPass || ts >= bestPass.ts) {
+        bestPass = { ...hit, ts };
       }
-      return hit;
+      continue;
     }
+    if (!bestFail) bestFail = hit;
   }
 
-  // 2) Fallback local SOLO si es del workspace actual y no forzamos remote-only
+  if (bestPass) {
+    persistArtifact(fileName, bestPass.data);
+    console.log(
+      JSON.stringify({
+        event: "artifact_selected_pass",
+        fileName,
+        source: bestPass.source,
+        timestamp: bestPass.data?.timestamp ?? null,
+      }),
+    );
+    return { data: bestPass.data, source: bestPass.source };
+  }
+
+  if (bestFail) {
+    console.log(
+      JSON.stringify({
+        event: "artifact_using_fail_candidate",
+        fileName,
+        source: bestFail.source,
+      }),
+    );
+    return bestFail;
+  }
+
   if (!flag("NADF_ARTIFACTS_REMOTE_ONLY", false)) {
     const local = localArtifactPath(fileName);
     const data = readJsonSafe(local) as GateJson;
@@ -196,11 +281,9 @@ function smokePassed(): boolean {
         last: results[results.length - 1],
       }),
     );
-    // Smoke OK si al menos un paso Cloud terminó (aunque gates posteriores fallen)
     return anyFinished;
   }
 
-  // Sin remaining-pipeline (p.ej. smoke solo analyzer): señal mínima = env + gh auth
   try {
     gh(["auth", "status"]);
     console.log(
@@ -209,7 +292,6 @@ function smokePassed(): boolean {
         reason: "no_pipeline_results_but_gh_ok_assume_prior_steps_ok",
       }),
     );
-    // En CI el job solo llega aquí si invokes anteriores no fallaron (set -e)
     return true;
   } catch {
     return false;
@@ -304,49 +386,105 @@ function validationPassed(): {
   };
 }
 
-function mergeOpenProductPrs(): void {
+function listProductCursorPrs(repo: string): ProductPr[] {
+  const listRaw = gh([
+    "pr",
+    "list",
+    "--repo",
+    repo,
+    "--state",
+    "open",
+    "--json",
+    "number,title,isDraft,headRefName,updatedAt,mergeable,mergeStateStatus",
+  ]);
+  const prs = JSON.parse(listRaw) as ProductPr[];
+  return prs
+    .filter((p) => p.headRefName.startsWith("cursor/"))
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+}
+
+function isPrMergeable(pr: ProductPr): boolean {
+  // mergeable: MERGEABLE | CONFLICTING | UNKNOWN
+  if (pr.mergeable === "CONFLICTING") return false;
+  if (pr.mergeStateStatus === "DIRTY" || pr.mergeStateStatus === "BLOCKED") {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Merges pending cursor/* PRs on WEB/Back (newest first).
+ * Close conflicting leftovers as superseded after a successful merge on that repo.
+ * Returns whether any mergeable PR remains open (should be false after gates PASS).
+ */
+function mergeOpenProductPrs(): {
+  merged: number;
+  skipped: number;
+  remainingMergeable: Array<{ repo: string; number: number; title: string }>;
+} {
   const repos = [
     "arodriguez-novusintelligence/NovusIntelligenceWEB",
     "arodriguez-novusintelligence/NovusIntelligenceBack",
   ];
 
+  let merged = 0;
+  let skipped = 0;
+  const remainingMergeable: Array<{
+    repo: string;
+    number: number;
+    title: string;
+  }> = [];
+
   for (const repo of repos) {
-    const listRaw = gh([
-      "pr",
-      "list",
-      "--repo",
-      repo,
-      "--state",
-      "open",
-      "--json",
-      "number,title,isDraft,headRefName",
-    ]);
-    const prs = JSON.parse(listRaw) as Array<{
-      number: number;
-      title: string;
-      isDraft: boolean;
-      headRefName: string;
-    }>;
+    const prs = listProductCursorPrs(repo);
+    let repoMerged = 0;
 
     for (const pr of prs) {
-      if (!pr.headRefName.startsWith("cursor/")) continue;
-      if (pr.isDraft) {
-        try {
-          gh(["pr", "ready", String(pr.number), "--repo", repo]);
-        } catch (e) {
-          console.warn(`ready failed ${repo}#${pr.number}`, e);
-        }
+      if (!isPrMergeable(pr)) {
+        skipped += 1;
+        console.warn(
+          JSON.stringify({
+            event: "pr_merge_deferred_conflict",
+            repo,
+            number: pr.number,
+            mergeable: pr.mergeable,
+            mergeStateStatus: pr.mergeStateStatus,
+          }),
+        );
+        continue;
       }
-      try {
-        gh([
+
+      if (pr.isDraft) {
+        const ready = ghSoft([
           "pr",
-          "merge",
+          "ready",
           String(pr.number),
           "--repo",
           repo,
-          "--squash",
-          "--delete-branch",
         ]);
+        if (!ready.ok) {
+          console.warn(
+            `ready failed ${repo}#${pr.number}: ${ready.out}`,
+          );
+        }
+      }
+
+      const mergeResult = ghSoft([
+        "pr",
+        "merge",
+        String(pr.number),
+        "--repo",
+        repo,
+        "--squash",
+        "--delete-branch",
+      ]);
+
+      if (mergeResult.ok) {
+        merged += 1;
+        repoMerged += 1;
         console.log(
           JSON.stringify({
             event: "pr_merged",
@@ -355,11 +493,64 @@ function mergeOpenProductPrs(): void {
             title: pr.title,
           }),
         );
-      } catch (e) {
-        console.warn(`merge failed ${repo}#${pr.number}`, e);
+      } else {
+        skipped += 1;
+        console.warn(
+          JSON.stringify({
+            event: "pr_merge_skipped",
+            repo,
+            number: pr.number,
+            reason: mergeResult.out,
+          }),
+        );
+      }
+    }
+
+    // Tras merge exitoso, cerrar PRs cursor/* con conflicto (stale de corridas previas)
+    if (repoMerged > 0) {
+      for (const pr of listProductCursorPrs(repo)) {
+        if (isPrMergeable(pr)) continue;
+        const closed = ghSoft([
+          "pr",
+          "close",
+          String(pr.number),
+          "--repo",
+          repo,
+          "--comment",
+          "Superseded by newer cursor/* merge from Lovable sync DEV post-pipeline.",
+        ]);
+        console.log(
+          JSON.stringify({
+            event: closed.ok ? "pr_closed_superseded" : "pr_close_failed",
+            repo,
+            number: pr.number,
+            detail: closed.out,
+          }),
+        );
+      }
+    }
+
+    for (const pr of listProductCursorPrs(repo)) {
+      if (isPrMergeable(pr)) {
+        remainingMergeable.push({
+          repo,
+          number: pr.number,
+          title: pr.title,
+        });
       }
     }
   }
+
+  console.log(
+    JSON.stringify({
+      event: "product_merge_summary",
+      merged,
+      skipped,
+      remainingMergeable,
+    }),
+  );
+
+  return { merged, skipped, remainingMergeable };
 }
 
 function triggerDeployDev(): void {
@@ -385,7 +576,6 @@ function main(): void {
   let autoDeploy = flag("NADF_AUTO_DEPLOY_DEV", !smoke);
 
   if (smoke) {
-    // Smoke: nunca mutar WEB/Back ni desplegar
     autoMerge = false;
     autoDeploy = false;
   } else if (protectArchetype) {
@@ -433,6 +623,8 @@ function main(): void {
         event: "skip_merge_and_deploy",
         reason: "validation_not_pass",
         sources: gates.sources,
+        pendingProductAllowed: true,
+        note: "Código WEB/Back puede quedar en PRs cursor/* solo mientras falle el post-pipeline.",
       }),
     );
     process.exit(5);
@@ -443,17 +635,54 @@ function main(): void {
       JSON.stringify({
         event: "gates_pass_archetype_protected",
         message:
-          "Gates OK pero NADF_PROTECT_ARCHETYPE=true — no merge/deploy WEB/Back. USar instancia o NADF_PROTECT_ARCHETYPE=false.",
+          "Gates OK pero NADF_PROTECT_ARCHETYPE=true — no merge/deploy WEB/Back. Usar instancia o NADF_PROTECT_ARCHETYPE=false.",
         sources: gates.sources,
       }),
     );
     process.exit(0);
   }
 
-  if (autoMerge) mergeOpenProductPrs();
-  if (autoDeploy) triggerDeployDev();
+  let mergeSummary = {
+    merged: 0,
+    skipped: 0,
+    remainingMergeable: [] as Array<{
+      repo: string;
+      number: number;
+      title: string;
+    }>,
+  };
 
-  console.log(JSON.stringify({ event: "post_pipeline_done", env: "dev_only" }));
+  if (autoMerge) {
+    mergeSummary = mergeOpenProductPrs();
+  }
+
+  if (autoDeploy) {
+    // Deploy siempre tras gates PASS: acopla a DEV lo versionado en main
+    // (incluye merges recién hechos de esta corrida).
+    triggerDeployDev();
+  }
+
+  if (autoMerge && mergeSummary.remainingMergeable.length > 0) {
+    console.log(
+      JSON.stringify({
+        event: "post_pipeline_incomplete",
+        reason: "mergeable_product_prs_remain",
+        remainingMergeable: mergeSummary.remainingMergeable,
+        hint: "Gates PASS pero quedó código productivable sin merge — no debería quedar pendiente.",
+      }),
+    );
+    process.exit(7);
+  }
+
+  console.log(
+    JSON.stringify({
+      event: "post_pipeline_done",
+      env: "dev_only",
+      merged: mergeSummary.merged,
+      deployed: autoDeploy,
+      sources: gates.sources,
+    }),
+  );
 }
 
 main();
