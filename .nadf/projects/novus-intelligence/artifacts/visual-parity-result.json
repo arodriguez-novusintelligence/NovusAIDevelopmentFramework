@@ -1,0 +1,125 @@
+{
+  "status": "FAIL",
+  "gate": "visual_exact_parity",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatioObserved": 0.448786,
+  "agentName": "visual-parity-agent",
+  "referenceUrl": "http://127.0.0.1:5173",
+  "referenceNote": "novus-nexus dev local (NADF_LOVABLE_REFERENCE_URL no definida en runtime)",
+  "candidateUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+  "routesChecked": 12,
+  "routesPassed": 0,
+  "routes": [
+    {
+      "path": "/",
+      "viewport": "1440x900",
+      "diffRatio": 0.18742,
+      "diffPixels": 1281682,
+      "totalPixels": 6838560,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-home-diff.png"
+    },
+    {
+      "path": "/about",
+      "viewport": "1440x900",
+      "diffRatio": 0.042955,
+      "diffPixels": 118268,
+      "totalPixels": 2753280,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-about-diff.png"
+    },
+    {
+      "path": "/services",
+      "viewport": "1440x900",
+      "diffRatio": 0.048594,
+      "diffPixels": 134563,
+      "totalPixels": 2769120,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-services-diff.png"
+    },
+    {
+      "path": "/contact",
+      "viewport": "1440x900",
+      "diffRatio": 0.428979,
+      "diffPixels": 962423,
+      "totalPixels": 2243520,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-contact-diff.png"
+    },
+    {
+      "path": "/",
+      "viewport": "768x1024",
+      "diffRatio": 0.181712,
+      "diffPixels": 900549,
+      "totalPixels": 4955904,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-home-diff.png"
+    },
+    {
+      "path": "/about",
+      "viewport": "768x1024",
+      "diffRatio": 0.042408,
+      "diffPixels": 104483,
+      "totalPixels": 2463744,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-about-diff.png"
+    },
+    {
+      "path": "/services",
+      "viewport": "768x1024",
+      "diffRatio": 0.082172,
+      "diffPixels": 195825,
+      "totalPixels": 2383104,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-services-diff.png"
+    },
+    {
+      "path": "/contact",
+      "viewport": "768x1024",
+      "diffRatio": 0.412139,
+      "diffPixels": 868539,
+      "totalPixels": 2107392,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-contact-diff.png"
+    },
+    {
+      "path": "/",
+      "viewport": "390x844",
+      "diffRatio": 0.215616,
+      "diffPixels": 707786,
+      "totalPixels": 3282630,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-home-diff.png"
+    },
+    {
+      "path": "/about",
+      "viewport": "390x844",
+      "diffRatio": 0.113603,
+      "diffPixels": 159455,
+      "totalPixels": 1403610,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-about-diff.png"
+    },
+    {
+      "path": "/services",
+      "viewport": "390x844",
+      "diffRatio": 0.064966,
+      "diffPixels": 98433,
+      "totalPixels": 1515150,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-services-diff.png"
+    },
+    {
+      "path": "/contact",
+      "viewport": "390x844",
+      "diffRatio": 0.448786,
+      "diffPixels": 530681,
+      "totalPixels": 1182480,
+      "pass": false,
+      "diffImage": "/agent/repos/NovusAIDevelopmentFramework/.nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-contact-diff.png"
+    }
+  ],
+  "summary": "Paridad visual FAIL — remediación frontend requerida",
+  "remediationRequired": true,
+  "generatedAt": "2026-07-15T18:43:17.838Z"
+}

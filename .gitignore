@@ -8,3 +8,6 @@ secrets/
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Visual parity checker — screenshots locales (regenerables)
+.nadf/projects/*/artifacts/visual-parity-shots/*.png
