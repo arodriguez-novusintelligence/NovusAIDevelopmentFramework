@@ -10,7 +10,7 @@
 **Target environment:** DEV — AWS `sa-east-1`  
 **Baseline Lovable:** novus-nexus @ `e3a9819`  
 **Aprobado por:** architect-agent  
-**Fecha aprobación:** 2026-07-14
+**Fecha aprobación:** 2026-07-15 (re-validación Plan Review)
 
 ---
 
@@ -32,7 +32,7 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 | `intent_source` | cambios-lovable.json (lovable-analyzer-agent) |
 | `status` | **approved** — Plan Review completado por architect-agent |
 | `approved_by` | architect-agent |
-| `approved_at` | 2026-07-14 |
+| `approved_at` | 2026-07-15 |
 | `requires_backend` | true |
 | `requires_database` | false |
 | `requires_infra` | true |
@@ -46,7 +46,7 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 |------|----|-------------|--------------|
 | Sin copia Lovable | `no_lovable_code_copy` | Reimplementar intención; prohibido JSX/CSS/utilities literales de novus-nexus | reviewer-agent + diff manual |
 | Sin mocks en prod | `no_mock_data_in_production` | Sin fallback demo en contacto; sin datos simulados en rutas productivas | qa-agent + security-agent |
-| Deploy con aprobación | `deploy_human_approval` | Ningún despliegue a DEV/QA/prod sin aprobación humana explícita | devops-agent / cloud-agent |
+| Deploy con aprobación | `deploy_human_approval` | QA/prod: aprobación humana explícita. DEV: auto tras gates (ADR-0006, incl. `visual_exact_parity`) | devops-agent / cloud-agent |
 | Sin secrets en repo | `no_secrets_in_repo` | Credenciales solo en AWS Secrets Manager / SSM Parameter Store | security-agent |
 | Plan aprobado | `plan_approved` | `status == approved` antes de Execution | architect-agent (paso 6) |
 
@@ -56,7 +56,7 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 - `NO_DEPLOY` — Infraestructura se propone; despliegue queda bloqueado hasta aprobación.
 - `TARGET_DEV_REGION_SA_EAST_1` — Toda propuesta cloud DEV apunta a región **sa-east-1**.
 
-> **Nota de alineación:** `environments/dev.yml` actualmente declara `region: us-east-1`. El target operativo de esta planificación es **sa-east-1** según constraints del workflow. El **backend-impact-agent** y **cloud-agent** deben reconciliar `dev.yml` y stacks Serverless en pasos posteriores.
+> **Nota de alineación regional:** `environments/dev.yml` declara **`region: sa-east-1`** (reconciliado). El **cloud-agent** debe verificar que stacks Serverless e IaC desplegados operen en **sa-east-1** (TASK-INFRA-001 como verificación, no edición pendiente de `dev.yml`). Certificados ACM para CloudFront pueden permanecer en `us-east-1` (requisito AWS).
 
 ---
 
@@ -231,7 +231,7 @@ flowchart TD
 | 5.1 | Implementar Lambda `novus-contact-handler` | CHG-011 | Handler Node.js 20; timeout 10s |
 | 5.2 | Exponer `POST /api/v1/contact` en API Gateway | CHG-011 | Contrato OpenAPI cumplido |
 | 5.3 | Validación server-side de ContactRequest | CHG-008, CHG-011 | 400 en campos inválidos |
-| 5.4 | Integración AWS SES (email notificación) | CHG-011 | Email enviado a `CONTACT_SES_TO` desde `CONTACT_SES_FROM` |
+| 5.4 | Integración AWS SES (email notificación) | CHG-011 | Email enviado a `CONTACT_EMAIL_TO` desde `CONTACT_EMAIL_FROM` (Secrets/SSM) |
 | 5.5 | Rate limiting (429) | CHG-011, R-008 | Límite configurable documentado |
 | 5.6 | Sanitización de inputs | CHG-011 | Sin inyección en email/logs |
 | 5.7 | CORS configurado para origen frontend DEV/prod | CHG-011 | Preflight exitoso desde dominio WEB |
@@ -242,7 +242,7 @@ flowchart TD
 
 **Variables (nombres únicamente, valores en Secrets/SSM):**
 
-- `CONTACT_SES_FROM`, `CONTACT_SES_TO`, `CRM_WEBHOOK_URL` (opcional)
+- `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO`, `CRM_WEBHOOK_URL` (opcional)
 
 ---
 
@@ -269,18 +269,18 @@ flowchart TD
 
 **Agentes:** cloud-agent, devops-agent  
 **Dependencias:** Fases 5 y 6 especificadas; backend-impact evaluado  
-**Bloqueo:** `deploy_human_approval` — solo preparar artefactos
+**Bloqueo:** DEV auto-deploy solo tras gates (ADR-0006); QA/prod requieren aprobación humana
 
 | # | Tarea | Agente | Criterios de aceptación |
 |---|-------|--------|-------------------------|
-| 7.1 | Reconciliar `environments/dev.yml` → región `sa-east-1` | cloud-agent | Archivo alineado con target DEV |
+| 7.1 | Verificar stacks/IaC en región `sa-east-1` (`dev.yml` ya reconciliado) | cloud-agent | Recursos DEV operando en sa-east-1 |
 | 7.2 | Propuesta IaC: API Gateway + Lambda + SES en sa-east-1 | cloud-agent | `propuesta-infra.md` generado |
 | 7.3 | Configurar S3 + CloudFront para frontend DEV | cloud-agent | Bucket `novus-intelligence-web-dev`; CDN habilitado |
 | 7.4 | Bucket assets `novus-intelligence-assets-dev` | cloud-agent | Assets de marca servidos |
 | 7.5 | Secrets en AWS Secrets Manager / SSM (sin valores en repo) | cloud-agent | Nombres documentados; sin secrets versionados |
 | 7.6 | Pipeline CI: lint + build frontend y backend | devops-agent | `pipeline-config.md`; gates no_lovable_code_copy |
 | 7.7 | Variables build: `VITE_NOVUS_API_URL`, `VITE_DEMO_MODE=false` | devops-agent | Config DEV documentada |
-| 7.8 | **Despliegue DEV** | devops-agent + cloud-agent | **Solo tras aprobación humana explícita** |
+| 7.8 | **Despliegue DEV** | devops-agent + cloud-agent | **Automático tras gates** (ADR-0006, incl. `visual_exact_parity`) |
 
 **URLs DEV objetivo:**
 
@@ -358,14 +358,14 @@ Los agentes ejecutores pueden proceder según la secuencia de fases definida en 
 |--------|--------------|-----------|
 | **frontend-integration-agent** | Fases 0–4 inmediatas; Fase 6 tras API DEV | Gates `no_lovable_code_copy`, `no_mock_data_in_production` |
 | **backend-agent** | Fase 5 (`POST /api/v1/contact`) | Seguir `especificacion-backend.md` |
-| **cloud-agent** | Fase 7 (preparación IaC) | **TASK-INFRA-001 obligatoria:** reconciliar `environments/dev.yml` a `sa-east-1` antes de despliegue |
-| **devops-agent** | Fase 7 (CI/pipeline) | Sin despliegue sin aprobación humana |
+| **cloud-agent** | Fase 7 (preparación IaC) | Verificar recursos en `sa-east-1`; TASK-INFRA-001 como verificación de stacks |
+| **devops-agent** | Fase 7 (CI/pipeline) | Deploy DEV auto tras gates (ADR-0006); QA/prod con aprobación humana |
 
 **Tareas previas de infra (no bloquean inicio de código):**
 
-1. Reconciliar región DEV `us-east-1` → `sa-east-1` en `environments/dev.yml` (TASK-INFRA-001).
-2. Normalizar nombres de variables email a `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` (coherencia con especificación backend).
-3. Despliegue DEV bloqueado hasta `deploy_human_approval` explícita.
+1. Verificar stacks Serverless/IaC en `sa-east-1` (TASK-INFRA-001; `dev.yml` ya en sa-east-1).
+2. Normalizar nombres de variables email a `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` en código y pipeline.
+3. Despliegue DEV: automático tras gates NADF incl. `visual_exact_parity` (ADR-0006). QA/prod: aprobación humana explícita.
 
 Referencia completa: `artifacts/impacto-arquitectonico.md`.
 
@@ -376,7 +376,7 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 5 (completado) | **backend-impact-agent** | `evaluacion-backend.md` + `especificacion-backend.md` |
-| 6 (completado) | **architect-agent** | Plan Review → `approved`; `impacto-arquitectonico.md` |
+| 6 (completado) | **architect-agent** | Plan Review → `approved`; `impacto-arquitectonico.md` (re-validado 2026-07-15) |
 | 7+ | **frontend-integration-agent**, **backend-agent** | Execution autorizada (paralelo Fases 0–4 + Fase 5) |
 | 7 (infra) | **cloud-agent**, **devops-agent** | Preparación; reconciliar región; deploy con aprobación humana |
 | 11–13 | **qa-agent**, **security-agent**, **reviewer-agent** | Validation post-ejecución |
@@ -407,3 +407,4 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 | 2026-07-14 | Plan generado en status `draft` | planner-agent |
 | 2026-07-14 | Evaluación y especificación backend generadas | backend-impact-agent |
 | 2026-07-14 | Plan Review completado; status `approved` | architect-agent |
+| 2026-07-15 | Re-validación Plan Review; alineación ADR-0005/0006 y región DEV | architect-agent |
