@@ -2,15 +2,15 @@
 
 **Proyecto:** novus-intelligence  
 **Workflow:** novus-intelligence-lovable-to-web  
-**Paso:** paso-16-reflexion (fase Reflection)  
+**Paso:** paso-13-reflexion (fase Reflection)  
 **Agente:** reflection-agent  
 **Patrón:** Reflection Pattern  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
 **Baseline Lovable:** novus-nexus @ `e3a9819`  
-**Estado workflow al reflexionar:** **blocked** (qualityScore: 62)
+**Estado workflow al reflexionar:** **blocked** (qualityScore: 63)
 
 ---
 
@@ -20,16 +20,17 @@
 |-------|-------|
 | `workflowId` | novus-intelligence-lovable-to-web |
 | `runId` | bc-7db90cca-6bbe-4914-bce2-8b237c3cd973 |
+| `metricsRunId` | bc-aeb8abe7-3124-4fba-90aa-877763f78d3c |
 | Inicio corrida | 2026-07-14T08:30:00Z |
-| Fin corrida (consolidado) | 2026-07-14T11:05:00Z |
-| Duración total | ~2 h 35 min (9 300 s) |
-| Agentes ejecutados | 13 de 19 habilitados |
-| Agentes éxito | 9 |
-| Agentes fallo | 3 (devops-agent, qa-agent, security-agent) |
+| Fin corrida (consolidado) | 2026-07-15T20:50:00Z |
+| Duración total | ~36 h 20 min (130 800 s) |
+| Agentes ejecutados | 17 de 19 habilitados |
+| Agentes éxito | 14 |
+| Agentes fallo | 2 (devops-agent, visual-parity-agent) |
 | Agentes omitidos/N/A | 1 (database-agent) |
-| Agentes bloqueados/pendientes | 6 (reviewer, reflection→este paso, kb, adr + parciales) |
-| PRs Framework abiertos | 8 (draft) |
-| Ramas productivas sin merge | 2 (NovusIntelligenceWEB + NovusIntelligenceBack) |
+| Agentes bloqueados/pendientes | 1 (reviewer-agent) |
+| PRs Framework mergeados | 11 (#1–#13) |
+| Repos productivos en `main` | 2 (NovusIntelligenceWEB @ `783acea`, NovusIntelligenceBack @ `6090f73`) |
 
 ### Agentes involucrados por fase
 
@@ -38,14 +39,15 @@
 | Event Trigger | workflow-agent | ✅ |
 | Planning | lovable-analyzer-agent, planner-agent, backend-impact-agent | ✅ |
 | Plan Review | architect-agent | ✅ — plan `approved` |
-| Execution | frontend-integration-agent, backend-agent, cloud-agent | ⚠️ Parcial (lint WEB, SEC-001/002) |
+| Execution | frontend-integration-agent, backend-agent, cloud-agent | ✅ — mergeado en `main` |
 | Execution | devops-agent | ❌ — `pipeline-config.md` ausente |
 | Execution | database-agent | ⏭️ N/A |
-| Validation | qa-agent, security-agent | ❌ FAIL |
-| Validation | reviewer-agent | ⏸️ Bloqueado |
+| Validation | qa-agent, security-agent | ✅ PASS (revalidación 2026-07-15) |
+| Validation | visual-parity-agent | ❌ FAIL — 0/12 capturas |
+| Validation | reviewer-agent | ⏸️ Bloqueado por `visual_exact_parity` |
 | Documentation | documentation-agent | ✅ |
 | Metrics | metrics-agent | ✅ |
-| Reflection | reflection-agent | ✅ (este artefacto) |
+| Reflection | reflection-agent | ✅ (este artefacto — v2) |
 
 ---
 
@@ -53,27 +55,32 @@
 
 ### Planning y Plan Review (exitoso)
 
-1. **lovable-analyzer-agent** detectó 13 cambios (CHG-001–CHG-013) en el commit `e3a9819`, con `backendRequired: true`. Produjo `cambios-lovable.json`, impactos frontend/backend y matriz de riesgos.
-2. **planner-agent** generó `plan-implementacion.md` (PLAN-NOVUS-LOVABLE-2026-07-14) con 9 fases, mapeo de rutas TanStack → React Router y mitigaciones R-001 a R-008.
+1. **lovable-analyzer-agent** detectó 13 cambios (CHG-001–CHG-013) en el commit `e3a9819`, con `backendRequired: true`.
+2. **planner-agent** generó `plan-implementacion.md` (PLAN-NOVUS-LOVABLE-2026-07-14) con 9 fases y mitigaciones R-001 a R-008.
 3. **backend-impact-agent** especificó la API de contacto (`POST /api/v1/contact`) sin persistencia en BD.
-4. **architect-agent** aprobó el plan y documentó impacto arquitectónico en `impacto-arquitectonico.md`.
+4. **architect-agent** aprobó el plan y documentó impacto arquitectónico.
 
-### Execution (mayormente completada)
+### Execution (completada y mergeada)
 
-5. **frontend-integration-agent** implementó el sitio corporativo completo en `NovusIntelligenceWEB` (rama `cursor/implement-novus-frontend-2d22`):
-   - Fases 0–4 del plan: design system dark-first, 10 rutas, layout, landing, contenido, soluciones dinámicas (6 slugs), `MultiAgentDemo` lazy-loaded.
-   - Fase 6 parcial: UI de contacto sin fallback demo (R-001 mitigado).
-   - Build Vite exitoso; reimplementación propia sin copia de novus-nexus.
+5. **frontend-integration-agent** implementó el sitio corporativo completo en **NovusIntelligenceWEB** (`main` @ `783acea`):
+   - Fases 0–6 del plan: design system dark-first, 10 rutas, layout, landing, contenido, soluciones dinámicas (6 slugs), `MultiAgentDemo` lazy-loaded, formulario de contacto sin fallback demo.
+   - Build Vite y lint sin errores (QA-001 remediado).
 
-6. **backend-agent** implementó `novus-contact-handler` en `NovusIntelligenceBack` (rama `cursor/implement-contact-api-04c8`):
-   - Validación server-side V1–V10, CORS con lista blanca, captcha preparado (deshabilitado en DEV).
-   - Build y lint backend sin errores.
+6. **backend-agent** implementó `novus-contact-handler` en **NovusIntelligenceBack** (`main` @ `6090f73`):
+   - Validación server-side V1–V10, CORS lista blanca, rate limit por IP (`isIpRateLimited`), captcha preparado.
+   - IAM SES acotado a `identity/*` (remediación SEC-001-prev).
 
-7. **cloud-agent** reconcilió `environments/dev.yml` a región `sa-east-1` y generó `propuesta-infra.md` con stacks, secrets paths y checklist de deploy. Sin despliegue (`NO_DEPLOY`).
+7. **cloud-agent** reconcilió `environments/dev.yml` a región `sa-east-1` y generó `propuesta-infra.md`. Sin despliegue (`NO_DEPLOY`).
 
-8. **documentation-agent** consolidó la corrida en `resumen-ejecucion.md`.
+### Validation (parcial — evolución 2026-07-14 → 2026-07-15)
 
-9. **metrics-agent** registró métricas en `metricas-ejecucion.json` (qualityScore: 62).
+8. **qa-agent** — revalidación 2026-07-15: **PASS** (qualityScore 100). Build, lint, audit y gates estáticos cumplen en `main`.
+9. **security-agent** — revalidación 2026-07-15: **PASS** (securityScore 88). IAM y rate limit remediados; 8 hallazgos no bloqueantes.
+10. **visual-parity-agent** — 12/12 capturas **FAIL** (maxDiffRatio 0,096091 vs umbral 0,002). Único gate bloqueante restante.
+
+### Knowledge (documentado en iteración previa)
+
+11. **documentation-agent**, **metrics-agent**, **knowledge-base-agent** y **adr-agent** completaron sus artefactos en la corrida consolidada.
 
 ### Constraints respetados
 
@@ -90,34 +97,48 @@
 
 ## Qué falló
 
-### Gates bloqueantes fallidos
+### Gate bloqueante activo
 
 | Gate | ID hallazgo | Descripción | Agente responsable |
 |------|-------------|-------------|-------------------|
-| `build_success` | QA-001 | 4 errores ESLint `@typescript-eslint/no-empty-object-type` en `Input`, `Label`, `Select`, `Textarea` (WEB) | frontend-integration-agent |
-| `security_pass` | SEC-001 | IAM SES con `Resource: '*'` en `serverless.yml` — viola mínimo privilegio | backend-agent |
-| `security_pass` | SEC-002 | `rateLimitResponse()` definido pero no invocado; solo throttle global API Gateway | backend-agent |
+| `visual_exact_parity` | VP-001 | 0/12 capturas PASS; maxDiffRatio 0,096091 (`/` @ 390×844) | frontend-integration-agent |
 
-### Tareas no completadas
+**Gaps P0 documentados en `gaps-paridad.json`:**
+
+- VP-GAP-TOKENS — oklch (Lovable) vs HSL (WEB) en gradientes y colores de marca
+- VP-GAP-TYPO — métricas Space Grotesk / Inter distintas
+- VP-GAP-HERO-MOBILE — stack hero/demo en landing móvil
+- VP-GAP-CONTACT-LAYOUT — grid 2-col formulario/sidebar
+- VP-GAP-HEADER-MOBILE — altura y padding header sticky móvil
+
+### Tareas no completadas (no bloqueantes inmediatos)
 
 | ID | Descripción | Impacto |
 |----|-------------|---------|
-| DEVOPS-001 | `pipeline-config.md` ausente — TASK-DEVOPS-001 no ejecutada | Sin documentación CI/CD; gate operativo incompleto |
-| BE-ART-001 | `resumen-backend.md` en rama remota no mergeado al Framework | Trazabilidad backend incompleta en Blackboard |
-| REV-001 | `reviewer-agent` no ejecutado | Bloqueado por QA/Security FAIL |
+| DEVOPS-001 | `pipeline-config.md` ausente — TASK-DEVOPS-001 no ejecutada | Sin documentación CI/CD |
+| BE-ART-001 | `resumen-backend.md` no publicado en Framework | Trazabilidad backend incompleta |
+| REV-001 | `reviewer-agent` no ejecutado | Bloqueado por `visual_exact_parity` FAIL |
 | E2E-001 | Prueba E2E contacto post-deploy | Bloqueada por `NO_DEPLOY` + API no desplegada |
+
+### Remediados desde reflexión v1 (2026-07-14)
+
+| ID | Gate | Estado | Evidencia |
+|----|------|--------|-----------|
+| QA-001 | `build_success` | ✅ Remediado | Lint 0 errores en WEB `main` |
+| SEC-001-prev | `security_pass` | ✅ Remediado | IAM SES `identity/*` (no `*`) |
+| SEC-002-prev | `security_pass` | ✅ Remediado | `isIpRateLimited()` invocado en handler |
 
 ### Desviaciones plan vs resultado
 
 | Fase plan | Esperado | Real | Gap |
 |-----------|----------|------|-----|
 | 6 — Contacto integración | E2E con API DEV | UI lista; sin API desplegada | Esperado por `NO_DEPLOY` |
-| 7 — Infra/DevOps | Propuesta + pipeline | Propuesta ✅; pipeline ❌ | devops-agent no ejecutó TASK-DEVOPS-001 |
-| 9 — Validación | Pass completo | FAIL lint + security | Workflow bloqueado antes de reviewer |
+| 7 — Infra/DevOps | Propuesta + pipeline | Propuesta ✅; pipeline ❌ | devops-agent pendiente |
+| 9 — Validación | Pass completo | QA + Security PASS; paridad visual FAIL | Bloqueo en gate visual |
 
 ### Efecto en cadena de validación
 
-La política NADF de gates bloqueantes funcionó como diseñado: un fallo en `build_success` (lint) y `security_pass` detuvo **reviewer-agent** y retrasó las fases Knowledge (reflection parcialmente desbloqueada por métricas ya registradas, KB y ADR aún pendientes).
+La remediación iterativa post-merge demostró que los gates QA y Security son recuperables sin re-planificar. El gate `visual_exact_parity` (ADR-0006) actúa ahora como **único bloqueante** antes de reviewer-agent y deploy DEV — comportamiento esperado del workflow canónico.
 
 ---
 
@@ -125,35 +146,37 @@ La política NADF de gates bloqueantes funcionó como diseñado: un fallo en `bu
 
 ### Patrones exitosos
 
-1. **Separación planificación/ejecución/validación.** El plan `approved` por architect-agent antes de código productivo permitió trazabilidad clara: cada fase de ejecución mapea a tareas del plan con IDs CHG-xxx verificables.
+1. **Separación planificación/ejecución/validación.** El plan `approved` antes de código productivo mantuvo trazabilidad CHG-xxx a través de dos ciclos de validación.
 
-2. **Traducción intención Lovable sin copia directa.** El workflow demostró que es viable implementar un sitio corporativo completo (10 rutas, design system, componente interactivo `MultiAgentDemo`) reimplementando intención visual/funcional en React + Tailwind, sin importar código de novus-nexus. Gates `no_lovable_code_copy` y `no_mock_data_in_production` pasaron en primera validación.
+2. **Reimplementación Lovable sin copia directa.** Sitio corporativo completo (10 rutas, design system, `MultiAgentDemo`) verificado en QA y Security tras merge a `main`.
 
-3. **Mitigación R-001 (modo demo) desde diseño.** Tanto frontend (`submitContact()` retorna error sin `VITE_NOVUS_API_URL`) como backend (`randomUUID()` sin prefijo `demo-`) implementaron la política anti-mock de forma coherente. Esto valida el patrón de especificar riesgos en planning y verificarlos en validation.
+3. **Remediación iterativa post-merge.** Lint WEB, IAM SES y rate limit corregidos en repos productivos; revalidación QA/Security PASS sin re-ejecutar planning. Patrón: *fix in product repo → re-run validators*.
 
-4. **Reconciliación de región en planning constraints.** La discrepancia `us-east-1` vs `sa-east-1` en `dev.yml` se resolvió en cloud-agent sin bloquear ejecución frontend/backend, demostrando que TASK-INFRA-001 como tarea explícita en el plan es efectiva.
+4. **Mitigación R-001 (modo demo) coherente.** Frontend y backend implementan política anti-mock de forma alineada; gates `no_mock_data_in_production` en PASS.
 
-5. **Validación en ramas feature antes de merge.** Mantener implementación en ramas `cursor/*` permitió QA y Security evaluar código sin contaminar `main` (aún en scaffold). Patrón seguro para workflows multi-repo.
+5. **Reconciliación región cloud (TASK-INFRA-001).** `dev.yml` alineado a `sa-east-1` sin bloquear ejecución frontend/backend.
 
-6. **Documentación consolidada post-corrida.** `resumen-ejecucion.md` + `metricas-ejecucion.json` proporcionaron insumo suficiente para reflexión aun con workflow bloqueado — el Blackboard cumple su rol de memoria compartida.
+6. **Blackboard como memoria de corrida multi-día.** `resumen-ejecucion.md` v2 + `metricas-ejecucion.json` permitieron reflexión actualizada 24 h después sin pérdida de contexto.
+
+7. **Gates bloqueantes en cascada funcionan.** reviewer-agent correctamente bloqueado por paridad visual; no se avanzó a deploy con diff visual > 9 %.
 
 ### Anti-patrones detectados
 
-1. **Interfaces vacías en componentes UI shadcn-style.** Usar `interface X extends Y {}` sin añadir props dispara `@typescript-eslint/no-empty-object-type`. Preferir `type X = Y` o añadir props explícitas.
+1. **Conversión HSL aproximada de tokens oklch.** Mapear intención visual con equivalentes HSL sin verificación pixel produce diff masivo en gradientes y CTA — bloquea `visual_exact_parity` aunque la semántica sea correcta.
 
-2. **Código de seguridad definido pero no conectado.** `rateLimitResponse()` y `RATE_LIMIT_PER_IP` existen en backend pero el handler no los invoca — patrón «dead code security» que pasa revisión superficial pero falla security-agent.
+2. **Paridad visual como gate tardío.** Los tokens y tipografía se validaron tarde (post-merge); remediar en `main` es más costoso que verificar tokens en Fase 0 con captura piloto.
 
-3. **Desalineación IaC implementación vs propuesta.** `serverless.yml` usa `Resource: '*'` para SES mientras `propuesta-infra.md` documenta ARN acotado. El executor no alineó implementación con la propuesta cloud del mismo workflow.
+3. **Agente DevOps omitido en corrida.** Sin `pipeline-config.md`, la fase 7 del plan quedó incompleta; el workflow carece de gate bloqueante explícito para DevOps.
 
-4. **Agente DevOps omitido en corrida.** Sin `pipeline-config.md`, la fase 7 del plan quedó incompleta. El workflow no tiene gate bloqueante explícito para DevOps, lo que permitió avanzar a Validation con gap operativo.
+4. **Validación responsive estática insuficiente para paridad.** QA PASS por análisis de clases Tailwind no detecta diff pixel en hero móvil (9,6 %). Complementar con visual-parity-agent antes de merge.
 
-5. **Lint como sub-gate de build_success.** Build Vite exitoso pero lint fallido bloquea todo el workflow. Patrón correcto para calidad, pero requiere que frontend-integration-agent ejecute lint antes de handoff a Validation.
+5. **Desalineación IAM implementación vs propuesta (residual).** SES `identity/*` remediado respecto a `*`, pero aún más amplio que dominio específico en `propuesta-infra.md` — observación SEC-001 no bloqueante.
 
 ### Aprendizajes operativos del workflow
 
-- **QualityScore 62** refleja ejecución sólida (78% completitud) penalizada por 2 gates bloqueantes (75% gates pass).
-- **Validación estática responsive/SEO** fue aceptada por QA sin browser automation — documentar limitación explícitamente en informes.
-- **8 PRs draft** en Framework indican necesidad de consolidación/merge strategy antes de que KB Agent procese aprendizajes.
+- **QualityScore 63** (+1 vs iteración previa 62): 9/10 gates bloqueantes PASS; penalización total por `visualParityScore: 0`.
+- **Umbral 0,2 %** es estricto pero detectó gaps reales de diseño no visibles en revisión de código.
+- **Referencia Lovable local** (`novus-nexus` @ puerto 4173) funcionó cuando `NADF_LOVABLE_REFERENCE_URL` no estaba definida — documentar como fallback operativo.
 
 ---
 
@@ -161,29 +184,28 @@ La política NADF de gates bloqueantes funcionó como diseñado: un fallo en `bu
 
 ### Actualizaciones sugeridas para Knowledge Base
 
-Ver `recomendaciones-kb.json` para estructura machine-readable. Resumen:
+Ver `recomendaciones-kb.json` (v2) para estructura machine-readable. Resumen:
 
-1. **Patrón ESLint `no-empty-object-type`** en componentes UI — usar `type` alias.
-2. **Checklist IAM least-privilege SES** para Serverless Framework en sa-east-1.
-3. **Matriz de decisión rate limiting** — handler in-app (DynamoDB) vs AWS WAF rate-based.
-4. **Checklist pre-handoff executor** — lint + alineación serverless.yml vs propuesta-infra.md.
-5. **Patrón workflow multi-repo** — ramas feature + validación antes de merge a main.
+1. **Patrón mapeo tokens oklch → CSS productivo** sin copiar `styles.css` Lovable.
+2. **Checklist paridad visual pre-merge** — captura piloto en Fase 0 antes de layout completo.
+3. **Flujo post-remediación visual** — frontend-integration → visual-parity → reviewer → devops.
+4. **Actualizar entradas KB existentes** — marcar QA-001, SEC-001-prev, SEC-002-prev como remediados.
+5. **Nuevas entradas** — oklch token mapping, visual parity mobile hero, contact layout parity.
 
 ### ADRs pendientes de registro
 
-| Tema | Justificación | Agente sugerido |
-|------|---------------|-----------------|
-| Rate limiting por IP en API pública serverless | Decisión arquitectónica no formalizada (DynamoDB vs WAF vs ElastiCache) | adr-agent |
-| Gestión secretos SSM/Secrets Manager vs env plano | Desalineación SEC-003 entre implementación y propuesta | adr-agent |
+| Tema | Justificación | Urgencia |
+|------|---------------|----------|
+| Estrategia rate limiting distribuido (DynamoDB/WAF) | SEC-002b — rate limit en memoria Lambda | before_prod_deploy |
+| Gestión secretos SSM/Secrets Manager vs env plano | SEC-003 desalineación | before_prod_deploy |
 
-> Nota: ADR-0002, ADR-0003 y ADR-0004 ya cubren arquitectura multiagente, canonicalización Lovable→Web y Meta Model. No se requieren ADRs nuevos para decisiones ya registradas.
+> ADR-0006 ya cubre paridad visual y auto-deploy DEV. No se requiere ADR-0007 para decisiones ya registradas.
 
 ### Mejoras de workflow propuestas
 
-1. **Gate explícito `devops_pipeline_documented`** antes de Validation, o incluir TASK-DEVOPS-001 como prerequisito en paso 10.
-2. **Pre-check lint en handoff frontend-integration → qa-agent** para reducir ciclos de re-validación.
-3. **Checklist de alineación serverless.yml ↔ propuesta-infra.md** como tarea obligatoria backend-agent post cloud-agent.
-4. **Ejecutar reviewer-agent en modo «advisory»** cuando QA/Security fallan, para documentar desviaciones de convención sin bloquear reflexión.
+1. **Captura piloto visual-parity en Fase 0** (tokens + Hero) antes de merge a `main`.
+2. **Gate `devops_pipeline_documented`** cuando `requires_infra: true`.
+3. **Actualizar reflexión automáticamente** tras cada revalidación de gates (QA, Security, Visual parity).
 
 ---
 
@@ -191,24 +213,22 @@ Ver `recomendaciones-kb.json` para estructura machine-readable. Resumen:
 
 ```mermaid
 flowchart LR
-    QA001[QA-001: lint WEB] --> QA[qa-agent re-run]
-    SEC[SEC-001/002: IAM + rate limit] --> SECA[security-agent re-run]
-    QA --> REV[reviewer-agent]
-    SECA --> REV
-    REV --> DEPLOY[deploy_human_approval]
+    VP[VP-001: paridad visual P0] --> FE[frontend-integration-agent]
+    FE --> VPA[visual-parity-agent re-run]
+    VPA --> REV[reviewer-agent]
+    REV --> DEVOPS[devops-agent pipeline]
+    DEVOPS --> DEPLOY[deploy_human_approval]
     DEPLOY --> E2E[E2E contacto]
 ```
 
 | Orden | Agente | Acción |
 |-------|--------|--------|
-| 1 | frontend-integration-agent | Corregir QA-001 (4 errores ESLint) |
-| 2 | backend-agent | Corregir SEC-001 (IAM SES) y SEC-002 (rate limit) |
-| 3 | devops-agent | Completar TASK-DEVOPS-001 (`pipeline-config.md`) |
-| 4 | qa-agent | Re-ejecutar validación |
-| 5 | security-agent | Re-ejecutar revisión |
-| 6 | reviewer-agent | Revisión de coherencia y diff |
-| 7 | knowledge-base-agent | Consolidar `recomendaciones-kb.json` |
-| 8 | adr-agent | Registrar ADRs de rate limiting y secretos si aplica |
+| 1 | frontend-integration-agent | Remediar gaps P0 en `gaps-paridad.json` |
+| 2 | visual-parity-agent | Re-ejecutar checker 12 capturas |
+| 3 | reviewer-agent | Revisión coherencia y `no_lovable_code_copy` |
+| 4 | devops-agent | Completar TASK-DEVOPS-001 |
+| 5 | knowledge-base-agent | Consolidar recomendaciones v2 (paridad visual) |
+| 6 | deploy DEV | Solo con `deploy_human_approval` explícita |
 
 ---
 
@@ -217,18 +237,18 @@ flowchart LR
 | Campo | Valor |
 |-------|-------|
 | `agentName` | reflection-agent |
-| `reflectionSummary` | Primera corrida Lovable→Web completó planning y execution (~78%) con gates críticos de intención (sin copia Lovable, sin mocks, sin secrets) en PASS; bloqueada por lint WEB y seguridad IAM/rate-limit |
-| `patternsIdentified` | 6 patrones exitosos, 5 anti-patrones |
-| `failuresDocumented` | 3 bloqueantes (QA-001, SEC-001, SEC-002), 4 seguimiento |
-| `kbUpdatesRecommended` | 7 entradas en `recomendaciones-kb.json` |
+| `reflectionSummary` | Corrida Lovable→Web completó planning y execution con código mergeado en main; QA PASS (100) y Security PASS (88) tras revalidación 2026-07-15; bloqueada únicamente por paridad visual (0/12). qualityScore 63. |
+| `patternsIdentified` | 7 patrones exitosos, 5 anti-patrones |
+| `failuresDocumented` | 1 bloqueante (VP-001), 4 seguimiento |
+| `kbUpdatesRecommended` | 10 entradas en `recomendaciones-kb.json` v2 |
 
 ---
 
 ## Próximo agente sugerido
 
-**knowledge-base-agent** — Consolidar patrones y anti-patrones de `recomendaciones-kb.json` en `.nadf/global/knowledge-base/`.
+**frontend-integration-agent** — Remediar hallazgos P0 de paridad visual según `gaps-paridad.json`.
 
-> Antes de cerrar el workflow: corregir bloqueantes QA-001, SEC-001, SEC-002 y re-ejecutar cadena de validación.
+Tras PASS visual: **visual-parity-agent** → **reviewer-agent** → **knowledge-base-agent** (actualizar KB con aprendizajes de paridad).
 
 ---
 
@@ -239,12 +259,12 @@ flowchart LR
 - `artifacts/metricas-ejecucion.json`
 - `artifacts/informe-qa.md` / `qa-result.json`
 - `artifacts/informe-seguridad.md` / `security-result.json`
+- `artifacts/informe-paridad-visual.md` / `gaps-paridad.json`
 - `artifacts/resumen-frontend.md`
 - `artifacts/resumen-cloud.md`
 - `artifacts/propuesta-infra.md`
 - `artifacts/recomendaciones-kb.json`
 - `docs/reflection-learning.md`
-- `docs/meta-model/learning-model.md`
 
 ---
 
@@ -252,4 +272,5 @@ flowchart LR
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Reflexión post-ejecución — workflow blocked, qualityScore 62 | reflection-agent |
+| 2026-07-14 | Reflexión v1 — workflow blocked por QA/Security FAIL, qualityScore 62 | reflection-agent |
+| 2026-07-15 | Reflexión v2 — QA/Security PASS; bloqueado por paridad visual, qualityScore 63 | reflection-agent |
