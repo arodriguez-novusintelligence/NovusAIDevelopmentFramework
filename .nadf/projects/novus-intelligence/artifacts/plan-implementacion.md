@@ -10,7 +10,7 @@
 **Target environment:** DEV — AWS `sa-east-1`  
 **Baseline Lovable:** novus-nexus @ `e3a9819`  
 **Aprobado por:** architect-agent  
-**Fecha aprobación:** 2026-07-14
+**Fecha aprobación:** 2026-07-15
 
 ---
 
@@ -32,7 +32,7 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 | `intent_source` | cambios-lovable.json (lovable-analyzer-agent) |
 | `status` | **approved** — Plan Review completado por architect-agent |
 | `approved_by` | architect-agent |
-| `approved_at` | 2026-07-14 |
+| `approved_at` | 2026-07-15 |
 | `requires_backend` | true |
 | `requires_database` | false |
 | `requires_infra` | true |
@@ -56,7 +56,7 @@ El alcance cubre un sitio corporativo B2B completo: design system dark-first, 10
 - `NO_DEPLOY` — Infraestructura se propone; despliegue queda bloqueado hasta aprobación.
 - `TARGET_DEV_REGION_SA_EAST_1` — Toda propuesta cloud DEV apunta a región **sa-east-1**.
 
-> **Nota de alineación:** `environments/dev.yml` actualmente declara `region: us-east-1`. El target operativo de esta planificación es **sa-east-1** según constraints del workflow. El **backend-impact-agent** y **cloud-agent** deben reconciliar `dev.yml` y stacks Serverless en pasos posteriores.
+> **Nota de alineación:** `environments/dev.yml` declara `region: sa-east-1`, alineado con `project-context.yml` y el constraint `TARGET_DEV_REGION_SA_EAST_1`. El **cloud-agent** debe asegurar que stacks Serverless e IaC desplegados coincidan con esta región.
 
 ---
 
@@ -273,7 +273,7 @@ flowchart TD
 
 | # | Tarea | Agente | Criterios de aceptación |
 |---|-------|--------|-------------------------|
-| 7.1 | Reconciliar `environments/dev.yml` → región `sa-east-1` | cloud-agent | Archivo alineado con target DEV |
+| 7.1 | Verificar stacks Serverless/IaC alineados a `sa-east-1` (`dev.yml` ya reconciliado) | cloud-agent | Recursos DEV en región sa-east-1 |
 | 7.2 | Propuesta IaC: API Gateway + Lambda + SES en sa-east-1 | cloud-agent | `propuesta-infra.md` generado |
 | 7.3 | Configurar S3 + CloudFront para frontend DEV | cloud-agent | Bucket `novus-intelligence-web-dev`; CDN habilitado |
 | 7.4 | Bucket assets `novus-intelligence-assets-dev` | cloud-agent | Assets de marca servidos |
@@ -358,14 +358,15 @@ Los agentes ejecutores pueden proceder según la secuencia de fases definida en 
 |--------|--------------|-----------|
 | **frontend-integration-agent** | Fases 0–4 inmediatas; Fase 6 tras API DEV | Gates `no_lovable_code_copy`, `no_mock_data_in_production` |
 | **backend-agent** | Fase 5 (`POST /api/v1/contact`) | Seguir `especificacion-backend.md` |
-| **cloud-agent** | Fase 7 (preparación IaC) | **TASK-INFRA-001 obligatoria:** reconciliar `environments/dev.yml` a `sa-east-1` antes de despliegue |
+| **cloud-agent** | Fase 7 (preparación IaC) | Stacks alineados a `sa-east-1` (`dev.yml` reconciliado); sin despliegue sin aprobación humana |
 | **devops-agent** | Fase 7 (CI/pipeline) | Sin despliegue sin aprobación humana |
 
 **Tareas previas de infra (no bloquean inicio de código):**
 
-1. Reconciliar región DEV `us-east-1` → `sa-east-1` en `environments/dev.yml` (TASK-INFRA-001).
+1. ~~Reconciliar región DEV en `environments/dev.yml`~~ — **Cumplido:** `region: sa-east-1` confirmado (TASK-INFRA-001 en configuración NADF).
 2. Normalizar nombres de variables email a `CONTACT_EMAIL_FROM` / `CONTACT_EMAIL_TO` (coherencia con especificación backend).
-3. Despliegue DEV bloqueado hasta `deploy_human_approval` explícita.
+3. Alinear stacks Serverless e IaC a sa-east-1 antes de despliegue.
+4. Despliegue DEV bloqueado hasta `deploy_human_approval` explícita.
 
 Referencia completa: `artifacts/impacto-arquitectonico.md`.
 
@@ -376,7 +377,7 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 5 (completado) | **backend-impact-agent** | `evaluacion-backend.md` + `especificacion-backend.md` |
-| 6 (completado) | **architect-agent** | Plan Review → `approved`; `impacto-arquitectonico.md` |
+| 6 (completado) | **architect-agent** | Plan Review → `approved`; `impacto-arquitectonico.md` (revalidado 2026-07-15) |
 | 7+ | **frontend-integration-agent**, **backend-agent** | Execution autorizada (paralelo Fases 0–4 + Fase 5) |
 | 7 (infra) | **cloud-agent**, **devops-agent** | Preparación; reconciliar región; deploy con aprobación humana |
 | 11–13 | **qa-agent**, **security-agent**, **reviewer-agent** | Validation post-ejecución |
@@ -393,7 +394,7 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 - `.nadf/projects/novus-intelligence/environments/dev.yml`
 - `.nadf/projects/novus-intelligence/memory/brand-context.md`
 - `.nadf/projects/novus-intelligence/memory/technical-context.md`
-- ADR-0001, ADR-0002, ADR-0003, ADR-0004
+- ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0005
 - `artifacts/impacto-arquitectonico.md`
 - `artifacts/evaluacion-backend.md`
 - `artifacts/especificacion-backend.md`
@@ -407,3 +408,4 @@ Referencia completa: `artifacts/impacto-arquitectonico.md`.
 | 2026-07-14 | Plan generado en status `draft` | planner-agent |
 | 2026-07-14 | Evaluación y especificación backend generadas | backend-impact-agent |
 | 2026-07-14 | Plan Review completado; status `approved` | architect-agent |
+| 2026-07-15 | Revalidación paso-03; región DEV confirmada sa-east-1; Execution autorizada | architect-agent |
