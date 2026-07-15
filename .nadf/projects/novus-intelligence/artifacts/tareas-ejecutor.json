@@ -3,7 +3,7 @@
   "workflow": "novus-intelligence-lovable-to-web",
   "step": "paso-02-generar-plan",
   "producer": "planner-agent",
-  "createdAt": "2026-07-14T09:01:00Z",
+  "createdAt": "2026-07-15T19:39:00Z",
   "status": "draft",
   "baseline": {
     "sourceRepo": "novus-nexus",
@@ -13,9 +13,10 @@
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1",
-    "frontendUrl": "https://dev.novusintelligence.com",
+    "frontendUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+    "frontendUrlDnsPending": "https://dev.novusintelligence.com",
     "apiUrl": "https://api-dev.novusintelligence.com",
-    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+    "note": "Región sa-east-1 confirmada en environments/dev.yml y project-context.yml"
   },
   "scope": {
     "requiresBackend": true,
@@ -548,13 +549,13 @@
       "id": "TASK-INFRA-001",
       "agent": "cloud-agent",
       "phase": 7,
-      "title": "Reconciliar environments/dev.yml a región sa-east-1",
-      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "title": "Validar alineación environments/dev.yml y stacks a región sa-east-1",
+      "description": "Confirmar que dev.yml, Serverless stacks y recursos AWS usan región sa-east-1 (São Paulo).",
       "changeIds": ["CHG-011"],
       "dependencies": ["TASK-BI-001"],
       "priority": "high",
       "acceptanceCriteria": [
-        "dev.yml actualizado con region sa-east-1",
+        "dev.yml y stacks confirman region sa-east-1",
         "URLs DEV documentadas sin secrets"
       ],
       "blockedByPlanApproval": true,
@@ -818,6 +819,22 @@
       "blockedByPlanApproval": true
     },
     {
+      "id": "TASK-VP-001",
+      "agent": "visual-parity-agent",
+      "phase": 9,
+      "title": "Validar paridad visual exacta vs Lovable",
+      "description": "Comparar rutas /, /about, /services, /contact contra referencia Lovable. Threshold diff ≤ 0.2% (ADR-0006). Viewports 1440×900, 768×1024, 390×844.",
+      "changeIds": ["CHG-002", "CHG-003", "CHG-004", "CHG-006"],
+      "dependencies": ["TASK-QA-003"],
+      "priority": "critical",
+      "acceptanceCriteria": [
+        "Diff ratio ≤ 0.002 en todas las rutas y viewports configurados",
+        "artifacts/visual-parity-report.md generado",
+        "Gate visual_exact_parity evaluado"
+      ],
+      "blockedByPlanApproval": true
+    },
+    {
       "id": "TASK-REV-001",
       "agent": "reviewer-agent",
       "phase": 9,
@@ -877,6 +894,7 @@
     "TASK-QA-003",
     "TASK-QA-004",
     "TASK-QA-005",
+    "TASK-VP-001",
     "TASK-QA-006",
     "TASK-SEC-001",
     "TASK-SEC-002",
