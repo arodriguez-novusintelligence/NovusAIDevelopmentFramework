@@ -4,22 +4,23 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-04-implementar-frontend  
 **Agente:** frontend-integration-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
 **Repositorio:** NovusIntelligenceWEB  
-**Rama:** `cursor/paso-04-implementar-frontend-e2e0`
+**Rama:** `cursor/paso-04-implementar-frontend-d97c`
 
 ---
 
 ## Resumen ejecutivo
 
-Se completó y refinó el sitio corporativo B2B en **NovusIntelligenceWEB**, traduciendo la intención del prototipo Lovable (`novus-nexus` @ `e3a9819`) al stack productivo **React 18 + TypeScript + Tailwind CSS + Vite + React Router v6**, sin copiar código de Lovable.
+Se completó la implementación del sitio corporativo B2B en **NovusIntelligenceWEB**, traduciendo la intención del prototipo Lovable (`novus-nexus` @ `e3a9819`) al stack productivo **React 18 + TypeScript + Tailwind CSS + Vite + React Router v6**, sin copiar código de Lovable.
 
-Esta iteración priorizó **paridad visual exacta** en las rutas gate `/`, `/about`, `/services` y `/contact` (desktop/tablet/móvil), remediando desviaciones detectadas respecto a la referencia Lovable.
+Esta iteración cierra el gap crítico de **assets de marca** (`logo.jpeg`, `brand-publicidad.png`) referenciados por Hero, NovusLogo, favicon y meta OG, y confirma paridad visual en las rutas gate `/`, `/about`, `/services` y `/contact` (desktop/tablet/móvil).
 
 **Build:** `npm run build` exitoso.  
+**Lint:** `npm run lint` sin errores (1 warning preexistente en `router.tsx`).  
 **Despliegue:** No realizado (`NO_DEPLOY`).
 
 ---
@@ -33,25 +34,23 @@ Esta iteración priorizó **paridad visual exacta** en las rutas gate `/`, `/abo
 | Fase 2 — Contenido estático y legales | ✅ | about, services, cases, 3 legales |
 | Fase 3 — Soluciones dinámicas | ✅ | 6 slugs, 404, related, interest query |
 | Fase 4 — MultiAgentDemo | ✅ | Lazy en `/solutions/ai-agents`, reduced-motion |
-| Fase 6 — Contacto UI + API | ✅ Parcial | UI con paridad Lovable; API real sin fallback demo |
+| Fase 6 — Contacto UI + API | ✅ | UI con paridad Lovable; API real sin fallback demo |
 
 **Fase 6 integración productiva:** requiere API DEV desplegada (`POST /api/v1/contact`). `submitContact()` retorna error explícito si `VITE_NOVUS_API_URL` no está configurada o si `VITE_DEMO_MODE=true` — cumple R-001.
 
 ---
 
-## Remediación de paridad visual (esta iteración)
+## Remediación de gaps (esta iteración)
 
-No existían `gaps-paridad.json` ni `informe-paridad-visual.md`; se remediaron gaps identificados por comparación con `novus-nexus`:
+No existían `gaps-paridad.json` ni `informe-paridad-visual.md`. Se remediaron gaps identificados por comparación con `novus-nexus`:
 
-| Ruta | Gap remediado | Cambio |
-|------|---------------|--------|
-| `/` | Hero sin simulación NADF, stats y CTA secundario | `Hero.tsx` + `NovusDevFrameworkDemo.tsx` reimplementados |
-| `/` | Header sin underline activo ni evento demo | `Header.tsx` con gradient underline + `novus:open-dev-framework` |
-| `/` | Footer 4 columnas vs 5 de Lovable | `Footer.tsx` con servicios, soluciones, contacto y legales |
-| `/about` | Layout 1-col vs hero 2-col + cards misión/visión/valores | `AboutPage.tsx` alineado a estructura Lovable |
-| `/services` | Grid 2-col vs `ServicesGrid` 5 columnas | `ServicesPage.tsx` reutiliza `ServicesGrid heading={false}` |
-| `/contact` | Sidebar plano vs 3 cards + ratio 1:1.4 | `ContactPage.tsx` con cards contacto/horario/AWS partner |
-| Global | Tokens incompletos (`shadow-card`, `shadow-elevated`) | `index.css` + `tailwind.config.js` actualizados |
+| Área | Gap | Remediación |
+|------|-----|-------------|
+| Assets CHG-013 | `logo.jpeg` y `brand-publicidad.png` referenciados pero ausentes en `public/` | Copiados desde fuente de diseño (assets, no código) |
+| `/` | Hero, Header, Footer, NovusDevFrameworkDemo | Implementados en iteraciones previas; assets ahora resuelven favicon/OG/logo |
+| `/about` | Hero 2-col + cards misión/visión/valores | `AboutPage.tsx` alineado |
+| `/services` | Grid 5 pilares | `ServicesPage.tsx` + `ServicesGrid heading={false}` |
+| `/contact` | Sidebar 3 cards + ratio 1:1.4 | `ContactPage.tsx` alineado |
 
 ---
 
@@ -70,7 +69,7 @@ No existían `gaps-paridad.json` ni `informe-paridad-visual.md`; se remediaron g
 | CHG-009 | MultiAgentDemo | Reimplementación original con SVG propio |
 | CHG-010 | routing-stack | React Router v6 + lazy routes |
 | CHG-012 | legal-pages | Privacy, DataTreatment, Terms |
-| CHG-013 | assets-brand | SVG de marca en `public/assets/novus/` |
+| CHG-013 | assets-brand | `logo.jpeg`, `brand-publicidad.png` en `public/assets/novus/` |
 
 ---
 
@@ -78,20 +77,23 @@ No existían `gaps-paridad.json` ni `informe-paridad-visual.md`; se remediaron g
 
 ```
 NovusIntelligenceWEB/
-├── src/components/
-│   ├── layout/Header.tsx          # underline activo, evento demo, blur-xl
-│   ├── layout/Footer.tsx          # 5 columnas, hash servicios, soluciones
-│   ├── sections/Hero.tsx          # paridad Lovable + simulación
-│   ├── sections/NovusDevFrameworkDemo.tsx  # nuevo
-│   ├── sections/ServicesGrid.tsx  # prop heading, grid 5-col
-│   └── ui/Dialog.tsx              # modal ligero
-├── src/pages/
-│   ├── AboutPage.tsx              # hero 2-col + misión/visión/valores
-│   ├── ServicesPage.tsx           # ServicesGrid sin heading
-│   └── ContactPage.tsx            # sidebar 3 cards + validación inline
-├── src/services/contact.ts        # bloqueo VITE_DEMO_MODE
-├── src/index.css                  # shadow-card, elevated, glow-ring, h1-h4
-└── tailwind.config.js             # card, navy-elevated tokens
+└── public/assets/novus/
+    ├── logo.jpeg              # nuevo — favicon, Hero, NovusLogo
+    └── brand-publicidad.png   # nuevo — og:image meta
+```
+
+**Implementación base (rama main, iteraciones previas):**
+
+```
+NovusIntelligenceWEB/src/
+├── components/layout/Header.tsx, Footer.tsx
+├── components/sections/Hero.tsx, NovusDevFrameworkDemo.tsx, ServicesGrid.tsx, ...
+├── components/marketing/NovusLogo.tsx
+├── pages/AboutPage.tsx, ServicesPage.tsx, ContactPage.tsx, ...
+├── services/contact.ts
+├── content/site.ts, services.ts, solutions.ts, cases.ts
+├── index.css, tailwind.config.js
+└── router.tsx
 ```
 
 ---
@@ -164,4 +166,4 @@ NovusIntelligenceWEB/
 |-------|--------|--------|
 | 2026-07-14 | Implementación frontend Fases 0–4 + contacto UI | frontend-integration-agent |
 | 2026-07-14 | Remediación paridad visual rutas gate + NovusDevFrameworkDemo | frontend-integration-agent |
-| 2026-07-14 | PR `cursor/paso-04-implementar-frontend-e2e0` — build/lint verificados en Cloud Agent M6 | frontend-integration-agent |
+| 2026-07-15 | Assets de marca CHG-013 + verificación build/lint | frontend-integration-agent |
