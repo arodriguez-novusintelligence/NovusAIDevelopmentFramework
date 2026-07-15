@@ -5,7 +5,7 @@
 **Paso:** paso-15-registrar-adrs  
 **Agente:** adr-agent  
 **Patrón:** Blackboard Pattern  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
@@ -18,17 +18,20 @@
 | Campo | Valor |
 |-------|-------|
 | **Decisión** | **No ADR required** |
-| **ADRs creados** | Ninguno |
-| **Numeración siguiente disponible** | ADR-0006 |
+| **ADRs creados en esta sesión** | Ninguno |
+| **ADRs vigentes en repositorio** | ADR-0001 a ADR-0006 |
+| **Numeración siguiente disponible** | ADR-0007 |
 | **Evaluado por** | adr-agent |
 
 ---
 
 ## Resumen ejecutivo
 
-Tras revisar el plan aprobado, el impacto arquitectónico, la reflexión de ejecución, el decision-log del proyecto y los ADRs vigentes (ADR-0001 a ADR-0004), **no se identifica ninguna decisión arquitectónica nueva** que requiera registro como ADR-0006 en esta sesión del workflow.
+Tras revisar el plan aprobado, el impacto arquitectónico, la reflexión de ejecución, el decision-log del proyecto y los ADRs vigentes (**ADR-0001 a ADR-0006**), **no se identifica ninguna decisión arquitectónica nueva** que requiera registro como ADR-0007 en esta sesión del workflow.
 
-El alcance de la primera corrida Lovable → Web para Novus Intelligence **implementa** decisiones ya registradas en el framework; no introduce patrones, capas, entidades Meta Model ni cambios de gobernanza que excedan lo cubierto por ADR-0001 (fundación/separación Lovable), ADR-0002 (arquitectura multiagente), ADR-0003 (canonicalización workflow) y ADR-0004 (Meta Model v1.0).
+El alcance de la corrida Lovable → Web para Novus Intelligence **implementa** decisiones ya registradas en el framework; no introduce patrones, capas, entidades Meta Model ni cambios de gobernanza que excedan lo cubierto por los ADRs existentes.
+
+**Nota sobre numeración:** ADR-0005 (Agent Runtime Bridge) y ADR-0006 (Paridad visual + deploy automático solo DEV) ya existen en `.nadf/global/decision-history/adr/` y fueron registrados por **framework-architect-agent** y **decision-log** (2026-07-14). Este paso **no duplica** esos registros; confirma su cobertura del alcance actual.
 
 ---
 
@@ -44,7 +47,7 @@ El alcance de la primera corrida Lovable → Web para Novus Intelligence **imple
 | Propuesta infra | `artifacts/propuesta-infra.md` | ✅ Revisado |
 | Informe seguridad | `artifacts/informe-seguridad.md` | ✅ Revisado |
 | Actualización KB | `artifacts/actualizacion-kb.md` | ✅ Revisado |
-| ADRs existentes | `.nadf/global/decision-history/adr/` | ✅ ADR-0001 a ADR-0004 |
+| ADRs existentes | `.nadf/global/decision-history/adr/` | ✅ ADR-0001 a ADR-0006 |
 
 ---
 
@@ -58,7 +61,9 @@ El alcance de la primera corrida Lovable → Web para Novus Intelligence **imple
 | Arquitectura multiagente 7 capas / 19 agentes | Workflow ejecutado según fases | ADR-0002 |
 | Orden Planning → Plan Review → Execution → Validation | Respetado (pasos 1–13) | ADR-0003 |
 | Entidades Meta Model (Intent, Plan, Execution, Artifact) | Sin entidades ad hoc | ADR-0004 |
-| Sin despliegue autónomo | `NO_DEPLOY` respetado | ADR-0001 |
+| Runtime Cursor Cloud Agent (M6) | Contrato AgentRuntime adoptado | ADR-0005 |
+| Paridad visual + deploy automático solo DEV | Gate `visual_exact_parity`; MVP event-driven | ADR-0006 |
+| Sin despliegue autónomo a PROD | `NO_DEPLOY` respetado; auto-deploy solo DEV | ADR-0001, ADR-0006 |
 
 **Veredicto:** Cobertura completa por ADRs existentes. No requiere ADR nuevo.
 
@@ -70,7 +75,7 @@ El alcance de la primera corrida Lovable → Web para Novus Intelligence **imple
 | cloud-agent (`propuesta-infra.md`) | TASK-INFRA-001 ejecutada; región alineada |
 | decision-log (2026-07-14) | Documentado como resultado operativo de corrida |
 
-**Veredicto:** Ajuste de configuración de entorno DEV dentro del alcance AWS ya adoptado (ADR-0001, §7). No amerita ADR de framework.
+**Veredicto:** Ajuste de configuración de entorno DEV dentro del alcance AWS ya adoptado (ADR-0001). No amerita ADR de framework.
 
 ### 3. API de contacto sin base de datos (SES + stateless)
 
@@ -92,7 +97,7 @@ El alcance de la primera corrida Lovable → Web para Novus Intelligence **imple
 | security-agent (SEC-002) | `rateLimitResponse()` definido pero **no implementado** — gap de ejecución |
 | KB (`rate-limiting-serverless-public-apis.md`) | Matriz de opciones documentada como patrón reutilizable |
 
-**Veredicto:** **No crear ADR.** No existe decisión tomada y cerrada en la sesión; hay propuestas divergentes y un hallazgo de implementación pendiente. Registrar un ADR ahora violaría la regla adr-agent de no inventar decisiones no tomadas. Cuando backend-agent o architect-agent formalicen la opción (A/B/C/D de la matriz KB), corresponderá ADR-0006 en una sesión posterior.
+**Veredicto:** **No crear ADR.** No existe decisión tomada y cerrada en la sesión; hay propuestas divergentes y un hallazgo de implementación pendiente. Registrar un ADR ahora violaría la regla adr-agent de no inventar decisiones no tomadas. Cuando backend-agent o architect-agent formalicen la opción (A/B/C/D de la matriz KB), corresponderá **ADR-0007** en una sesión posterior.
 
 ### 5. Gestión de secretos SSM/Secrets Manager vs env plano (ADR-REC-002 sugerido por reflexión)
 
@@ -103,7 +108,7 @@ El alcance de la primera corrida Lovable → Web para Novus Intelligence **imple
 | security-agent (SEC-003) | Recomendación no bloqueante: migrar `${env:...}` a `${ssm:...}` |
 | ADR-0001 + gate `no_secrets_in_repo` | Política ya establecida a nivel framework |
 
-**Veredicto:** **No crear ADR.** La política «sin secrets en repo» ya está en ADR-0001 y quality gates. El split Secrets Manager / SSM es detalle de implementación AWS documentado en artefactos de planning (`especificacion-backend.md`, `propuesta-infra.md`). La desalineación implementación vs propuesta es deuda técnica (SEC-003), no decisión arquitectónica pendiente de registro.
+**Veredicto:** **No crear ADR.** La política «sin secrets en repo» ya está en ADR-0001 y quality gates. El split Secrets Manager / SSM es detalle de implementación AWS documentado en artefactos de planning. La desalineación implementación vs propuesta es deuda técnica (SEC-003), no decisión arquitectónica pendiente de registro.
 
 ### 6. Temas explícitamente descartados por architect-agent
 
@@ -119,12 +124,12 @@ Esta evaluación se **confirma** tras la ejecución parcial y la reflexión (pas
 
 | ADR | Título | Cobertura en esta corrida |
 |-----|--------|---------------------------|
-| ADR-0001 | Fundación NADF | Separación Lovable/productivo, quality gates, sin deploy autónomo |
+| ADR-0001 | Fundación NADF | Separación Lovable/productivo, quality gates, sin deploy autónomo a PROD |
 | ADR-0002 | Arquitectura multiagente | 7 capas, 7 patrones, 19 agentes, fases workflow |
 | ADR-0003 | Canonicalización lovable-to-web | 18 pasos; backend-impact antes de Plan Review |
 | ADR-0004 | NADF Meta Model v1.0 | Entidades oficiales; Intent → Knowledge |
-
-**ADR-0005:** No existe en repositorio. Sin impacto según architect-agent (D-005).
+| ADR-0005 | Agent Runtime Bridge (M6) | Contrato AgentRuntime; Cursor Cloud como motor de ejecución |
+| ADR-0006 | Paridad visual + deploy auto DEV | `visual-parity-agent`, gate `visual_exact_parity`, MVP event-driven |
 
 ---
 
@@ -148,7 +153,7 @@ Estas recomendaciones permanecen documentadas en:
 | Criterio adr-agent | Estado |
 |--------------------|--------|
 | Decisión identificada sin contenido para ADR | ✅ N/A — sin decisión nueva |
-| Numeración ADR duplicada | ✅ N/A — sin creación |
+| Numeración ADR duplicada | ✅ N/A — sin creación; ADR-0006 ya existe |
 | ADR incompleto | ✅ N/A — sin creación |
 | Inventar decisiones no tomadas | ✅ Evitado — temas abiertos diferidos |
 
@@ -170,7 +175,7 @@ Estas recomendaciones permanecen documentadas en:
 
 **none** — Paso 15 completado. El workflow puede cerrar la fase Knowledge tras este registro.
 
-> **Nota operativa:** Antes de considerar el workflow desbloqueado, persisten correcciones de ejecución (QA-001, SEC-001, SEC-002) y re-validación. Los ADRs diferidos (ADR-REC-001/002) pueden registrarse en una corrida futura cuando las decisiones estén formalizadas.
+> **Nota operativa:** Antes de considerar el workflow desbloqueado, persisten correcciones de ejecución (QA-001, SEC-001, SEC-002) y re-validación. Los ADRs diferidos (ADR-REC-001/002) pueden registrarse como **ADR-0007+** en una corrida futura cuando las decisiones estén formalizadas.
 
 ---
 
@@ -184,6 +189,8 @@ Estas recomendaciones permanecen documentadas en:
 - `.nadf/global/decision-history/adr/ADR-0002-multiagent-patterns.md`
 - `.nadf/global/decision-history/adr/ADR-0003-lovable-to-web-canonicalization.md`
 - `.nadf/global/decision-history/adr/ADR-0004-nadf-meta-model.md`
+- `.nadf/global/decision-history/adr/ADR-0005-agent-runtime-bridge.md`
+- `.nadf/global/decision-history/adr/ADR-0006-visual-parity-and-auto-dev-deploy.md`
 - `.claude/agents/adr-agent.md`
 
 ---
@@ -192,4 +199,5 @@ Estas recomendaciones permanecen documentadas en:
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Evaluación completada — **No ADR required** | adr-agent |
+| 2026-07-14 | Evaluación inicial — **No ADR required** (ADR-0001 a ADR-0004) | adr-agent |
+| 2026-07-15 | Re-evaluación — **No ADR required**; ADR-0005/0006 confirmados vigentes; siguiente ADR-0007 | adr-agent |
