@@ -1,9 +1,9 @@
 {
-  "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
+  "planId": "PLAN-NOVUS-LOVABLE-2026-07-15",
   "workflow": "novus-intelligence-lovable-to-web",
   "step": "paso-02-generar-plan",
   "producer": "planner-agent",
-  "createdAt": "2026-07-14T09:01:00Z",
+  "createdAt": "2026-07-15T20:12:00Z",
   "status": "draft",
   "baseline": {
     "sourceRepo": "novus-nexus",
@@ -13,9 +13,10 @@
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1",
-    "frontendUrl": "https://dev.novusintelligence.com",
+    "frontendUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+    "frontendUrlDnsPending": "https://dev.novusintelligence.com",
     "apiUrl": "https://api-dev.novusintelligence.com",
-    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+    "note": "Región oficial DEV sa-east-1 según environments/dev.yml y project-context.yml"
   },
   "scope": {
     "requiresBackend": true,
@@ -548,14 +549,15 @@
       "id": "TASK-INFRA-001",
       "agent": "cloud-agent",
       "phase": 7,
-      "title": "Reconciliar environments/dev.yml a región sa-east-1",
-      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "title": "Verificar alineación environments/dev.yml con sa-east-1",
+      "description": "Confirmar que configuración DEV (región sa-east-1, buckets, CloudFront, API URL) es coherente con project-context.yml antes de IaC.",
       "changeIds": ["CHG-011"],
       "dependencies": ["TASK-BI-001"],
       "priority": "high",
       "acceptanceCriteria": [
-        "dev.yml actualizado con region sa-east-1",
-        "URLs DEV documentadas sin secrets"
+        "dev.yml verificado con region sa-east-1",
+        "URLs DEV documentadas sin secrets",
+        "Stack novus-intelligence-back-dev alineado a sa-east-1"
       ],
       "blockedByPlanApproval": true,
       "requiresHumanApprovalForDeploy": false
@@ -833,6 +835,22 @@
         "Alcance implementado coincide con plan aprobado"
       ],
       "blockedByPlanApproval": true
+    },
+    {
+      "id": "TASK-VP-001",
+      "agent": "visual-parity-agent",
+      "phase": 9,
+      "title": "Validar paridad visual exacta vs Lovable",
+      "description": "Comparar rutas /, /about, /services, /contact en viewports 1440x900, 768x1024, 390x844. Gate visual_exact_parity (diff ≤ 0.2%).",
+      "changeIds": ["CHG-002", "CHG-003", "CHG-004"],
+      "dependencies": ["TASK-QA-003"],
+      "priority": "high",
+      "acceptanceCriteria": [
+        "Diff ratio ≤ 0.002 en rutas definidas",
+        "Resultado documentado en artifacts de paridad visual",
+        "Paridad es resultado visual, no copia de código"
+      ],
+      "blockedByPlanApproval": true
     }
   ],
   "executionOrder": [
@@ -881,7 +899,8 @@
     "TASK-SEC-001",
     "TASK-SEC-002",
     "TASK-SEC-003",
-    "TASK-REV-001"
+    "TASK-REV-001",
+    "TASK-VP-001"
   ],
   "nextAgentSuggested": "backend-impact-agent"
 }
