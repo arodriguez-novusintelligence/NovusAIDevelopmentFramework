@@ -4,7 +4,7 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-05-evaluar-backend  
 **Agente:** backend-impact-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Estado:** Especificación de planificación (sin código)  
 **Repositorio destino:** NovusIntelligenceBack  
 **Target environment:** DEV — AWS `sa-east-1`  
@@ -364,7 +364,7 @@ Variable sugerida: `RATE_LIMIT_PER_IP` (requests por ventana).
 | Observabilidad | CloudWatch | Log group `/aws/lambda/novus-contact-handler` |
 | IaC | Serverless Framework | Stack `novus-intelligence-back-dev` |
 
-**Región:** `sa-east-1` (reconciliar `environments/dev.yml`).
+**Región:** `sa-east-1` (confirmada en `environments/dev.yml`).
 
 **Despliegue:** Solo con aprobación humana explícita (`deploy_human_approval`).
 
@@ -489,4 +489,5 @@ components:
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Especificación backend generada | backend-impact-agent |
+| 2026-07-14 | Especificación backend generada (borrador inicial) | backend-impact-agent |
+| 2026-07-15 | Especificación reconfirmada; alineada con plan `approved` y R-001 | backend-impact-agent |

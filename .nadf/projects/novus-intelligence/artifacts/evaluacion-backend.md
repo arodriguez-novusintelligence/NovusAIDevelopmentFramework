@@ -4,11 +4,11 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-05-evaluar-backend  
 **Agente:** backend-impact-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Runtime:** Cursor Cloud Agent (adaptador M6 cursor-cloud)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Baseline Lovable:** novus-nexus @ `e3a9819`  
-**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`draft`)
+**Plan referenciado:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)
 
 ---
 
@@ -165,9 +165,8 @@ El `database-agent` (paso 9) **no aplica** en esta iteración.
 
 ### Nota de reconciliación regional
 
-- `environments/dev.yml` declara `region: us-east-1`.
-- El constraint del workflow exige **TARGET_DEV_REGION_SA_EAST_1**.
-- **Acción downstream:** `cloud-agent` (TASK-INFRA-001) debe actualizar `dev.yml` y stacks Serverless antes del despliegue DEV.
+- `environments/dev.yml` declara `region: sa-east-1` (alineado con **TARGET_DEV_REGION_SA_EAST_1**).
+- **Acción downstream:** `cloud-agent` (TASK-INFRA-001) debe verificar que stacks Serverless e IaC de NovusIntelligenceBack usen la misma región antes del despliegue DEV.
 
 ### URLs DEV objetivo
 
@@ -257,4 +256,5 @@ flowchart LR
 
 | Fecha | Acción | Agente |
 |-------|--------|--------|
-| 2026-07-14 | Evaluación backend generada | backend-impact-agent |
+| 2026-07-14 | Evaluación backend generada (borrador inicial) | backend-impact-agent |
+| 2026-07-15 | Evaluación reconfirmada; plan `approved`; región DEV verificada en dev.yml | backend-impact-agent |
