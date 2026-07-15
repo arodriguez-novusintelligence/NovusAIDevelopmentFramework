@@ -4,6 +4,26 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-15 — Primera corrida Lovable→Web documentada (paso-11)
+
+**Contexto:** Se completó la primera ejecución end-to-end del workflow `novus-intelligence-lovable-to-web` con 13 cambios Lovable (`e3a9819`), plan `PLAN-NOVUS-LOVABLE-2026-07-14` aprobado y runtime Cursor Cloud Agent (M6).
+
+**Decisión / resultado documentado:**
+- Implementación productiva mergeada en `main`: **NovusIntelligenceWEB** @ `783acea`, **NovusIntelligenceBack** @ `6090f73`.
+- Validación QA y seguridad en **PASS** tras remediar lint WEB, IAM SES y rate limit por IP.
+- Gate `visual_exact_parity` en **FAIL** (12/12 capturas; diff máx. 9,6 %) — único bloqueante activo.
+- Despliegue DEV no ejecutado (`NO_DEPLOY`); infra documentada en `propuesta-infra.md` (sa-east-1).
+- 11 PRs Framework mergeados (#1, #3–#5, #7–#13); 4 PRs draft de re-validación 2026-07-15 (#104–#107).
+- 17 de 19 agentes NADF ejecutados; pendientes: `devops-agent` (pipeline) y `reviewer-agent` (bloqueado por paridad).
+
+**Rationale:** La documentación consolida evidencia del Blackboard para trazabilidad Meta Model (Execution → Validation → Knowledge) y habilita remediación dirigida por `frontend-integration-agent` antes de reviewer y deploy.
+
+**Artefactos:** `artifacts/resumen-ejecucion.md`, `artifacts/informe-qa.md`, `artifacts/informe-seguridad.md`, `artifacts/informe-paridad-visual.md`
+
+**Próximo agente sugerido:** `frontend-integration-agent`
+
+---
+
 ## 2026-07-14 — MVP automatización + paridad visual exacta
 
 **Contexto:** El sitio DEV no igualaba Lovable y no había trigger automático ante `lovable.commit`.
