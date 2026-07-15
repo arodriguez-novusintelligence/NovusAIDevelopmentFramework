@@ -4,7 +4,7 @@
   "step": "paso-09-validar-qa",
   "agent": "qa-agent",
   "agentName": "qa-agent",
-  "timestamp": "2026-07-14T10:30:00Z",
+  "timestamp": "2026-07-15T20:30:00Z",
   "runtime": "Cursor Cloud Agent (M6)",
   "targetEnvironment": {
     "name": "dev",
@@ -13,25 +13,26 @@
   },
   "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
   "planStatus": "approved",
-  "status": "fail",
-  "qualityScore": 0,
-  "summary": "Build exitoso en WEB y Back; lint WEB falla con 4 errores ESLint bloqueantes. Gates críticos de seguridad, mocks y copia Lovable pasan. Workflow bloqueado hasta corregir lint.",
+  "status": "pass",
+  "qualityScore": 100,
+  "summary": "Build y lint exitosos en WEB y Back (main). Gates críticos QA cumplen: sin mocks prod, sin copia Lovable, sin secrets, plan approved. Responsive y SEO básico verificados por análisis estático.",
   "repositories": {
     "framework": {
       "name": "NovusAIDevelopmentFramework",
-      "branch": "cursor/propuesta-infra-dev-1385",
-      "evaluated": true
+      "branch": "cursor/propuesta-infra-dev-a1e7",
+      "evaluated": true,
+      "artifactsPath": ".nadf/projects/novus-intelligence/artifacts/"
     },
     "frontend": {
       "name": "NovusIntelligenceWEB",
-      "branch": "cursor/implement-novus-frontend-2d22",
-      "mainBranchStatus": "scaffold_only",
+      "branch": "main",
+      "commit": "783acea",
       "evaluated": true
     },
     "backend": {
       "name": "NovusIntelligenceBack",
-      "branch": "cursor/implement-contact-api-04c8",
-      "mainBranchStatus": "scaffold_only",
+      "branch": "main",
+      "commit": "6090f73",
       "evaluated": true
     }
   },
@@ -40,15 +41,23 @@
       "id": "build-web",
       "repo": "NovusIntelligenceWEB",
       "command": "npm run build",
-      "status": "pass"
+      "status": "pass",
+      "details": "Vite 6, 1630 modules, dist generated"
     },
     {
       "id": "lint-web",
       "repo": "NovusIntelligenceWEB",
       "command": "npm run lint",
-      "status": "fail",
-      "errors": 4,
+      "status": "pass",
+      "errors": 0,
       "warnings": 1
+    },
+    {
+      "id": "audit-web",
+      "repo": "NovusIntelligenceWEB",
+      "command": "npm audit --audit-level=high",
+      "status": "pass",
+      "vulnerabilities": 0
     },
     {
       "id": "build-back",
@@ -61,6 +70,38 @@
       "repo": "NovusIntelligenceBack",
       "command": "npm run lint",
       "status": "pass"
+    },
+    {
+      "id": "secrets-scan",
+      "repo": "all",
+      "method": "regex_scan",
+      "status": "pass"
+    },
+    {
+      "id": "mock-policy-scan",
+      "repo": "NovusIntelligenceWEB",
+      "method": "static_code_review",
+      "status": "pass"
+    },
+    {
+      "id": "lovable-copy-scan",
+      "repo": "NovusIntelligenceWEB",
+      "method": "grep_novus-nexus",
+      "status": "pass"
+    },
+    {
+      "id": "responsive-static",
+      "repo": "NovusIntelligenceWEB",
+      "method": "static_code_review",
+      "status": "pass",
+      "breakpoints": ["375px", "768px", "1280px"]
+    },
+    {
+      "id": "seo-static",
+      "repo": "NovusIntelligenceWEB",
+      "method": "static_code_review",
+      "status": "pass",
+      "routesWithMeta": 11
     }
   ],
   "qualityGates": [
@@ -80,7 +121,7 @@
       "id": "no_mock_data_in_production",
       "blocking": true,
       "status": "pass",
-      "evidence": "contact.ts sin fallback demo; error explícito sin VITE_NOVUS_API_URL"
+      "evidence": "contact.ts rechaza VITE_DEMO_MODE=true; error explícito sin VITE_NOVUS_API_URL"
     },
     {
       "id": "no_secrets_in_repo",
@@ -91,14 +132,14 @@
     {
       "id": "build_success",
       "blocking": true,
-      "status": "fail",
-      "evidence": "Build OK en ambos repos; lint WEB 4 errores @typescript-eslint/no-empty-object-type"
+      "status": "pass",
+      "evidence": "npm run build y npm run lint exitosos en WEB y Back"
     },
     {
       "id": "responsive_validation",
       "blocking": true,
       "status": "pass",
-      "evidence": "Análisis estático: breakpoints sm/md/lg y menú móvil presentes",
+      "evidence": "Breakpoints sm/md/lg y menú móvil presentes en Header y páginas",
       "method": "static_code_review"
     },
     {
@@ -118,41 +159,34 @@
   "planAlignment": {
     "status": "partial",
     "completedPhases": [0, 1, 2, 3, 4, 5],
-    "pendingPhases": [6, 7],
+    "partialPhases": [6, 7],
+    "notApplicablePhases": [8],
     "gaps": [
-      "NovusIntelligenceWEB lint errors block merge to main",
-      "Feature branches not merged to main in WEB and Back",
-      "resumen-backend.md not merged in Framework artifacts",
+      "E2E contact API test blocked by NO_DEPLOY",
       "pipeline-config.md missing (TASK-DEVOPS-001)",
-      "E2E contact API test blocked by NO_DEPLOY"
+      "resumen-backend.md not in Framework artifacts",
+      "security-result.json (2026-07-14) requires re-validation after Back fixes"
     ]
   },
-  "lintErrors": [
+  "warnings": [
     {
-      "file": "src/components/ui/Input.tsx",
-      "line": 4,
-      "rule": "@typescript-eslint/no-empty-object-type"
+      "id": "QA-W001",
+      "severity": "low",
+      "message": "ESLint warning react-refresh/only-export-components in router.tsx"
     },
     {
-      "file": "src/components/ui/Label.tsx",
-      "line": 4,
-      "rule": "@typescript-eslint/no-empty-object-type"
+      "id": "QA-W002",
+      "severity": "medium",
+      "message": "security-result.json still fail from prior run; Back main includes SEC remediations"
     },
     {
-      "file": "src/components/ui/Select.tsx",
-      "line": 4,
-      "rule": "@typescript-eslint/no-empty-object-type"
-    },
-    {
-      "file": "src/components/ui/Textarea.tsx",
-      "line": 4,
-      "rule": "@typescript-eslint/no-empty-object-type"
+      "id": "QA-W003",
+      "severity": "medium",
+      "message": "visual_exact_parity gate not evaluated by qa-agent"
     }
   ],
-  "blockers": [
-    "NovusIntelligenceWEB: 4 errores ESLint bloqueantes en componentes UI"
-  ],
-  "nextAgentSuggested": "frontend-integration-agent",
+  "blockers": [],
+  "nextAgentSuggested": "security-agent",
   "artifactsProduced": [
     "artifacts/informe-qa.md",
     "artifacts/qa-result.json"
