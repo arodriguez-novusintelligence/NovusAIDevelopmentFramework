@@ -1,184 +1,118 @@
 # Impacto Backend — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  
-**Fuente:** novus-nexus @ `e3a9819`  
-**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS us-east-1)  
-**Fecha:** 2026-07-14  
+**Fuente:** novus-nexus @ `749430f` (delta desde `e3a9819`)  
+**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS sa-east-1)  
+**Fecha:** 2026-07-15  
 **Agente:** lovable-analyzer-agent
 
 ---
 
 ## Resumen ejecutivo
 
-El prototipo Lovable **requiere un único endpoint backend** para funcionalidad productiva: el formulario de contacto. No se detectan otros endpoints, bases de datos ni integraciones backend en el snapshot actual. El componente `MultiAgentDemo` es puramente frontend (visualización educativa) y no requiere API.
+El **delta incremental no introduce nuevos requisitos backend**. Los cambios del commit `749430f` y commits intermedios son exclusivamente de presentación (contacto light), interactividad frontend (`NovusDevFrameworkDemo`), contenido visual (Testimonials/logos) e infraestructura CI (`notify-nadf.yml`).
 
-**backendRequired: true** — condicionado al formulario de contacto.
+**backendRequired para el delta: false**  
+**backendRequired acumulado (sitio completo): true** — por el formulario de contacto documentado en snapshot previo (CHG-008/CHG-011).
 
 ---
 
-## Endpoints requeridos
+## Análisis por cambio del delta
+
+| ID | Componente | requiresBackend | Evaluación |
+|----|------------|-----------------|------------|
+| CHG-014 | contact-form (light theme) | false | Solo CSS/tokens; `submitContact()` sin cambios |
+| CHG-015 | NovusDevFrameworkDemo | false | Simulación educativa en Dialog; estado local React |
+| CHG-016 | Header event | false | CustomEvent browser; sin API |
+| CHG-017 | Hero CTAs | false | Navegación/UI local |
+| CHG-018 | Testimonials | false | Contenido estático desde `cases.ts` |
+| CHG-019 | logos assets | false | Assets estáticos; sin CDN dinámico |
+| CHG-020 | notify-nadf.yml | false* | CI cross-repo; no endpoint de aplicación |
+
+\* CHG-020 afecta orquestación NADF (GitHub `repository_dispatch`), no NovusIntelligenceBack.
+
+---
+
+## Endpoint existente (sin cambios en delta)
 
 ### POST /api/v1/contact
+
+El formulario de contacto mantiene la misma estructura y contrato del snapshot previo:
 
 | Atributo | Valor |
 |----------|-------|
 | Operación | `submitContact` |
 | Contrato | `novus-nexus/src/integrations/aws/contact-api.contract.ts` |
 | OpenAPI | `novus-nexus/reglasInfra/backend-endpoints.yml` |
-| Lambda sugerida | `novus-contact-handler` |
-| Runtime | Node.js 20.x |
-| Timeout | 10s |
+| Campos | name, company, email, phone, message, solutionInterest |
+| Cambio visual | Ninguno en payload ni validación |
 
-#### Request body (ContactRequest)
+#### Observación sobre modo demo (persistente)
 
-```json
-{
-  "name": "string (2–120, required)",
-  "company": "string (max 160)",
-  "email": "string (email, required)",
-  "phone": "string (max 40)",
-  "message": "string (5–4000, required)",
-  "solutionInterest": "enum: ai-agents | automation | integrations | analytics | documents-ai | customer-ai"
-}
-```
-
-#### Response body (ContactResponse)
-
-```json
-{
-  "ok": true,
-  "requestId": "string",
-  "message": "string"
-}
-```
-
-#### Códigos de respuesta
-
-| Código | Significado |
-|--------|-------------|
-| 200 | Mensaje recibido correctamente |
-| 400 | Validación fallida |
-| 429 | Rate limit excedido |
-| 500 | Error interno |
+`src/lib/api/contact.ts` sigue retornando éxito simulado cuando `VITE_DEMO_MODE=true` o DEV sin `VITE_NOVUS_API_URL`. El rediseño light del formulario **no elimina** este comportamiento.
 
 ---
 
-## Implementación backend esperada
+## Impacto en infraestructura / orquestación
 
-Según `reglasInfra/backend-endpoints.yml`:
+### notify-nadf.yml (CHG-020)
 
-| Componente | Especificación |
-|------------|----------------|
-| **Lambda** | `novus-contact-handler`, handler `index.handler` |
-| **API Gateway** | REST o HTTP API con ruta `/api/v1/contact` |
-| **SES** | Envío de email a `CONTACT_SES_TO` desde `CONTACT_SES_FROM` |
-| **CRM (opcional)** | Webhook a `CRM_WEBHOOK_URL` |
-| **Permisos IAM** | `ses:SendEmail`, `logs:*` |
-| **Observabilidad** | CloudWatch alarms (lambda errors, API 5xx) |
+| Aspecto | Detalle |
+|---------|---------|
+| Trigger | Push a `main` en novus-nexus |
+| Acción | `repository_dispatch` → NovusAIDevelopmentFramework |
+| Event type | `lovable-commit` |
+| Payload | `source`, `sha`, `ref` |
+| Secret | `NADF_DISPATCH_TOKEN` en repo novus-nexus |
 
-### Variables de entorno requeridas
-
-| Variable | Tipo | Uso |
-|----------|------|-----|
-| `CONTACT_SES_FROM` | Secreto | Email remitente SES |
-| `CONTACT_SES_TO` | Secreto | Email destino notificaciones |
-| `CRM_WEBHOOK_URL` | Secreto (opcional) | Integración CRM externa |
-
-### Variables frontend (públicas)
-
-| Variable | Valor prod | Uso |
-|----------|------------|-----|
-| `VITE_NOVUS_API_URL` | `https://api.novusintelligencesolutions.com` | Base URL API |
-| `VITE_DEMO_MODE` | `false` | **Obligatorio false en producción** |
+**Impacto en NovusIntelligenceBack:** ninguno directo.  
+**Impacto en pipeline NADF:** habilita sincronización event-driven documentada en `project-context.yml` (`automation.trigger: lovable.commit`).
 
 ---
 
-## Comportamiento actual en Lovable (no productivo)
+## Evaluación de componentes interactivos
 
-El archivo `src/lib/api/contact.ts` implementa un fallback demo:
-
-- Si `VITE_NOVUS_API_URL` no está definida **y** (`VITE_DEMO_MODE=true` o `import.meta.env.DEV`), retorna éxito simulado con `requestId: demo-{timestamp}`.
-- En producción sin API, retorna `{ ok: false, message: "Servicio de contacto no configurado." }`.
-
-**Este fallback demo NO debe replicarse en el frontend productivo.** Es un riesgo documentado en `riesgos.md`.
-
----
-
-## Funcionalidades sin impacto backend
-
-| Componente | Motivo |
-|------------|--------|
-| MultiAgentDemo | Visualización estática/animada; datos hardcoded en componente |
-| Navegación y routing | Client-side only |
-| Contenido estático (services, solutions, cases) | Archivos TS estáticos; migrar a content/ del frontend |
-| Páginas legales | Contenido estático |
-| SEO meta tags | Generados en build/SSR del frontend |
-| Header/Footer/Layout | Sin datos dinámicos |
+| Componente | ¿Llama API? | Notas |
+|------------|-------------|-------|
+| NovusDevFrameworkDemo | No | Textos de simulación son estáticos; deploy/preview son narrativos |
+| MultiAgentDemo (previo) | No | Diagrama SVG educativo en `/solutions/ai-agents` |
+| Formulario contacto | Sí (sin cambio) | Único punto de integración backend del sitio |
 
 ---
 
-## Seguridad y validación
+## Recomendaciones para agentes downstream
 
-Requisitos detectados en Lovable y reglas de infra:
+### backend-impact-agent (paso-05)
 
-| Requisito | Estado en Lovable | Requerido en backend |
-|-----------|-------------------|----------------------|
-| Validación campos required | Client-side | Server-side obligatorio |
-| Rate limiting | No implementado | Recomendado (429) |
-| Captcha (hCaptcha/Turnstile) | Pendiente (gap documentado) | Recomendado pre-prod |
-| Sanitización input | No visible | Obligatorio |
-| CORS | No definido en Lovable | Configurar en API Gateway |
-| Secrets en código | No detectados | Mantener en AWS Secrets/SSM |
+- Confirmar que el delta no altera `evaluacion-backend.md` ni `especificacion-backend.md` existentes.
+- Si el endpoint contact ya está especificado, **no replanificar** por este delta.
 
----
+### backend-agent (ejecución)
 
-## Dependencias AWS
+- Prioridad sin cambios: implementar `POST /api/v1/contact` según contrato OpenAPI.
+- Integraciones sugeridas (sin cambio): SES/SNS para notificación, DynamoDB o SQS para persistencia (según spec previa).
 
-| Servicio | Uso | Prioridad |
-|----------|-----|-----------|
-| Lambda | Handler de contacto | Alta |
-| API Gateway | Exposición REST | Alta |
-| SES | Notificación email | Alta |
-| CloudWatch | Logs y alarmas | Media |
-| Amplify (frontend) | Hosting | Media (DevOps, no backend logic) |
+### cloud-agent / devops-agent
 
-Dominios esperados (según `reglasInfra/aws-prod.yml`):
-
-- API prod: `https://api.novusintelligencesolutions.com`
-- API dev: `https://dev-api.novusintelligencesolutions.com`
+- Verificar que `NADF_DISPATCH_TOKEN` esté configurado en secrets de novus-nexus para que el workflow notify funcione.
+- No requiere cambios en Lambdas por este delta.
 
 ---
 
-## Evaluación de necesidad backend por cambio
+## Matriz de severidad backend
 
-| ID Cambio | Componente | requiresBackend | Justificación |
-|-----------|------------|-----------------|---------------|
-| CHG-008 | contact-form | **Sí** | Submit a API real |
-| CHG-011 | api-contract | **Sí** | Define contrato a implementar |
-| CHG-009 | MultiAgentDemo | No | Solo visualización |
-| CHG-001–007, 010, 012–013 | Resto | No | Frontend/contenido estático |
-
----
-
-## Gaps pendientes (handoff a backend-impact-agent)
-
-1. **Captcha:** Lovable documenta como TODO pre-prod; backend debe soportar validación de token.
-2. **CRM webhook:** Opcional; definir si se implementa en MVP.
-3. **i18n:** No requiere backend en alcance actual.
-4. **Blog/recursos:** Fuera de alcance inicial.
+| Área | Delta | Acumulado |
+|------|-------|-----------|
+| Nuevos endpoints | 0 | 1 (`/api/v1/contact`) |
+| Cambios contrato | 0 | 0 |
+| Base de datos | 0 | según spec previa |
+| Autenticación | 0 | 0 (endpoint público con rate limit) |
+| Secrets nuevos | 1 (CI only) | API keys backend sin cambio |
 
 ---
 
-## Recomendación para planner-agent
+## Conclusión
 
-1. Incluir implementación de `POST /api/v1/contact` como **tarea bloqueante** para la página de contacto productiva.
-2. Coordinar con **backend-impact-agent** (paso 5) para `evaluacion-backend.md` y `especificacion-backend.md`.
-3. El MultiAgentDemo puede implementarse en frontend sin esperar backend.
-4. Secuenciar: backend contact API → frontend contacto con API real → validación QA.
+El paso-01 sobre el delta `e3a9819..749430f` **no bloquea** la planificación backend. El único requisito backend del proyecto sigue siendo el formulario de contacto. Los dos componentes de simulación (`NovusDevFrameworkDemo` y `MultiAgentDemo`) son frontend puro y no generan carga en NovusIntelligenceBack.
 
----
-
-## Próximo agente
-
-**backend-impact-agent** (paso 5 del workflow) debe detallar la especificación Lambda, IAM y despliegue.  
-**planner-agent** (paso 4) debe incluir la dependencia backend en el plan de implementación.
+**Siguiente agente:** planner-agent (puede proceder con plan de frontend prioritario; backend-impact puede reutilizar evaluación previa).
