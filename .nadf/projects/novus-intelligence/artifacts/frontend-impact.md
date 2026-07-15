@@ -1,171 +1,160 @@
 # Impacto Frontend — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  
-**Fuente:** novus-nexus @ `e3a9819`  
+**Fuente:** novus-nexus @ `719ea6b` (delta: `e3a9819..719ea6b`)  
 **Destino:** NovusIntelligenceWEB (React + TypeScript + Tailwind + React Router + Vite)  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-15  
 **Agente:** lovable-analyzer-agent
 
 ---
 
 ## Resumen ejecutivo
 
-El prototipo Lovable define un **sitio corporativo B2B completo** con design system dark-first (navy + cyan + púrpura), 10 rutas navegables y un componente interactivo nuevo (`MultiAgentDemo`) en la solución AI Agents. La traducción al frontend productivo requiere **reimplementar la intención visual y funcional** sin copiar código, adaptando routing (TanStack → React Router) y tokens al design system existente de NovusIntelligenceWEB.
+Desde el análisis anterior (`e3a9819`), Lovable introdujo **tres áreas de impacto principal** en frontend productivo:
+
+1. **Tema claro en contacto** — variante `contact-light` con tokens semánticos locales y gradiente radial.
+2. **Sección Testimonials rediseñada** — contraste claro/oscuro, logos de clientes y tarjetas tipo contact card.
+3. **Simulación NovusAIDevelopmentFramework** — modal interactivo en Hero con diagrama de 4 columnas y timeline de 9 pasos.
+
+El resto del sitio (routing, design system dark-first, MultiAgentDemo en ai-agents, formulario funcional) permanece vigente del snapshot previo. La traducción sigue siendo **reimplementación de intención**, sin copiar JSX/CSS de Lovable.
 
 ---
 
-## Alcance de impacto por sección
+## Delta reciente — impacto por cambio
 
-| Sección Lovable | Ruta Lovable | Ruta WEB esperada | Prioridad | Complejidad |
-|-----------------|--------------|-------------------|-----------|-------------|
-| Landing / Hero | `/` | `/` | Alta | Media |
-| Header / Footer | Layout | Layout compartido | Alta | Media |
-| Servicios (5 pilares) | `/services` | `/services` o sección `/` | Alta | Baja |
-| Soluciones (grid) | `/solutions` | `/services` o `/solutions` | Alta | Baja |
-| Detalle solución | `/solutions/$slug` | `/solutions/:slug` | Alta | Media |
-| MultiAgentDemo | `/solutions/ai-agents` | `/solutions/ai-agents` | Alta | **Alta** |
-| Nosotros | `/about` | `/about` | Alta | Baja |
-| Casos de éxito | `/cases` | `/cases` o sección | Media | Baja |
-| Contacto | `/contact` | `/contact` | Alta | Media |
-| Páginas legales | `/privacy`, `/data-treatment`, `/terms` | Rutas equivalentes | Media | Baja |
+| ID | Componente | Tipo | Prioridad | Complejidad | Acción en WEB |
+|----|------------|------|-----------|-------------|---------------|
+| CHG-014 | contact-light-theme | visual | Alta | Media | Crear variante de sección clara en `/contact`; mapear tokens al design system productivo |
+| CHG-015 | Testimonials | visual | Media | Media | Rediseñar sección casos/landing con fondo claro y logos reales de clientes |
+| CHG-016 | NovusDevFrameworkDemo | functional | Alta | **Alta** | Nuevo modal con simulación animada; componente aislado lazy-loaded |
+| CHG-017 | Hero | functional | Media | Baja | Reemplazar CTA secundario; logo clickable abre demo |
+| CHG-018 | Header | functional | Baja | Baja | Evento custom o state lift para abrir demo desde nav Inicio |
+| CHG-019 | client-logos | content | Media | Baja | Copiar assets reales (permitido); no URLs CDN Lovable en prod |
 
 ---
 
-## Cambios visuales a traducir
+## CHG-014: Variante clara en contacto
 
-### Design system (CHG-002)
+### Intención visual
 
-- **Paleta:** navy profundo como fondo, cyan neón como primary, púrpura como secondary/accent. Todos en oklch.
-- **Tipografía:** Space Grotesk para headings, Inter para body. Verificar si NovusIntelligenceWEB ya las incluye; si no, añadir vía Google Fonts o self-host.
-- **Utilities a replicar conceptualmente:** gradientes de marca, sombras glow, grid background, animaciones pulse/float.
-- **Prohibido:** copiar `src/styles.css` literal ni clases Tailwind de Lovable.
+- Contraste deliberado: el resto del sitio es dark-first; la sección de formulario usa **fondo claro** (oklch ~0.98) con cards blancas.
+- Gradiente radial sutil con acentos cyan y púrpura en esquinas.
+- Labels y títulos con `text-card-foreground` para legibilidad sobre fondo claro.
+- Tarjeta "Partner principal" usa acento secondary (púrpura) en lugar de primary.
 
-### Layout (CHG-003)
+### Traducción recomendada
 
-- Header sticky con blur, navegación de 6 ítems, CTA persistente y menú móvil.
-- Footer con contacto, redes (LinkedIn, Instagram, Facebook) y enlaces legales.
-- PageShell como wrapper consistente con Toaster/notificaciones.
+| Lovable | Productivo |
+|---------|------------|
+| `@utility contact-light` con override de CSS vars | Clase/variante en design system o wrapper `<ContactSection variant="light">` |
+| `bg-gradient-light-radial` | Utility equivalente en Tailwind config o CSS module del proyecto |
+| Valores oklch inline | Tokens semánticos: `--contact-bg`, `--contact-card`, etc. |
 
-### Secciones landing (CHG-004, CHG-006)
+**Prohibido:** copiar bloque `@utility contact-light` literal de `src/styles.css`.
 
-- Hero con badge, headline gradiente, dual CTA, stats inline y logo animado.
-- Grids de servicios y soluciones con cards hover (translate, border glow).
-- Testimonials reutilizando datos de `cases.ts`.
-- CTA reutilizable al final de páginas.
-
-### MultiAgentDemo (CHG-009) — Mayor complejidad
-
-- Diagrama SVG con nodos posicionados en porcentajes, curvas Bézier, partículas animadas (`animateMotion`).
-- Estado React: step, playing, timeline de 8 pasos con auto-advance cada 1.8s.
-- Controles: play/pause, step manual, indicadores de progreso.
-- **Recomendación:** implementar como componente aislado con props; considerar `prefers-reduced-motion` para accesibilidad.
-- **No copiar:** el SVG inline ni las clases de Lovable; traducir la intención del diagrama.
+**Rutas de paridad visual:** `/contact` en viewports 1440×900, 768×1024, 390×844 (gate `visual_exact_parity`).
 
 ---
 
-## Cambios funcionales a traducir
+## CHG-015: Testimonials / casos de éxito
 
-### Routing (CHG-010)
+### Intención visual
 
-| Lovable (TanStack) | Productivo (React Router) |
-|--------------------|---------------------------|
-| `createFileRoute("/")` | `<Route path="/" />` |
-| `src/routes/solutions.$slug.tsx` | `/solutions/:slug` con `useParams()` |
-| `head()` meta tags | React Helmet o equivalente |
-| `Link` de TanStack | `Link` de react-router-dom |
-| `useRouterState` | `useLocation` / `useParams` |
+- Sección con **fondo claro** que rompe el patrón oscuro de landing (similar estrategia a contacto).
+- Tarjetas blancas con sombra suave, header con logo 80×80, industria, país (MapPin), sitio web (Globe).
+- Hover: `-translate-y-1` y rotación de icono ArrowUpRight.
+- Logos: Banco Santa Cruz (`bancosantacruz.com.do`), doevents (`doevents.com`).
 
-Referencia de mapeo: `novus-nexus/reglasEmpalme/port-map.yml`.
+### Traducción recomendada
 
-### Formulario de contacto (CHG-008)
-
-- Campos: name*, company, email*, phone, solutionInterest (select), message*.
-- Estados: idle → submitting → done (con opción "enviar otro").
-- Validación client-side antes de submit.
-- Integración con API real (`VITE_NOVUS_API_URL`); **sin modo demo en producción**.
-
-### Páginas dinámicas (CHG-007)
-
-- Loader de solución por slug con 404 custom.
-- Query param `interest` en link desde detalle → contacto.
-- Sección "También te puede interesar" con 3 soluciones relacionadas.
+- Usar assets reales del proyecto (PNG/JPG de logos); **no** hotlink a CDN Lovable.
+- Mantener datos de `cases.ts` como fuente de contenido; validar contra memoria de marca.
+- Considerar reutilizar tokens de la variante clara (contact-light) para consistencia entre secciones claras.
 
 ---
 
-## Contenido a sincronizar (CHG-005)
+## CHG-016/017/018: NovusDevFrameworkDemo en Hero
 
-Los archivos `src/content/` de Lovable son la fuente de intención de contenido. El planner debe validar coherencia con:
+### Intención funcional
 
-- `.nadf/projects/novus-intelligence/memory/brand-context.md`
-- `.nadf/projects/novus-intelligence/memory/business-context.md` (si existe)
+- Modal Dialog fullscreen-ish (`max-w-6xl`) con simulación educativa del framework NADF.
+- **4 columnas:** Triggers → NovusAIDevelopmentFramework (engine) → Agentes IA → Entregables.
+- **9 pasos** auto-advance cada 1.2s; controles play/pausa/reiniciar; barra de progreso clickable.
+- SVG mini-canvas estilo n8n con `animateMotion` en edges activos.
+- Al finalizar: tarjeta "Producto entregado" (Lead Manager B2B MVP — contenido fictivo/demo).
 
-Datos clave detectados en Lovable:
+### Puntos de entrada
 
-- **Founder:** Andrés D. Rodríguez Vargas, Founder & CEO
-- **Contacto:** arodriguez@novusintelligencesolutions.com, +57 302 757 6511, Bogotá
-- **6 soluciones:** ai-agents, automation, integrations, analytics, documents-ai, customer-ai
-- **2 casos:** Banco Santa Cruz, doevents.com
+| Trigger | Comportamiento |
+|---------|----------------|
+| Botón Hero "Ver simulación" | `setOpen(true)` |
+| Click en logo Hero | Mismo modal |
+| Nav "Inicio" estando en `/` | `CustomEvent('novus:open-dev-framework')` |
 
----
+### Traducción recomendada
 
-## Componentes reutilizables sugeridos
-
-| Componente Lovable (intención) | Acción en WEB |
-|--------------------------------|---------------|
-| Hero | Nuevo o extender existente |
-| ServicesGrid | Nuevo |
-| SolutionsGrid | Nuevo |
-| MultiAgentDemo | Nuevo (alta prioridad para ai-agents) |
-| CTA | Extraer como componente compartido |
-| NovusLogo | Verificar existente; adaptar si difiere |
-| PageShell | Extender layout actual |
+- Implementar como `NovusDevFrameworkDemo.tsx` aislado en NovusIntelligenceWEB.
+- Usar Dialog/modal del design system productivo (no shadcn copiado de Lovable).
+- Respetar `prefers-reduced-motion`: pausar SVG animateMotion y auto-advance.
+- **Contenido del producto demo** ("Lead Manager B2B", "leadmgr.novus.dev") es ilustrativo — no implementar como producto real.
+- Complejidad comparable a MultiAgentDemo (CHG-009); secuenciar en plan si recursos limitados.
 
 ---
 
-## Dependencias y stack
+## Impacto acumulado (snapshot + delta)
 
-| Lovable | Productivo | Acción |
-|---------|------------|--------|
-| TanStack Router/Start | React Router | Traducir rutas |
-| shadcn/ui | Verificar en WEB | Reutilizar si existe; no copiar de Lovable |
-| lucide-react | Probablemente ya en WEB | Reutilizar iconos |
-| sonner (toast) | Verificar en WEB | Equivalente o alternativa |
-| @tanstack/react-query | Verificar necesidad | Solo si se usa en WEB |
-
----
-
-## SEO y meta
-
-Cada ruta Lovable define `head()` con title, description y og:*. El frontend productivo debe replicar:
-
-- Titles por página (ej. "Novus Intelligence Solutions — Inteligencia que genera resultados")
-- Descriptions orientadas a IA/multiagente
-- OG image: `/assets/novus/brand-publicidad.png`
+| Sección | Ruta | Estado vs Lovable | Prioridad |
+|---------|------|---------------------|-----------|
+| Landing / Hero | `/` | Delta: demo modal + CTA simulación | Alta |
+| Testimonials | `/` (sección) | Delta: rediseño claro + logos | Media |
+| Contacto | `/contact` | Delta: tema claro | Alta |
+| MultiAgentDemo | `/solutions/ai-agents` | Sin cambios en delta | Alta |
+| Resto del sitio | Varias | Sin cambios en delta | Según plan previo |
 
 ---
 
-## Estimación de esfuerzo relativo
+## Design tokens nuevos (referencia, no CSS literal)
 
-| Área | Esfuerzo | Notas |
-|------|----------|-------|
-| Design tokens + layout | Alto | Base para todo el sitio |
-| Landing completa | Alto | 7 secciones |
-| Páginas estáticas (about, legal) | Medio | Contenido mayormente textual |
-| Soluciones + detalle | Medio | 6 slugs + routing dinámico |
-| MultiAgentDemo | Alto | SVG + animaciones + estado |
-| Contacto | Medio | Depende de API backend |
-| Assets | Bajo | Copiar assets reales (no código) |
+```yaml
+# Variante clara (contact + testimonials)
+light-background: oklch(0.98 0.005 240)
+light-background-end: oklch(0.94 0.01 245)
+light-card: oklch(1 0 0)
+light-foreground: oklch(0.16 0.04 264)
+light-muted-foreground: oklch(0.35 0.02 265)
+light-border: oklch(0.9 0.01 265)
+radial-accent-cyan: oklch(0.82 0.16 220 / 0.15)
+radial-accent-purple: oklch(0.65 0.22 295 / 0.12)
+```
+
+Referencia normativa: `novus-nexus/reglasDiseno/tokens.yml` (prohíbe tokens locales fuera de styles.css en Lovable; en WEB usar design system centralizado).
 
 ---
 
-## Restricciones NADF aplicables
+## Componentes a crear o extender
 
-- **NO_LOVABLE_CODE_COPY:** Reimplementar intención, no JSX/CSS literal.
-- **NO_PRODUCTIVE_CODE:** Este agente no implementa; solo documenta impacto.
-- Contenido debe alinearse con memoria de marca, no con placeholders Lovable.
+| Componente (intención) | Acción |
+|------------------------|--------|
+| ContactSection (variant light) | Nuevo o extender página contacto |
+| TestimonialsSection | Rediseñar con variante clara |
+| NovusDevFrameworkDemo | **Nuevo** — modal simulación framework |
+| Hero | Actualizar CTAs y logo interactivo |
+| Header | Wiring evento abrir demo |
+
+---
+
+## Restricciones NADF
+
+- **NO_LOVABLE_CODE_COPY:** Traducir intención; no importar `@/components/sections/NovusDevFrameworkDemo` de novus-nexus.
+- **NO_PRODUCTIVE_CODE:** Este agente solo documenta impacto.
+- **NO_MOCK:** El contenido "Lead Manager B2B" del demo es narrativa educativa; no usar como datos productivos ni fixtures en rutas reales.
 
 ---
 
 ## Próximo agente
 
-**planner-agent** debe usar este documento junto con `cambios-lovable.json` y `backend-impact.md` para generar `plan-implementacion.md`.
+**planner-agent** debe priorizar en el plan:
+
+1. Variante clara `/contact` (paridad visual gate).
+2. Rediseño Testimonials con assets reales.
+3. NovusDevFrameworkDemo (alta complejidad; puede ser fase 2 si bloquea contacto).
