@@ -34,11 +34,22 @@ Verificar alineación con `propuesta-infra.md` del mismo workflow.
 - Artefactos: `artifacts/informe-seguridad.md`, `artifacts/propuesta-infra.md`
 - Agente responsable corrección: backend-agent
 
+## Estado de remediación
+
+| Campo | Valor |
+|-------|-------|
+| `remediationStatus` | **resolved** (parcial) |
+| `remediatedAt` | 2026-07-15 |
+| Corrección aplicada | `Resource: identity/*` en lugar de `Resource: '*'` |
+| Observación residual | `identity/*` sigue más amplio que dominio específico en `propuesta-infra.md` — seguimiento pre-prod (SEC-001 no bloqueante) |
+| Evidencia | `artifacts/informe-seguridad.md`, NovusIntelligenceBack `main` @ `6090f73` |
+
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | ANTI-003, KB-002 |
+| IDs reflexión | ANTI-003, KB-002, KB-UPDATE-002 |
 | Severidad | high |
 | Gate bloqueante | security_pass |
 | Fecha | 2026-07-14 |
+| Última actualización | 2026-07-15 |

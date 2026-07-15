@@ -38,11 +38,21 @@ Alternativa: añadir al menos una prop semántica explícita a la interface.
 - Artefactos: `artifacts/informe-qa.md`, `artifacts/qa-result.json`
 - Agente responsable corrección: frontend-integration-agent
 
+## Estado de remediación
+
+| Campo | Valor |
+|-------|-------|
+| `remediationStatus` | **resolved** |
+| `remediatedAt` | 2026-07-15 |
+| Evidencia | Lint 0 errores en NovusIntelligenceWEB `main` @ `783acea` |
+| Artefacto | `artifacts/informe-qa.md` |
+
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | ANTI-001, KB-001 |
+| IDs reflexión | ANTI-001, ANTI-005, KB-001, KB-UPDATE-001 |
 | Severidad | critical |
 | Gate bloqueante | build_success |
 | Fecha | 2026-07-14 |
+| Última actualización | 2026-07-15 |

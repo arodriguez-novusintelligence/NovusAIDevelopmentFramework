@@ -26,11 +26,22 @@ Patrón «dead code security»: utilidades de protección definidas durante desa
 - Artefactos: `artifacts/informe-seguridad.md`, `artifacts/security-result.json`, `artifacts/especificacion-backend.md`
 - Agentes responsables: backend-agent, cloud-agent (si WAF)
 
+## Estado de remediación
+
+| Campo | Valor |
+|-------|-------|
+| `remediationStatus` | **resolved** |
+| `remediatedAt` | 2026-07-15 |
+| Corrección aplicada | `isIpRateLimited()` invocado al inicio del handler de contacto |
+| Observación residual | Rate limit en memoria Lambda no distribuido — ADR recomendado antes de prod (SEC-002b) |
+| Evidencia | `artifacts/informe-seguridad.md`, `contact.ts` en NovusIntelligenceBack `main` @ `6090f73` |
+
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | ANTI-002, KB-003 |
+| IDs reflexión | ANTI-002, KB-003, KB-UPDATE-002 |
 | Severidad | high |
 | Gate bloqueante | security_pass |
 | Fecha | 2026-07-14 |
+| Última actualización | 2026-07-15 |
