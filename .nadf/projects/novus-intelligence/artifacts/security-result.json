@@ -1,10 +1,10 @@
 {
   "project": "novus-intelligence",
   "workflow": "novus-intelligence-lovable-to-web",
-  "step": "paso-10-revision-seguridad",
+  "step": "paso-10-revision-seguridad-revalidacion-cors",
   "agent": "security-agent",
   "agentName": "security-agent",
-  "timestamp": "2026-07-14T10:45:00Z",
+  "timestamp": "2026-07-15T00:30:00Z",
   "runtime": "Cursor Cloud Agent (M6)",
   "targetEnvironment": {
     "name": "dev",
@@ -14,175 +14,138 @@
   "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
   "planStatus": "approved",
   "status": "fail",
-  "securityScore": 72,
-  "summary": "Sin secrets ni CORS abierto; validación server-side correcta y R-001 mitigado. Bloqueado por IAM SES con Resource wildcard y rate limiting por IP no implementado.",
+  "securityScore": 78,
+  "summary": "SEC-CORS-001 sigue abierto en main (wildcard en default CORS_ALLOWED_ORIGINS); remediación verificada en PR cursor/remediate-sec-cors-001-19c5 pendiente de merge.",
   "repositories": {
-    "framework": {
-      "name": "NovusAIDevelopmentFramework",
-      "branch": "cursor/security-review-361e",
-      "evaluated": true
-    },
-    "frontend": {
-      "name": "NovusIntelligenceWEB",
-      "branch": "cursor/implement-novus-frontend-2d22",
-      "mainBranchStatus": "scaffold_only",
-      "evaluated": true
-    },
     "backend": {
       "name": "NovusIntelligenceBack",
-      "branch": "cursor/implement-contact-api-04c8",
-      "mainBranchStatus": "scaffold_only",
+      "branchesEvaluated": [
+        {
+          "branch": "main",
+          "commit": "bf3bd2b35088551cb89d88c174d6dead085c8a6e",
+          "deployedBranch": true,
+          "secCors001": "fail"
+        },
+        {
+          "branch": "cursor/remediate-sec-cors-001-19c5",
+          "commit": "f705e36a85e865f25fb57d7e2fe6bc299e24240f",
+          "deployedBranch": false,
+          "secCors001": "pass"
+        }
+      ],
       "evaluated": true
     }
   },
+  "blockingGate": "SEC-CORS-001",
   "checksRun": [
+    {
+      "id": "sec-cors-001-main",
+      "area": "cors",
+      "status": "fail",
+      "blocking": true,
+      "findingId": "SEC-CORS-001",
+      "evidence": "main serverless.yml línea 34: default CORS_ALLOWED_ORIGINS incluye ',*'; httpResponse.ts allowAny branch activa con '*'"
+    },
+    {
+      "id": "sec-cors-001-pr-head",
+      "area": "cors",
+      "status": "pass",
+      "blocking": false,
+      "findingId": "SEC-CORS-001",
+      "evidence": "cursor/remediate-sec-cors-001-19c5: default sin wildcard, CloudFront DEV en allowlist, corsHeaders() estricto"
+    },
     {
       "id": "secrets-scan",
       "area": "secrets",
       "status": "pass",
-      "method": "regex_scan_and_manual_review",
-      "evidence": "Sin AKIA, sk-, passwords ni tokens en WEB, Back y artifacts; .env.example vacío"
-    },
-    {
-      "id": "cors-config",
-      "area": "cors",
-      "status": "pass",
-      "evidence": "Orígenes explícitos en serverless.yml y corsHeaders(); sin wildcard; allowCredentials false"
-    },
-    {
-      "id": "contact-validation-server",
-      "area": "contact_validation",
-      "status": "pass",
-      "evidence": "contactValidator.ts cumple V1-V10; sanitize.ts + escapeHtml en email SES"
-    },
-    {
-      "id": "contact-validation-client",
-      "area": "contact_validation",
-      "status": "pass",
-      "evidence": "Validación mínima client-side; servidor es autoridad; sin demo fallback (R-001)"
-    },
-    {
-      "id": "iam-permissions",
-      "area": "iam",
-      "status": "fail",
-      "evidence": "serverless.yml SES Resource '*' vs propuesta-infra ARN identity scoped; sin secretsmanager/ssm"
+      "blocking": false,
+      "evidence": "Sin credenciales en código; .env.example sin valores reales"
     },
     {
       "id": "rate-limiting",
       "area": "rate_limit",
-      "status": "fail",
-      "evidence": "rateLimitResponse() no invocado; solo API GW global throttle; RATE_LIMIT_PER_IP sin uso"
+      "status": "pass",
+      "blocking": false,
+      "evidence": "isIpRateLimited() invocado en contact.ts; SEC-002 remediado en main"
     },
     {
-      "id": "captcha-readiness",
-      "area": "captcha",
+      "id": "iam-permissions",
+      "area": "iam",
       "status": "pass",
-      "evidence": "CAPTCHA_ENABLED=false DEV; captchaService implementado; obligatorio pre-prod (R-008)"
+      "blocking": false,
+      "evidence": "SES acotado a arn:aws:ses:...:identity/*; SEC-001 remediado en main"
     },
     {
-      "id": "dependencies-web",
-      "area": "dependencies",
-      "status": "pass",
-      "evidence": "npm audit --audit-level=high: 0 vulnerabilidades"
-    },
-    {
-      "id": "dependencies-back-runtime",
-      "area": "dependencies",
-      "status": "pass",
-      "evidence": "@aws-sdk/client-ses sin vulnerabilidades high/critical en runtime bundle"
+      "id": "secrets-management",
+      "area": "secrets_management",
+      "status": "warning",
+      "blocking": false,
+      "findingId": "SEC-003",
+      "evidence": "Variables sensibles vía ${env:...}; sin permisos secretsmanager/ssm en serverless.yml"
     },
     {
       "id": "dependencies-back-devtooling",
       "area": "dependencies",
       "status": "warning",
-      "evidence": "serverless devDependency chain: 1 high, 3 critical (decompress, tar); no afecta Lambda runtime"
-    },
-    {
-      "id": "demo-mode-r001",
-      "area": "mock_policy",
-      "status": "pass",
-      "evidence": "submitContact sin éxito simulado; randomUUID sin prefijo demo-"
+      "blocking": false,
+      "findingId": "SEC-004",
+      "evidence": "npm audit: 1 high, 3 critical en cadena serverless devDependency"
     },
     {
       "id": "no-deploy",
       "area": "deployment_policy",
       "status": "pass",
-      "evidence": "NO_DEPLOY respetado; sin despliegue ni creación de secretos"
+      "blocking": false,
+      "evidence": "NO_DEPLOY respetado en esta ejecución"
     }
   ],
   "securityGates": [
     {
-      "id": "no_secrets_in_repo",
+      "id": "sec_cors_001",
       "blocking": true,
-      "status": "pass",
-      "evidence": "Escaneo sin credenciales; .gitignore protege .env"
+      "status": "fail",
+      "evidence": "Wildcard '*' en default CORS_ALLOWED_ORIGINS en main (bf3bd2b)"
     },
     {
-      "id": "cors_configured",
-      "blocking": true,
+      "id": "no_secrets_in_repo",
+      "blocking": false,
       "status": "pass",
-      "evidence": "Lista blanca de orígenes; sin Access-Control-Allow-Origin: *"
+      "evidence": "Escaneo sin credenciales"
     },
     {
       "id": "iam_least_privilege",
-      "blocking": true,
-      "status": "fail",
-      "evidence": "SES Resource wildcard en serverless.yml"
+      "blocking": false,
+      "status": "pass",
+      "evidence": "SES identity-scoped en main"
     },
     {
       "id": "rate_limit_active",
-      "blocking": true,
-      "status": "fail",
-      "evidence": "Rate limit por IP no implementado en aplicación"
-    },
-    {
-      "id": "contact_validation_server",
-      "blocking": true,
+      "blocking": false,
       "status": "pass",
-      "evidence": "Validaciones V1-V10 implementadas"
-    },
-    {
-      "id": "no_demo_mock_prod",
-      "blocking": true,
-      "status": "pass",
-      "evidence": "R-001 mitigado en frontend y backend"
+      "evidence": "Rate limit por IP activo en handler"
     },
     {
       "id": "deploy_human_approval",
-      "blocking": true,
+      "blocking": false,
       "status": "pass",
-      "evidence": "Sin despliegue autónomo"
-    },
-    {
-      "id": "plan_approved",
-      "blocking": true,
-      "status": "pass",
-      "evidence": "plan-implementacion.md status approved"
+      "evidence": "Sin despliegue autónomo en esta corrida"
     }
   ],
   "findings": [
     {
-      "id": "SEC-001",
-      "title": "IAM SES con Resource wildcard",
+      "id": "SEC-CORS-001",
+      "title": "Wildcard en default CORS_ALLOWED_ORIGINS",
       "severity": "high",
       "blocking": true,
-      "area": "iam",
+      "area": "cors",
       "file": "NovusIntelligenceBack/serverless.yml",
-      "line": 47,
-      "description": "ses:SendEmail y ses:SendRawEmail concedidos sobre Resource '*' en lugar de ARN de identidad de dominio",
-      "recommendation": "Acotar a arn:aws:ses:sa-east-1:${aws:accountId}:identity/novusintelligence.com según propuesta-infra.md",
-      "ownerAgent": "backend-agent"
-    },
-    {
-      "id": "SEC-002",
-      "title": "Rate limiting por IP no implementado",
-      "severity": "high",
-      "blocking": true,
-      "area": "rate_limit",
-      "file": "NovusIntelligenceBack/src/handlers/contact.ts",
-      "description": "RATE_LIMIT_PER_IP cargado en config pero rateLimitResponse() nunca invocado; solo throttling global API Gateway",
-      "recommendation": "Implementar contador por IP (DynamoDB/ElastiCache) o AWS WAF rate-based rule documentada en IaC",
-      "ownerAgent": "backend-agent"
+      "line": 34,
+      "branch": "main",
+      "description": "Default 'https://dev.novusintelligence.com,http://localhost:5173,*' permite CORS abierto vía capa Lambda cuando env no está definida",
+      "recommendation": "Merge PR cursor/remediate-sec-cors-001-19c5 a main",
+      "remediationStatus": "fixed_in_pr_pending_merge",
+      "remediationBranch": "cursor/remediate-sec-cors-001-19c5",
+      "remediationCommit": "f705e36a85e865f25fb57d7e2fe6bc299e24240f"
     },
     {
       "id": "SEC-003",
@@ -190,10 +153,7 @@
       "severity": "medium",
       "blocking": false,
       "area": "secrets_management",
-      "file": "NovusIntelligenceBack/serverless.yml",
-      "description": "Variables sensibles referenciadas como ${env:...} sin permisos secretsmanager/ssm alineados a propuesta-infra",
-      "recommendation": "Adoptar ${ssm:...} y ${ssm:/aws/reference/secretsmanager/...} con IAM acotado",
-      "ownerAgent": "cloud-agent"
+      "status": "open"
     },
     {
       "id": "SEC-004",
@@ -201,38 +161,13 @@
       "severity": "medium",
       "blocking": false,
       "area": "dependencies",
-      "description": "npm audit reporta critical en decompress y high en tar en cadena serverless CLI",
-      "recommendation": "Evaluar upgrade Serverless v4 o CI aislado; no afecta bundle Lambda runtime",
-      "ownerAgent": "devops-agent"
-    },
-    {
-      "id": "SEC-005",
-      "title": "clientIp en logs sin anonimizar",
-      "severity": "medium",
-      "blocking": false,
-      "area": "privacy",
-      "file": "NovusIntelligenceBack/src/handlers/contact.ts",
-      "line": 151,
-      "description": "IP del cliente registrada en texto plano en logs estructurados",
-      "recommendation": "Hashear o enmascarar clientIp según especificacion-backend.md",
-      "ownerAgent": "backend-agent"
-    },
-    {
-      "id": "SEC-006",
-      "title": "Captcha deshabilitado en DEV",
-      "severity": "medium",
-      "blocking": false,
-      "area": "captcha",
-      "description": "CAPTCHA_ENABLED=false por defecto; aceptable DEV, obligatorio pre-prod (R-008)",
-      "recommendation": "Habilitar captcha antes de producción",
-      "ownerAgent": "backend-agent"
+      "status": "open"
     }
   ],
   "blockers": [
-    "SEC-001: IAM SES Resource wildcard en serverless.yml",
-    "SEC-002: Rate limiting por IP no implementado en handler"
+    "SEC-CORS-001: wildcard '*' en default CORS_ALLOWED_ORIGINS en main — remediación en PR no mergeada"
   ],
-  "nextAgentSuggested": "backend-agent",
+  "nextAgentSuggested": "none",
   "artifactsProduced": [
     "artifacts/informe-seguridad.md",
     "artifacts/security-result.json"
