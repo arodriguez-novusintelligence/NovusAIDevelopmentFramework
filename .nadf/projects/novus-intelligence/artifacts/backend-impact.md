@@ -1,22 +1,40 @@
 # Impacto Backend — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  
-**Fuente:** novus-nexus @ `e3a9819`  
-**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS us-east-1)  
-**Fecha:** 2026-07-14  
+**Fuente:** novus-nexus @ `61bb6d8`  
+**Baseline anterior:** `e3a9819`  
+**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS sa-east-1)  
+**Fecha:** 2026-07-15  
 **Agente:** lovable-analyzer-agent
 
 ---
 
 ## Resumen ejecutivo
 
-El prototipo Lovable **requiere un único endpoint backend** para funcionalidad productiva: el formulario de contacto. No se detectan otros endpoints, bases de datos ni integraciones backend en el snapshot actual. El componente `MultiAgentDemo` es puramente frontend (visualización educativa) y no requiere API.
+El delta desde `e3a9819` **no introduce nuevos requisitos backend**. Los cambios son exclusivamente frontend: estilos de contacto, componente interactivo NovusDevFrameworkDemo, rediseño Testimonials y workflow CI de notificación NADF. El único endpoint backend requerido sigue siendo `POST /api/v1/contact` (documentado en análisis previo como CHG-008/CHG-011).
 
-**backendRequired: true** — condicionado al formulario de contacto.
+**backendRequired: true** — condicionado únicamente al formulario de contacto (sin cambios en este delta).
 
 ---
 
-## Endpoints requeridos
+## Evaluación delta por cambio
+
+| ID | Componente | requiresBackend | Justificación |
+|----|------------|-----------------|---------------|
+| CHG-014 | contact-page (visual) | No | Solo tokens CSS; misma lógica submitContact |
+| CHG-015 | NovusDevFrameworkDemo | No | Simulación frontend; datos hardcoded en STEPS |
+| CHG-016 | Hero triggers | No | CustomEvent client-side |
+| CHG-017 | Header event | No | CustomEvent client-side |
+| CHG-018 | Testimonials | No | Contenido estático + assets |
+| CHG-019 | client-logos | No | Assets estáticos |
+| CHG-020 | bg-gradient-section | No | CSS utility |
+| CHG-021 | notify-nadf-workflow | No* | CI/DevOps; no lógica de aplicación |
+
+\* CHG-021 es infraestructura de integración NADF (repository_dispatch). Requiere secret `NADF_DISPATCH_TOKEN` en GitHub, no cambios en NovusIntelligenceBack.
+
+---
+
+## Endpoint vigente (sin cambios)
 
 ### POST /api/v1/contact
 
@@ -25,160 +43,65 @@ El prototipo Lovable **requiere un único endpoint backend** para funcionalidad 
 | Operación | `submitContact` |
 | Contrato | `novus-nexus/src/integrations/aws/contact-api.contract.ts` |
 | OpenAPI | `novus-nexus/reglasInfra/backend-endpoints.yml` |
-| Lambda sugerida | `novus-contact-handler` |
-| Runtime | Node.js 20.x |
-| Timeout | 10s |
+| Campos | name*, company, email*, phone, message*, solutionInterest (enum) |
 
-#### Request body (ContactRequest)
-
-```json
-{
-  "name": "string (2–120, required)",
-  "company": "string (max 160)",
-  "email": "string (email, required)",
-  "phone": "string (max 40)",
-  "message": "string (5–4000, required)",
-  "solutionInterest": "enum: ai-agents | automation | integrations | analytics | documents-ai | customer-ai"
-}
-```
-
-#### Response body (ContactResponse)
-
-```json
-{
-  "ok": true,
-  "requestId": "string",
-  "message": "string"
-}
-```
-
-#### Códigos de respuesta
-
-| Código | Significado |
-|--------|-------------|
-| 200 | Mensaje recibido correctamente |
-| 400 | Validación fallida |
-| 429 | Rate limit excedido |
-| 500 | Error interno |
+El formulario de contacto mantiene los mismos campos y validación client-side. La unificación visual a Navy Neón no altera el payload ni el contrato API.
 
 ---
 
-## Implementación backend esperada
+## Comportamiento demo (sin cambios — riesgo persistente)
 
-Según `reglasInfra/backend-endpoints.yml`:
+`src/lib/api/contact.ts` sigue implementando fallback demo:
+- `VITE_DEMO_MODE=true` o `DEV` sin API → éxito simulado con `requestId: demo-{timestamp}`
+- Producción sin API → `{ ok: false }`
 
-| Componente | Especificación |
-|------------|----------------|
-| **Lambda** | `novus-contact-handler`, handler `index.handler` |
-| **API Gateway** | REST o HTTP API con ruta `/api/v1/contact` |
-| **SES** | Envío de email a `CONTACT_SES_TO` desde `CONTACT_SES_FROM` |
-| **CRM (opcional)** | Webhook a `CRM_WEBHOOK_URL` |
-| **Permisos IAM** | `ses:SendEmail`, `logs:*` |
-| **Observabilidad** | CloudWatch alarms (lambda errors, API 5xx) |
-
-### Variables de entorno requeridas
-
-| Variable | Tipo | Uso |
-|----------|------|-----|
-| `CONTACT_SES_FROM` | Secreto | Email remitente SES |
-| `CONTACT_SES_TO` | Secreto | Email destino notificaciones |
-| `CRM_WEBHOOK_URL` | Secreto (opcional) | Integración CRM externa |
-
-### Variables frontend (públicas)
-
-| Variable | Valor prod | Uso |
-|----------|------------|-----|
-| `VITE_NOVUS_API_URL` | `https://api.novusintelligencesolutions.com` | Base URL API |
-| `VITE_DEMO_MODE` | `false` | **Obligatorio false en producción** |
+**Acción requerida downstream:** mantener política no-mock en frontend productivo (R-001).
 
 ---
 
-## Comportamiento actual en Lovable (no productivo)
-
-El archivo `src/lib/api/contact.ts` implementa un fallback demo:
-
-- Si `VITE_NOVUS_API_URL` no está definida **y** (`VITE_DEMO_MODE=true` o `import.meta.env.DEV`), retorna éxito simulado con `requestId: demo-{timestamp}`.
-- En producción sin API, retorna `{ ok: false, message: "Servicio de contacto no configurado." }`.
-
-**Este fallback demo NO debe replicarse en el frontend productivo.** Es un riesgo documentado en `riesgos.md`.
-
----
-
-## Funcionalidades sin impacto backend
+## Funcionalidades sin impacto backend (delta)
 
 | Componente | Motivo |
 |------------|--------|
-| MultiAgentDemo | Visualización estática/animada; datos hardcoded en componente |
-| Navegación y routing | Client-side only |
-| Contenido estático (services, solutions, cases) | Archivos TS estáticos; migrar a content/ del frontend |
-| Páginas legales | Contenido estático |
-| SEO meta tags | Generados en build/SSR del frontend |
-| Header/Footer/Layout | Sin datos dinámicos |
+| NovusDevFrameworkDemo | Dialog con steps hardcoded; simula flujo Lovable→Framework→Deploy sin API real |
+| Testimonials + logos | Render estático desde `cases.ts` y asset.json |
+| Hero/Header events | Comunicación intra-componente vía CustomEvent |
+| notify-nadf.yml | Dispara workflow NADF externo; no endpoint de aplicación |
 
 ---
 
-## Seguridad y validación
+## Infraestructura / DevOps (informativo)
 
-Requisitos detectados en Lovable y reglas de infra:
+El workflow `notify-nadf.yml` en novus-nexus:
+- Trigger: push a main/master
+- Acción: `repository_dispatch` → NovusAIDevelopmentFramework con `event_type: lovable-commit`
+- Payload: source, sha, ref
 
-| Requisito | Estado en Lovable | Requerido en backend |
-|-----------|-------------------|----------------------|
-| Validación campos required | Client-side | Server-side obligatorio |
-| Rate limiting | No implementado | Recomendado (429) |
-| Captcha (hCaptcha/Turnstile) | Pendiente (gap documentado) | Recomendado pre-prod |
-| Sanitización input | No visible | Obligatorio |
-| CORS | No definido en Lovable | Configurar en API Gateway |
-| Secrets en código | No detectados | Mantener en AWS Secrets/SSM |
+Esto alimenta el orquestador MVP (`lovable-sync-dev.yml`) documentado en `project-context.yml`. No requiere cambios en Lambda ni API Gateway del backend productivo.
 
 ---
 
-## Dependencias AWS
+## Seguridad — estado sin cambios
 
-| Servicio | Uso | Prioridad |
-|----------|-----|-----------|
-| Lambda | Handler de contacto | Alta |
-| API Gateway | Exposición REST | Alta |
-| SES | Notificación email | Alta |
-| CloudWatch | Logs y alarmas | Media |
-| Amplify (frontend) | Hosting | Media (DevOps, no backend logic) |
-
-Dominios esperados (según `reglasInfra/aws-prod.yml`):
-
-- API prod: `https://api.novusintelligencesolutions.com`
-- API dev: `https://dev-api.novusintelligencesolutions.com`
-
----
-
-## Evaluación de necesidad backend por cambio
-
-| ID Cambio | Componente | requiresBackend | Justificación |
-|-----------|------------|-----------------|---------------|
-| CHG-008 | contact-form | **Sí** | Submit a API real |
-| CHG-011 | api-contract | **Sí** | Define contrato a implementar |
-| CHG-009 | MultiAgentDemo | No | Solo visualización |
-| CHG-001–007, 010, 012–013 | Resto | No | Frontend/contenido estático |
-
----
-
-## Gaps pendientes (handoff a backend-impact-agent)
-
-1. **Captcha:** Lovable documenta como TODO pre-prod; backend debe soportar validación de token.
-2. **CRM webhook:** Opcional; definir si se implementa en MVP.
-3. **i18n:** No requiere backend en alcance actual.
-4. **Blog/recursos:** Fuera de alcance inicial.
+| Requisito | Delta | Acción |
+|-----------|-------|--------|
+| Validación server-side contact | Sin cambio | Mantener en backend-agent |
+| Captcha | Sin cambio | Pendiente pre-prod (R-008) |
+| CORS | Sin cambio | Configurar en API Gateway |
+| NADF_DISPATCH_TOKEN | Nuevo (CI) | Secret en GitHub, no en repo |
 
 ---
 
 ## Recomendación para planner-agent
 
-1. Incluir implementación de `POST /api/v1/contact` como **tarea bloqueante** para la página de contacto productiva.
-2. Coordinar con **backend-impact-agent** (paso 5) para `evaluacion-backend.md` y `especificacion-backend.md`.
-3. El MultiAgentDemo puede implementarse en frontend sin esperar backend.
-4. Secuenciar: backend contact API → frontend contacto con API real → validación QA.
+1. **No añadir** tareas backend por este delta.
+2. Mantener `POST /api/v1/contact` como dependencia bloqueante para contacto productivo (heredado de CHG-008).
+3. NovusDevFrameworkDemo y Testimonials pueden implementarse en frontend sin esperar backend.
+4. Secuencia sin cambios: backend contact API → frontend contacto con API real → validación QA.
 
 ---
 
 ## Próximo agente
 
-**backend-impact-agent** (paso 5 del workflow) debe detallar la especificación Lambda, IAM y despliegue.  
-**planner-agent** (paso 4) debe incluir la dependencia backend en el plan de implementación.
+**planner-agent** (paso 4) — incorporar delta frontend sin nuevas dependencias backend.  
+**backend-impact-agent** (paso 5) — solo si el plan previo no cubrió CHG-008/CHG-011.
