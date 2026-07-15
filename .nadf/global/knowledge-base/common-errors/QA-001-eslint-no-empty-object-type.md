@@ -37,12 +37,14 @@ Alternativa: añadir al menos una prop semántica explícita a la interface.
 - Workflow: novus-intelligence-lovable-to-web
 - Artefactos: `artifacts/informe-qa.md`, `artifacts/qa-result.json`
 - Agente responsable corrección: frontend-integration-agent
+- **Estado:** remediado en `main` (2026-07-15) — re-validación QA PASS
 
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | ANTI-001, KB-001 |
+| IDs reflexión | KB-001 |
 | Severidad | critical |
 | Gate bloqueante | build_success |
-| Fecha | 2026-07-14 |
+| Status | remediated |
+| Fecha | 2026-07-15 (actualizado) |

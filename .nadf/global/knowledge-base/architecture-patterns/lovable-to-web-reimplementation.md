@@ -15,10 +15,11 @@ Workflows `lovable-to-web` que traducen intención visual y funcional de un prot
 
 ## Ejemplo
 
-Primera corrida **novus-intelligence-lovable-to-web** (2026-07-14):
+Corrida **novus-intelligence-lovable-to-web** (2026-07-14 → 2026-07-15):
 - 10 rutas, design system dark-first, `MultiAgentDemo` lazy-loaded.
-- Gates `no_lovable_code_copy` y `no_mock_data_in_production` en PASS.
-- Evidencia: `artifacts/resumen-frontend.md`, `artifacts/informe-qa.md`, `artifacts/informe-seguridad.md`.
+- Gates `no_lovable_code_copy` y `no_mock_data_in_production` en PASS (re-validados en main).
+- Paridad visual pendiente: dark-first uniforme no aplica a páginas híbridas (`/contact`, testimonios landing).
+- Evidencia: `artifacts/resumen-frontend.md`, `artifacts/informe-qa.md`, `artifacts/gaps-paridad.json`.
 
 ## Proyectos donde se usa
 
@@ -37,4 +38,4 @@ Primera corrida **novus-intelligence-lovable-to-web** (2026-07-14):
 | IDs reflexión | PAT-001, PAT-002, PAT-003, KB-006 |
 | Workflow origen | novus-intelligence-lovable-to-web |
 | Reusabilidad | high |
-| Fecha | 2026-07-14 |
+| Fecha | 2026-07-15 (actualizado) |

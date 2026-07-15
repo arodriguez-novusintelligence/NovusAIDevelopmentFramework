@@ -29,7 +29,8 @@ El workflow no tiene gate bloqueante explícito para documentación CI/CD. devop
 
 | Campo | Valor |
 |-------|-------|
-| ID reflexión | ANTI-004 |
+| ID reflexión | ANTI-005 |
 | Severidad | medium |
 | Gate bloqueante | no (execution_completion) |
-| Fecha | 2026-07-14 |
+| Status | open |
+| Fecha | 2026-07-15 (confirmado) |

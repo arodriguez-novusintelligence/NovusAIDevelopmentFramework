@@ -25,12 +25,14 @@ Patrón «dead code security»: utilidades de protección definidas durante desa
 - Workflow: novus-intelligence-lovable-to-web
 - Artefactos: `artifacts/informe-seguridad.md`, `artifacts/security-result.json`, `artifacts/especificacion-backend.md`
 - Agentes responsables: backend-agent, cloud-agent (si WAF)
+- **Estado:** remediado en `main` (2026-07-15) — `isIpRateLimited()` conectado; ADR pendiente para estrategia distribuida pre-prod
 
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | ANTI-002, KB-003 |
+| IDs reflexión | KB-003 |
 | Severidad | high |
 | Gate bloqueante | security_pass |
-| Fecha | 2026-07-14 |
+| Status | remediated |
+| Fecha | 2026-07-15 (actualizado) |

@@ -33,12 +33,14 @@ Verificar alineación con `propuesta-infra.md` del mismo workflow.
 - Workflow: novus-intelligence-lovable-to-web
 - Artefactos: `artifacts/informe-seguridad.md`, `artifacts/propuesta-infra.md`
 - Agente responsable corrección: backend-agent
+- **Estado:** remediado parcial en `main` (2026-07-15) — acotado a `identity/*`; endurecer a dominio específico pre-prod
 
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | ANTI-003, KB-002 |
+| IDs reflexión | KB-002 |
 | Severidad | high |
 | Gate bloqueante | security_pass |
-| Fecha | 2026-07-14 |
+| Status | remediated_partial |
+| Fecha | 2026-07-15 (actualizado) |

@@ -18,10 +18,12 @@ Registrar en `qa-result.json`:
 - `method: static_code_review`
 - Limitación declarada: sin prueba en viewport real ni Lighthouse.
 
+> **No sustituye paridad visual.** El gate `visual_exact_parity` (threshold 0.2 %) requiere visual-parity-agent y capturas pixel-a-pixel. QA estático puede PASS mientras paridad visual falla al 100 %. Ver `visual-exact-parity-gate.md`.
+
 ## Ejemplo
 
-novus-intelligence (2026-07-14): QA aceptó PASS responsive/SEO por análisis estático.
-- Evidencia: `artifacts/informe-qa.md`, `artifacts/qa-result.json`.
+novus-intelligence (2026-07-15): QA PASS responsive/SEO por análisis estático; paridad visual FAIL (0/12 capturas).
+- Evidencia: `artifacts/informe-qa.md`, `artifacts/visual-parity-result.json`.
 
 ## Proyectos donde se usa
 
@@ -31,7 +33,7 @@ novus-intelligence (2026-07-14): QA aceptó PASS responsive/SEO por análisis es
 
 | Campo | Valor |
 |-------|-------|
-| ID reflexión | KB-007 |
+| IDs reflexión | KB-007, KB-012 |
 | Workflow origen | novus-intelligence-lovable-to-web |
 | Reusabilidad | medium |
-| Fecha | 2026-07-14 |
+| Fecha | 2026-07-15 (actualizado) |
