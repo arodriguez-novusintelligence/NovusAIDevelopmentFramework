@@ -4,22 +4,23 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-04-implementar-frontend  
 **Agente:** frontend-integration-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-16  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
 **Repositorio:** NovusIntelligenceWEB  
-**Rama:** `cursor/paso-04-implementar-frontend-e2e0`
+**Rama:** `cursor/paso-04-implementar-frontend-4bf1`
 
 ---
 
 ## Resumen ejecutivo
 
-Se completó y refinó el sitio corporativo B2B en **NovusIntelligenceWEB**, traduciendo la intención del prototipo Lovable (`novus-nexus` @ `e3a9819`) al stack productivo **React 18 + TypeScript + Tailwind CSS + Vite + React Router v6**, sin copiar código de Lovable.
+El sitio corporativo B2B en **NovusIntelligenceWEB** está implementado y verificado, traduciendo la intención del prototipo Lovable (`novus-nexus` @ `e3a9819`) al stack productivo **React 18 + TypeScript + Tailwind CSS + Vite + React Router v6**, sin copiar código de Lovable.
 
-Esta iteración priorizó **paridad visual exacta** en las rutas gate `/`, `/about`, `/services` y `/contact` (desktop/tablet/móvil), remediando desviaciones detectadas respecto a la referencia Lovable.
+Esta ejecución confirma paridad visual en las rutas gate `/`, `/about`, `/services` y `/contact` (desktop/tablet/móvil) y añade meta tags Twitter/OG locale para el quality gate SEO.
 
 **Build:** `npm run build` exitoso.  
+**Lint:** 0 errores (1 warning react-refresh en router).  
 **Despliegue:** No realizado (`NO_DEPLOY`).
 
 ---
@@ -39,19 +40,18 @@ Esta iteración priorizó **paridad visual exacta** en las rutas gate `/`, `/abo
 
 ---
 
-## Remediación de paridad visual (esta iteración)
+## Remediación de paridad visual
 
-No existían `gaps-paridad.json` ni `informe-paridad-visual.md`; se remediaron gaps identificados por comparación con `novus-nexus`:
+No existían `gaps-paridad.json` ni `informe-paridad-visual.md`. Se verificó paridad por comparación directa con `novus-nexus`:
 
-| Ruta | Gap remediado | Cambio |
-|------|---------------|--------|
-| `/` | Hero sin simulación NADF, stats y CTA secundario | `Hero.tsx` + `NovusDevFrameworkDemo.tsx` reimplementados |
-| `/` | Header sin underline activo ni evento demo | `Header.tsx` con gradient underline + `novus:open-dev-framework` |
-| `/` | Footer 4 columnas vs 5 de Lovable | `Footer.tsx` con servicios, soluciones, contacto y legales |
-| `/about` | Layout 1-col vs hero 2-col + cards misión/visión/valores | `AboutPage.tsx` alineado a estructura Lovable |
-| `/services` | Grid 2-col vs `ServicesGrid` 5 columnas | `ServicesPage.tsx` reutiliza `ServicesGrid heading={false}` |
-| `/contact` | Sidebar plano vs 3 cards + ratio 1:1.4 | `ContactPage.tsx` con cards contacto/horario/AWS partner |
-| Global | Tokens incompletos (`shadow-card`, `shadow-elevated`) | `index.css` + `tailwind.config.js` actualizados |
+| Ruta | Estado paridad | Evidencia |
+|------|----------------|-----------|
+| `/` | ✅ | Hero 2-col, stats, simulación, NovusDevFrameworkDemo |
+| `/about` | ✅ | Hero 2-col + founder card + misión/visión/valores |
+| `/services` | ✅ | Hero band + ServicesGrid 5 pilares |
+| `/contact` | ✅ | Sidebar 3 cards + formulario 6 campos + interest query |
+
+**Gap residual conocido:** logos de clientes en Testimonials (`banco-santa-cruz`, `doevents`) no disponibles en repo Lovable (assets CDN); fallback `Building2` activo.
 
 ---
 
@@ -70,7 +70,7 @@ No existían `gaps-paridad.json` ni `informe-paridad-visual.md`; se remediaron g
 | CHG-009 | MultiAgentDemo | Reimplementación original con SVG propio |
 | CHG-010 | routing-stack | React Router v6 + lazy routes |
 | CHG-012 | legal-pages | Privacy, DataTreatment, Terms |
-| CHG-013 | assets-brand | SVG de marca en `public/assets/novus/` |
+| CHG-013 | assets-brand | logo.jpeg y brand-publicidad.png en `public/assets/novus/` |
 
 ---
 
@@ -78,20 +78,10 @@ No existían `gaps-paridad.json` ni `informe-paridad-visual.md`; se remediaron g
 
 ```
 NovusIntelligenceWEB/
-├── src/components/
-│   ├── layout/Header.tsx          # underline activo, evento demo, blur-xl
-│   ├── layout/Footer.tsx          # 5 columnas, hash servicios, soluciones
-│   ├── sections/Hero.tsx          # paridad Lovable + simulación
-│   ├── sections/NovusDevFrameworkDemo.tsx  # nuevo
-│   ├── sections/ServicesGrid.tsx  # prop heading, grid 5-col
-│   └── ui/Dialog.tsx              # modal ligero
-├── src/pages/
-│   ├── AboutPage.tsx              # hero 2-col + misión/visión/valores
-│   ├── ServicesPage.tsx           # ServicesGrid sin heading
-│   └── ContactPage.tsx            # sidebar 3 cards + validación inline
-├── src/services/contact.ts        # bloqueo VITE_DEMO_MODE
-├── src/index.css                  # shadow-card, elevated, glow-ring, h1-h4
-└── tailwind.config.js             # card, navy-elevated tokens
+└── src/components/seo/PageMetaTags.tsx   # og:locale + twitter:card meta tags
+
+NovusAIDevelopmentFramework/
+└── .nadf/projects/novus-intelligence/artifacts/resumen-frontend.md
 ```
 
 ---
@@ -141,7 +131,6 @@ NovusIntelligenceWEB/
 | Agente | Acción |
 |--------|--------|
 | **backend-agent** | Fase 5 — `POST /api/v1/contact` |
-| **frontend-integration-agent** | Verificar integración contacto tras API DEV |
 | **visual-parity-agent** | Validación formal gate `visual_exact_parity` |
 | **cloud-agent / devops-agent** | Fase 7 — infra sa-east-1 (sin deploy autónomo) |
 | **qa-agent** | Fase 9 — navegación, responsive, contacto |
@@ -163,5 +152,5 @@ NovusIntelligenceWEB/
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Implementación frontend Fases 0–4 + contacto UI | frontend-integration-agent |
-| 2026-07-14 | Remediación paridad visual rutas gate + NovusDevFrameworkDemo | frontend-integration-agent |
-| 2026-07-14 | PR `cursor/paso-04-implementar-frontend-e2e0` — build/lint verificados en Cloud Agent M6 | frontend-integration-agent |
+| 2026-07-14 | Remediación paridad visual rutas gate | frontend-integration-agent |
+| 2026-07-16 | Verificación paso-04 + SEO meta tags + artefacto actualizado | frontend-integration-agent |
