@@ -1,0 +1,128 @@
+{
+  "status": "FAIL",
+  "gate": "visual_exact_parity",
+  "thresholdMaxDiffRatio": 0.002,
+  "referenceUrl": "http://127.0.0.1:5173",
+  "candidateUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+  "routes": [
+    {
+      "path": "/",
+      "viewport": "1440x900",
+      "diffRatio": 0.042558,
+      "diffPixels": 291036,
+      "totalPixels": 6838560,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-home-diff.png"
+    },
+    {
+      "path": "/about",
+      "viewport": "1440x900",
+      "diffRatio": 0.033663,
+      "diffPixels": 92685,
+      "totalPixels": 2753280,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-about-diff.png"
+    },
+    {
+      "path": "/services",
+      "viewport": "1440x900",
+      "diffRatio": 0.026785,
+      "diffPixels": 74171,
+      "totalPixels": 2769120,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-services-diff.png"
+    },
+    {
+      "path": "/contact",
+      "viewport": "1440x900",
+      "diffRatio": 0.047996,
+      "diffPixels": 107680,
+      "totalPixels": 2243520,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/desktop-contact-diff.png"
+    },
+    {
+      "path": "/",
+      "viewport": "768x1024",
+      "diffRatio": 0.065992,
+      "diffPixels": 349959,
+      "totalPixels": 5303040,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-home-diff.png"
+    },
+    {
+      "path": "/about",
+      "viewport": "768x1024",
+      "diffRatio": 0.037118,
+      "diffPixels": 91449,
+      "totalPixels": 2463744,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-about-diff.png"
+    },
+    {
+      "path": "/services",
+      "viewport": "768x1024",
+      "diffRatio": 0.030712,
+      "diffPixels": 73189,
+      "totalPixels": 2383104,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-services-diff.png"
+    },
+    {
+      "path": "/contact",
+      "viewport": "768x1024",
+      "diffRatio": 0.052481,
+      "diffPixels": 110599,
+      "totalPixels": 2107392,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/tablet-contact-diff.png"
+    },
+    {
+      "path": "/",
+      "viewport": "390x844",
+      "diffRatio": 0.096091,
+      "diffPixels": 349460,
+      "totalPixels": 3636750,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-home-diff.png"
+    },
+    {
+      "path": "/about",
+      "viewport": "390x844",
+      "diffRatio": 0.050972,
+      "diffPixels": 71545,
+      "totalPixels": 1403610,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-about-diff.png"
+    },
+    {
+      "path": "/services",
+      "viewport": "390x844",
+      "diffRatio": 0.039585,
+      "diffPixels": 59977,
+      "totalPixels": 1515150,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-services-diff.png"
+    },
+    {
+      "path": "/contact",
+      "viewport": "390x844",
+      "diffRatio": 0.061399,
+      "diffPixels": 72603,
+      "totalPixels": 1182480,
+      "pass": false,
+      "diffImage": ".nadf/projects/novus-intelligence/artifacts/visual-parity-shots/mobile-contact-diff.png"
+    }
+  ],
+  "summary": "Paridad visual FAIL — remediación frontend requerida",
+  "remediationRequired": true,
+  "maxDiffRatioObserved": 0.096091,
+  "worstRoute": { "path": "/", "viewport": "390x844", "diffRatio": 0.096091 },
+  "routesChecked": 12,
+  "routesPassed": 0,
+  "routesFailed": 12,
+  "planStatus": "approved",
+  "cloudfrontMatchesLocalBuild": true,
+  "generatedAt": "2026-07-16T01:36:33.449Z",
+  "nextAgentSuggested": "frontend-integration-agent"
+}

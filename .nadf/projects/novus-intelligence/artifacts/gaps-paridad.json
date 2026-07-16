@@ -1,0 +1,166 @@
+{
+  "status": "FAIL",
+  "gate": "visual_exact_parity",
+  "thresholdMaxDiffRatio": 0.002,
+  "maxDiffRatioObserved": 0.096091,
+  "referenceUrl": "http://127.0.0.1:5173",
+  "candidateUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+  "generatedAt": "2026-07-16T01:36:33.449Z",
+  "nextAgent": "frontend-integration-agent",
+  "gaps": [
+    {
+      "id": "VP-GAP-001",
+      "priority": "P0",
+      "area": "design-tokens",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.096091,
+      "files": ["NovusIntelligenceWEB/src/index.css", "NovusIntelligenceWEB/tailwind.config.js"],
+      "finding": "Tokens HSL del productivo no reproducen oklch/gradientes cyan→púrpura de Lovable; ghosting tipográfico en diff global.",
+      "action": "Mapear valores oklch de novus-nexus/src/styles.css a variables CSS productivas (--primary, --secondary, --gradient-brand, --gradient-text, --gradient-hero, --navy-*). Ajustar .text-gradient-brand a gradiente 135deg equivalente. Sin copiar styles.css literal."
+    },
+    {
+      "id": "VP-GAP-002",
+      "priority": "P0",
+      "area": "Button",
+      "routes": ["/", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.065992,
+      "files": ["NovusIntelligenceWEB/src/components/ui/Button.tsx"],
+      "finding": "Botones productivos usan rounded-full (pill) y alturas mayores; referencia usa rounded-md compacto (h-8/h-10).",
+      "action": "Cambiar default a rounded-md con sizes sm:h-8 lg:h-10. Mantener bg-gradient-brand shadow-glow en CTAs primarios. Revisar Header, Hero, CTA y Contact submit."
+    },
+    {
+      "id": "VP-GAP-003",
+      "priority": "P0",
+      "area": "Header",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.042558,
+      "files": [
+        "NovusIntelligenceWEB/src/content/site.ts",
+        "NovusIntelligenceWEB/src/components/layout/Header.tsx"
+      ],
+      "finding": "Nav productivo tiene 6 ítems; referencia incluye 'Registro empresas'. CTA y spacing de links difieren.",
+      "action": "Añadir { label: 'Registro empresas', to: '/register-company' } en nav.main. Igualar estilos de link activo (h-0.5 w-6 bg-gradient-brand). Verificar drawer móvil incluye los 7 links."
+    },
+    {
+      "id": "VP-GAP-004",
+      "priority": "P0",
+      "area": "Hero",
+      "routes": ["/"],
+      "viewports": ["1440x900", "390x844"],
+      "diffRatio": 0.096091,
+      "files": ["NovusIntelligenceWEB/src/components/sections/Hero.tsx"],
+      "finding": "Eyebrow badge, saltos H1, stats row y glow del logo card no coinciden; mobile acumula drift vertical máximo.",
+      "action": "Tras tokens+Button: alinear py-24 lg:py-32, gap-12, leading-[1.05], max-w-xl. Reducir opacidad glow secondary. Verificar grid stats en 390px."
+    },
+    {
+      "id": "VP-GAP-005",
+      "priority": "P0",
+      "area": "ContactForm",
+      "routes": ["/contact"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.061399,
+      "files": [
+        "NovusIntelligenceWEB/src/pages/ContactPage.tsx",
+        "NovusIntelligenceWEB/src/components/ui/Input.tsx",
+        "NovusIntelligenceWEB/src/components/ui/Select.tsx",
+        "NovusIntelligenceWEB/src/components/ui/Textarea.tsx"
+      ],
+      "finding": "Inputs h-11 rounded-xl vs referencia h-9 rounded-md; submit pill; columna info izquierda desalineada.",
+      "action": "Normalizar controles a h-9 rounded-md px-3 text-sm. Form container rounded-2xl border bg-navy-elevated p-8. Submit w-full rounded-md bg-gradient-brand. Cards sidebar space-y-6 rounded-2xl p-6."
+    },
+    {
+      "id": "VP-GAP-006",
+      "priority": "P0",
+      "area": "Testimonials",
+      "routes": ["/"],
+      "viewports": ["1440x900", "390x844"],
+      "diffRatio": 0.096091,
+      "files": ["NovusIntelligenceWEB/src/components/sections/Testimonials.tsx"],
+      "finding": "Cards Banco Santa Cruz / doevents con logos, badge flecha y fondo sección clara desalineados vs referencia.",
+      "action": "Verificar assets /assets/logos/*. Confirmar oklch en sección clara. Badge arrow h-9 w-9 rounded-full gradient 135deg. Logo container 80×80 rounded."
+    },
+    {
+      "id": "VP-GAP-007",
+      "priority": "P1",
+      "area": "ServicesGrid",
+      "routes": ["/", "/services"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.039585,
+      "files": ["NovusIntelligenceWEB/src/components/sections/ServicesGrid.tsx"],
+      "finding": "Iconos h-11 w-11, tags y contraste navy-surface difieren de referencia.",
+      "action": "Lock icon h-11 w-11 rounded-xl mb-4. Tags mt-4 gap-1.5 text-[11px]. Section border-y bg-navy-surface/40 py-20."
+    },
+    {
+      "id": "VP-GAP-008",
+      "priority": "P1",
+      "area": "SolutionsGrid",
+      "routes": ["/"],
+      "viewports": ["1440x900", "390x844"],
+      "diffRatio": 0.042558,
+      "files": ["NovusIntelligenceWEB/src/components/sections/SolutionsGrid.tsx"],
+      "finding": "Cards rounded-2xl p-6 con link EXPLORAR desplazado; intro paragraph baseline distinto.",
+      "action": "Icon mb-5 h-12 w-12. Link mt-5 text-xs uppercase tracking-widest text-primary. Evitar hover translate que altere altura estática."
+    },
+    {
+      "id": "VP-GAP-009",
+      "priority": "P1",
+      "area": "ImpactStats",
+      "routes": ["/"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.065992,
+      "files": ["NovusIntelligenceWEB/src/components/sections/ImpactStats.tsx"],
+      "finding": "Iconos con bg-gradient-brand en candidato; referencia usa bg-primary/10 text-primary.",
+      "action": "Cambiar contenedor icono a bg-primary/10 text-primary rounded-xl. Grid gap-4 sm:grid-cols-2 lg:grid-cols-4."
+    },
+    {
+      "id": "VP-GAP-010",
+      "priority": "P1",
+      "area": "Footer",
+      "routes": ["/", "/about", "/services", "/contact"],
+      "viewports": ["390x844"],
+      "diffRatio": 0.061399,
+      "files": ["NovusIntelligenceWEB/src/components/layout/Footer.tsx"],
+      "finding": "Grid columnas, social icons y copyright (año dinámico 2026 vs 2024 referencia) generan diff en mobile.",
+      "action": "Grid gap-12 lg:grid-cols-5 brand lg:col-span-2. Social flex gap-3 p-2 rounded-full border. Evaluar año copyright estático vs dinámico según brand-context."
+    },
+    {
+      "id": "VP-GAP-011",
+      "priority": "P1",
+      "area": "AboutPage",
+      "routes": ["/about"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.050972,
+      "files": ["NovusIntelligenceWEB/src/pages/AboutPage.tsx"],
+      "finding": "Hero 2-col + founder card + misión/visión/valores con drift tipográfico y espaciado (diffRatio 3,4–5,1%).",
+      "action": "Aplicar tokens+Button globales primero. Revisar grid lg:grid-cols-2, card founder rounded-2xl, secciones valores con spacing referencia."
+    },
+    {
+      "id": "VP-GAP-012",
+      "priority": "P1",
+      "area": "ServicesPage",
+      "routes": ["/services"],
+      "viewports": ["1440x900", "768x1024", "390x844"],
+      "diffRatio": 0.039585,
+      "files": ["NovusIntelligenceWEB/src/pages/ServicesPage.tsx"],
+      "finding": "Hero band + ServicesGrid en página dedicada con diffRatio 2,7–4,0%.",
+      "action": "Hereda correcciones de ServicesGrid (VP-GAP-007). Verificar hero band py/título gradient en ServicesPage."
+    }
+  ],
+  "routeResults": [
+    { "path": "/", "viewport": "1440x900", "diffRatio": 0.042558, "pass": false },
+    { "path": "/about", "viewport": "1440x900", "diffRatio": 0.033663, "pass": false },
+    { "path": "/services", "viewport": "1440x900", "diffRatio": 0.026785, "pass": false },
+    { "path": "/contact", "viewport": "1440x900", "diffRatio": 0.047996, "pass": false },
+    { "path": "/", "viewport": "768x1024", "diffRatio": 0.065992, "pass": false },
+    { "path": "/about", "viewport": "768x1024", "diffRatio": 0.037118, "pass": false },
+    { "path": "/services", "viewport": "768x1024", "diffRatio": 0.030712, "pass": false },
+    { "path": "/contact", "viewport": "768x1024", "diffRatio": 0.052481, "pass": false },
+    { "path": "/", "viewport": "390x844", "diffRatio": 0.096091, "pass": false },
+    { "path": "/about", "viewport": "390x844", "diffRatio": 0.050972, "pass": false },
+    { "path": "/services", "viewport": "390x844", "diffRatio": 0.039585, "pass": false },
+    { "path": "/contact", "viewport": "390x844", "diffRatio": 0.061399, "pass": false }
+  ]
+}
