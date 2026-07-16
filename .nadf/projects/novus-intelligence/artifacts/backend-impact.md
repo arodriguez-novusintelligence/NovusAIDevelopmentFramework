@@ -1,22 +1,27 @@
 # Impacto Backend — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  
-**Fuente:** novus-nexus @ `e3a9819`  
-**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS us-east-1)  
-**Fecha:** 2026-07-14  
+**Fuente:** novus-nexus @ `e2aa094`  
+**Destino:** NovusIntelligenceBack (Serverless Framework, Node.js 20, AWS sa-east-1)  
+**Fecha:** 2026-07-16  
 **Agente:** lovable-analyzer-agent
 
 ---
 
 ## Resumen ejecutivo
 
-El prototipo Lovable **requiere un único endpoint backend** para funcionalidad productiva: el formulario de contacto. No se detectan otros endpoints, bases de datos ni integraciones backend en el snapshot actual. El componente `MultiAgentDemo` es puramente frontend (visualización educativa) y no requiere API.
+El delta `e2aa094` **amplía significativamente** los requisitos backend. Además del formulario de contacto (`POST /api/v1/contact`), Lovable introduce un **portal de empresas** con autenticación y persistencia de perfiles corporativos vía **Supabase** (solo prototipo).
 
-**backendRequired: true** — condicionado al formulario de contacto.
+En producción, según `port-lovable-to-aws.md` y `port-map.yml`:
+
+- **Sin Supabase en producción.**
+- Auth y datos de empresas deben implementarse en **AWS** (Cognito + Lambda + DynamoDB/RDS o equivalente).
+
+**backendRequired: true** — contacto + auth + registro empresas.
 
 ---
 
-## Endpoints requeridos
+## Endpoints requeridos (existentes)
 
 ### POST /api/v1/contact
 
@@ -26,81 +31,140 @@ El prototipo Lovable **requiere un único endpoint backend** para funcionalidad 
 | Contrato | `novus-nexus/src/integrations/aws/contact-api.contract.ts` |
 | OpenAPI | `novus-nexus/reglasInfra/backend-endpoints.yml` |
 | Lambda sugerida | `novus-contact-handler` |
-| Runtime | Node.js 20.x |
-| Timeout | 10s |
+| Estado | Pendiente de implementación productiva |
 
-#### Request body (ContactRequest)
+Sin cambios en el contrato respecto al análisis anterior. Ver detalle en commit baseline `e3a9819`.
+
+---
+
+## Endpoints requeridos (nuevos — delta e2aa094)
+
+### Autenticación de empresas
+
+Lovable implementa auth vía Supabase (`signUp`, `signInWithPassword`, `signOut`, `getSession`). En producción se requiere equivalente AWS:
+
+| Capacidad Lovable | Traducción AWS sugerida |
+|-------------------|-------------------------|
+| `signUp(email, password)` | Cognito User Pool `SignUp` o API `POST /api/v1/auth/signup` |
+| `signInWithPassword` | Cognito `InitiateAuth` o API `POST /api/v1/auth/login` |
+| `getSession` / refresh | JWT en cookie httpOnly + refresh token |
+| `signOut` | `POST /api/v1/auth/logout` + invalidar sesión |
+| `emailRedirectTo` | Cognito email verification callback URL |
+
+**Nota:** El planner y architect-agent deben decidir Cognito directo vs API custom. Esto probablemente requiere **ADR**.
+
+### CRUD perfil de empresa
+
+Lovable persiste en tabla `public.companies` vía Supabase client con RLS.
+
+#### Esquema detectado (migración SQL)
+
+```sql
+companies (
+  id UUID PK,
+  user_id UUID FK → auth.users (UNIQUE),
+  company_name TEXT NOT NULL,
+  tax_id TEXT,
+  country TEXT,
+  city TEXT,
+  website TEXT,
+  industry TEXT,
+  company_size TEXT,
+  founded_year INTEGER,
+  solution_interest TEXT,
+  budget_range TEXT,      -- en schema, no usado en formulario actual
+  timeframe TEXT,         -- en schema, no usado en formulario actual
+  message TEXT,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ
+)
+```
+
+#### Políticas RLS (Lovable/Supabase)
+
+- Usuario autenticado solo puede SELECT/INSERT/UPDATE/DELETE su propio registro (`auth.uid() = user_id`).
+
+#### API productiva sugerida
+
+| Método | Ruta | Operación | Auth |
+|--------|------|-----------|------|
+| GET | `/api/v1/companies/me` | Obtener perfil del usuario autenticado | JWT required |
+| PUT | `/api/v1/companies/me` | Crear/actualizar perfil (upsert) | JWT required |
+| DELETE | `/api/v1/companies/me` | Eliminar perfil (opcional) | JWT required |
+
+#### Request body (CompanyUpsert) — intención del formulario
 
 ```json
 {
-  "name": "string (2–120, required)",
-  "company": "string (max 160)",
-  "email": "string (email, required)",
-  "phone": "string (max 40)",
-  "message": "string (5–4000, required)",
-  "solutionInterest": "enum: ai-agents | automation | integrations | analytics | documents-ai | customer-ai"
+  "company_name": "string (required)",
+  "tax_id": "string (optional)",
+  "country": "string (optional)",
+  "city": "string (optional)",
+  "website": "string (optional, url)",
+  "industry": "string (optional)",
+  "company_size": "string (optional)",
+  "founded_year": "integer (optional, 1900–current)",
+  "solution_interest": "enum: ai-agents | automation | integrations | analytics | documents-ai | customer-ai",
+  "message": "string (optional)"
 }
 ```
 
-#### Response body (ContactResponse)
+#### Response body
 
 ```json
 {
   "ok": true,
-  "requestId": "string",
-  "message": "string"
+  "company": { "...": "CompanyRow" },
+  "message": "Perfil de empresa guardado."
 }
 ```
 
-#### Códigos de respuesta
-
-| Código | Significado |
-|--------|-------------|
-| 200 | Mensaje recibido correctamente |
-| 400 | Validación fallida |
-| 429 | Rate limit excedido |
-| 500 | Error interno |
-
----
-
-## Implementación backend esperada
-
-Según `reglasInfra/backend-endpoints.yml`:
+#### Lambda sugerida
 
 | Componente | Especificación |
 |------------|----------------|
-| **Lambda** | `novus-contact-handler`, handler `index.handler` |
-| **API Gateway** | REST o HTTP API con ruta `/api/v1/contact` |
-| **SES** | Envío de email a `CONTACT_SES_TO` desde `CONTACT_SES_FROM` |
-| **CRM (opcional)** | Webhook a `CRM_WEBHOOK_URL` |
-| **Permisos IAM** | `ses:SendEmail`, `logs:*` |
-| **Observabilidad** | CloudWatch alarms (lambda errors, API 5xx) |
-
-### Variables de entorno requeridas
-
-| Variable | Tipo | Uso |
-|----------|------|-----|
-| `CONTACT_SES_FROM` | Secreto | Email remitente SES |
-| `CONTACT_SES_TO` | Secreto | Email destino notificaciones |
-| `CRM_WEBHOOK_URL` | Secreto (opcional) | Integración CRM externa |
-
-### Variables frontend (públicas)
-
-| Variable | Valor prod | Uso |
-|----------|------------|-----|
-| `VITE_NOVUS_API_URL` | `https://api.novusintelligencesolutions.com` | Base URL API |
-| `VITE_DEMO_MODE` | `false` | **Obligatorio false en producción** |
+| Lambda | `novus-company-handler` |
+| Runtime | Node.js 20.x |
+| Storage | DynamoDB (userId PK) o RDS Postgres |
+| Auth | Validar JWT Cognito en API Gateway authorizer |
+| IAM | Permisos read/write storage, logs |
 
 ---
 
-## Comportamiento actual en Lovable (no productivo)
+## Implementación en Lovable (no productiva)
 
-El archivo `src/lib/api/contact.ts` implementa un fallback demo:
+| Archivo | Rol |
+|---------|-----|
+| `src/integrations/supabase/client.ts` | Cliente browser con VITE_SUPABASE_* |
+| `src/integrations/supabase/client.server.ts` | Cliente admin server-side |
+| `src/integrations/supabase/auth-middleware.ts` | Middleware SSR con getClaims |
+| `src/integrations/supabase/auth-attacher.ts` | Attach session en start.ts |
+| `src/integrations/supabase/types.ts` | Tipos generados tabla companies |
+| `supabase/migrations/*.sql` | DDL + RLS |
 
-- Si `VITE_NOVUS_API_URL` no está definida **y** (`VITE_DEMO_MODE=true` o `import.meta.env.DEV`), retorna éxito simulado con `requestId: demo-{timestamp}`.
-- En producción sin API, retorna `{ ok: false, message: "Servicio de contacto no configurado." }`.
+**Prohibido portar** estos archivos al stack productivo.
 
-**Este fallback demo NO debe replicarse en el frontend productivo.** Es un riesgo documentado en `riesgos.md`.
+---
+
+## Variables de entorno
+
+### Lovable (prototipo — no replicar en prod)
+
+| Variable | Uso |
+|----------|-----|
+| `VITE_SUPABASE_URL` | URL proyecto Supabase |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Clave pública Supabase |
+| `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` | SSR fallback |
+
+### Productivo (AWS — sin secretos en repo)
+
+| Variable | Uso |
+|----------|-----|
+| `CONTACT_SES_FROM` / `CONTACT_SES_TO` | Email contacto |
+| `COGNITO_USER_POOL_ID` | Auth empresas |
+| `COGNITO_CLIENT_ID` | Auth empresas |
+| `COMPANIES_TABLE_NAME` | DynamoDB o conexión RDS |
+| `JWT_ISSUER` | Validación tokens |
 
 ---
 
@@ -108,44 +172,24 @@ El archivo `src/lib/api/contact.ts` implementa un fallback demo:
 
 | Componente | Motivo |
 |------------|--------|
-| MultiAgentDemo | Visualización estática/animada; datos hardcoded en componente |
-| Navegación y routing | Client-side only |
-| Contenido estático (services, solutions, cases) | Archivos TS estáticos; migrar a content/ del frontend |
-| Páginas legales | Contenido estático |
-| SEO meta tags | Generados en build/SSR del frontend |
-| Header/Footer/Layout | Sin datos dinámicos |
+| NovusDevFrameworkDemo | Visualización educativa; datos hardcoded |
+| MultiAgentDemo | Solo frontend |
+| Navegación, contenido estático, legales | Client-side |
+| Header con link "Registro empresas" | Solo navegación |
 
 ---
 
-## Seguridad y validación
+## Seguridad y validación (ampliado)
 
-Requisitos detectados en Lovable y reglas de infra:
-
-| Requisito | Estado en Lovable | Requerido en backend |
-|-----------|-------------------|----------------------|
-| Validación campos required | Client-side | Server-side obligatorio |
-| Rate limiting | No implementado | Recomendado (429) |
-| Captcha (hCaptcha/Turnstile) | Pendiente (gap documentado) | Recomendado pre-prod |
-| Sanitización input | No visible | Obligatorio |
-| CORS | No definido en Lovable | Configurar en API Gateway |
-| Secrets en código | No detectados | Mantener en AWS Secrets/SSM |
-
----
-
-## Dependencias AWS
-
-| Servicio | Uso | Prioridad |
-|----------|-----|-----------|
-| Lambda | Handler de contacto | Alta |
-| API Gateway | Exposición REST | Alta |
-| SES | Notificación email | Alta |
-| CloudWatch | Logs y alarmas | Media |
-| Amplify (frontend) | Hosting | Media (DevOps, no backend logic) |
-
-Dominios esperados (según `reglasInfra/aws-prod.yml`):
-
-- API prod: `https://api.novusintelligencesolutions.com`
-- API dev: `https://dev-api.novusintelligencesolutions.com`
+| Requisito | Lovable | Requerido en backend productivo |
+|-----------|---------|--------------------------------|
+| Auth password min 6 chars | Client-side | Política Cognito más estricta (≥8, complejidad) |
+| RLS por user_id | Supabase RLS | Authorizer JWT + filtro por sub en Lambda |
+| Validación server-side | Parcial (Supabase constraints) | Obligatorio en Lambda |
+| Rate limiting auth | No | Obligatorio (brute force) |
+| Captcha en signup | No | Recomendado |
+| CORS | Supabase managed | API Gateway |
+| Secrets en .env Lovable | Presentes (prototipo) | **Nunca en repo productivo** |
 
 ---
 
@@ -153,32 +197,37 @@ Dominios esperados (según `reglasInfra/aws-prod.yml`):
 
 | ID Cambio | Componente | requiresBackend | Justificación |
 |-----------|------------|-----------------|---------------|
-| CHG-008 | contact-form | **Sí** | Submit a API real |
-| CHG-011 | api-contract | **Sí** | Define contrato a implementar |
-| CHG-009 | MultiAgentDemo | No | Solo visualización |
-| CHG-001–007, 010, 012–013 | Resto | No | Frontend/contenido estático |
+| CHG-008 | contact-form | **Sí** | POST /api/v1/contact |
+| CHG-011 | api-contract | **Sí** | Contrato contacto |
+| CHG-014 | auth-portal | **Sí** | Signup/login/logout |
+| CHG-015 | register-company-form | **Sí** | CRUD perfil empresa |
+| CHG-016 | supabase-integration | **Sí** | Traducir a AWS, no copiar |
+| CHG-009, CHG-017 | Demos interactivos | No | Solo frontend |
+| CHG-001–007, 010, 012–013, 018 | Resto | No | Frontend/contenido |
 
 ---
 
-## Gaps pendientes (handoff a backend-impact-agent)
+## Gaps pendientes (handoff)
 
-1. **Captcha:** Lovable documenta como TODO pre-prod; backend debe soportar validación de token.
-2. **CRM webhook:** Opcional; definir si se implementa en MVP.
-3. **i18n:** No requiere backend en alcance actual.
-4. **Blog/recursos:** Fuera de alcance inicial.
+1. **ADR auth:** Decidir Cognito vs proveedor externo para portal empresas.
+2. **ADR storage:** DynamoDB vs RDS para tabla companies.
+3. **OpenAPI:** Extender `backend-endpoints.yml` con rutas auth y companies.
+4. **Alcance:** Portal empresas no está en `initial_scope` — validar con stakeholder.
+5. **Captcha:** Aplicar a signup y registro empresa.
+6. **Notificación:** ¿Email interno al guardar perfil empresa? (Lovable muestra toast; no hay webhook).
 
 ---
 
 ## Recomendación para planner-agent
 
-1. Incluir implementación de `POST /api/v1/contact` como **tarea bloqueante** para la página de contacto productiva.
-2. Coordinar con **backend-impact-agent** (paso 5) para `evaluacion-backend.md` y `especificacion-backend.md`.
-3. El MultiAgentDemo puede implementarse en frontend sin esperar backend.
-4. Secuenciar: backend contact API → frontend contacto con API real → validación QA.
+1. Tratar portal empresas como **épica separada** con dependencia auth → companies API → frontend.
+2. Mantener `POST /api/v1/contact` como tarea bloqueante para contacto.
+3. **No** incluir Supabase en plan productivo; documentar traducción AWS explícitamente.
+4. Secuenciar: ADR auth/storage → backend APIs → frontend auth UI → frontend registro → QA security.
 
 ---
 
 ## Próximo agente
 
-**backend-impact-agent** (paso 5 del workflow) debe detallar la especificación Lambda, IAM y despliegue.  
-**planner-agent** (paso 4) debe incluir la dependencia backend en el plan de implementación.
+**backend-impact-agent** (paso 5) debe detallar especificación Lambda auth + companies, IAM y almacenamiento.  
+**planner-agent** (paso 4) debe incluir ambas dependencias backend y flag de expansión de alcance.

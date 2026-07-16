@@ -1,16 +1,21 @@
 # Impacto Frontend — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  
-**Fuente:** novus-nexus @ `e3a9819`  
+**Fuente:** novus-nexus @ `e2aa094`  
 **Destino:** NovusIntelligenceWEB (React + TypeScript + Tailwind + React Router + Vite)  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-16  
 **Agente:** lovable-analyzer-agent
 
 ---
 
 ## Resumen ejecutivo
 
-El prototipo Lovable define un **sitio corporativo B2B completo** con design system dark-first (navy + cyan + púrpura), 10 rutas navegables y un componente interactivo nuevo (`MultiAgentDemo`) en la solución AI Agents. La traducción al frontend productivo requiere **reimplementar la intención visual y funcional** sin copiar código, adaptando routing (TanStack → React Router) y tokens al design system existente de NovusIntelligenceWEB.
+El prototipo Lovable define un **sitio corporativo B2B completo** con design system dark-first (navy + cyan + púrpura), **12 rutas navegables** y dos capacidades nuevas en el delta `e2aa094`:
+
+1. **Portal de empresas** (`/auth` + `/register-company`) con autenticación y formulario de perfil corporativo.
+2. **NovusDevFrameworkDemo** — modal interactivo en Hero que simula el flujo NADF multiagente.
+
+La traducción al frontend productivo requiere **reimplementar la intención visual y funcional** sin copiar código. La integración Supabase de Lovable **está prohibida en producción** según `port-map.yml` y `.ai/prompts/port-lovable-to-aws.md`; debe traducirse a APIs AWS.
 
 ---
 
@@ -18,48 +23,93 @@ El prototipo Lovable define un **sitio corporativo B2B completo** con design sys
 
 | Sección Lovable | Ruta Lovable | Ruta WEB esperada | Prioridad | Complejidad |
 |-----------------|--------------|-------------------|-----------|-------------|
-| Landing / Hero | `/` | `/` | Alta | Media |
+| Landing / Hero | `/` | `/` | Alta | Alta |
 | Header / Footer | Layout | Layout compartido | Alta | Media |
-| Servicios (5 pilares) | `/services` | `/services` o sección `/` | Alta | Baja |
-| Soluciones (grid) | `/solutions` | `/services` o `/solutions` | Alta | Baja |
+| Servicios (5 pilares) | `/services` | `/services` | Alta | Baja |
+| Soluciones (grid) | `/solutions` | `/solutions` | Alta | Baja |
 | Detalle solución | `/solutions/$slug` | `/solutions/:slug` | Alta | Media |
-| MultiAgentDemo | `/solutions/ai-agents` | `/solutions/ai-agents` | Alta | **Alta** |
+| MultiAgentDemo | `/solutions/ai-agents` | `/solutions/ai-agents` | Alta | Alta |
+| NovusDevFrameworkDemo | Modal en `/` | Modal en `/` | Alta | Alta |
 | Nosotros | `/about` | `/about` | Alta | Baja |
-| Casos de éxito | `/cases` | `/cases` o sección | Media | Baja |
+| Casos de éxito | `/cases` | `/cases` | Media | Baja |
 | Contacto | `/contact` | `/contact` | Alta | Media |
+| **Auth empresas** | `/auth` | `/auth` o `/empresas/acceso` | **Alta** | **Alta** |
+| **Registro empresa** | `/register-company` | `/register-company` o `/empresas/registro` | **Alta** | **Alta** |
 | Páginas legales | `/privacy`, `/data-treatment`, `/terms` | Rutas equivalentes | Media | Baja |
 
 ---
 
-## Cambios visuales a traducir
+## Delta principal: Portal de empresas (CHG-014, CHG-015, CHG-018)
+
+### Intención funcional
+
+- Flujo: usuario sin sesión → `/auth` → signup/login → `/register-company` → formulario → confirmación.
+- Protección de ruta: redirección a `/auth` si no hay sesión activa.
+- Formulario con 3 bloques visuales (datos básicos, perfil corporativo, necesidad/interés).
+- Prefill si el usuario ya tiene perfil guardado (upsert por `user_id`).
+- Estados: loading inicial, saving, done con opción editar, logout.
+- Meta `robots: noindex` en auth y registro.
+
+### Intención visual
+
+- Hero section con badge "Portal de empresas", headline con gradiente de marca.
+- Cards elevadas (`bg-navy-elevated`, `border-border/60`, `shadow-elevated`).
+- Inputs con fondo `bg-navy-surface/50`.
+- CTA principal con `bg-gradient-brand` y `shadow-glow`.
+- Pantalla de éxito con icono CheckCircle2 y CTAs secundarios.
+
+### Traducción al stack productivo
+
+| Lovable (prototipo) | Productivo (requerido) |
+|---------------------|------------------------|
+| `supabase.auth.signUp/signIn` | Cognito, Auth0, o API custom AWS — **no Supabase** |
+| `supabase.from("companies").upsert()` | `POST/PUT /api/v1/companies` vía Lambda |
+| `localStorage` session Supabase | Tokens JWT en httpOnly cookies o Amplify Auth |
+| Tabs shadcn login/signup | Reutilizar componentes UI existentes en WEB |
+| Selects con listas hardcoded | Mismas listas como constantes en WEB (INDUSTRIES, SIZES, COUNTRIES) |
+
+### Prohibiciones explícitas
+
+- **No copiar** `src/integrations/supabase/*` (listado en `port-map.yml` forbidden).
+- **No añadir** `@supabase/supabase-js` al frontend productivo.
+- **No exponer** `VITE_SUPABASE_*` en build productivo.
+
+---
+
+## Delta secundario: NovusDevFrameworkDemo (CHG-017)
+
+### Intención
+
+- Modal Dialog con simulación educativa del framework NADF en 4 columnas.
+- 9 pasos animados con logs técnicos, controles play/pause/reset.
+- Disparado desde Hero ("Ver simulación") y desde Header (clic en "Inicio" cuando ya está en `/`).
+
+### Traducción
+
+- Componente lazy-loaded en landing; no requiere backend.
+- Respetar `prefers-reduced-motion`.
+- Reimplementar diagrama y animaciones sin copiar las ~467 líneas de Lovable.
+- Evento custom `novus:open-dev-framework` puede traducirse a contexto React o state lifting.
+
+---
+
+## Cambios visuales previos (mantienen vigencia)
 
 ### Design system (CHG-002)
 
-- **Paleta:** navy profundo como fondo, cyan neón como primary, púrpura como secondary/accent. Todos en oklch.
-- **Tipografía:** Space Grotesk para headings, Inter para body. Verificar si NovusIntelligenceWEB ya las incluye; si no, añadir vía Google Fonts o self-host.
-- **Utilities a replicar conceptualmente:** gradientes de marca, sombras glow, grid background, animaciones pulse/float.
-- **Prohibido:** copiar `src/styles.css` literal ni clases Tailwind de Lovable.
+- Paleta navy + cyan + púrpura en oklch (ver `reglasDiseno/tokens.yml`).
+- Tipografía Space Grotesk + Inter.
+- Utilities: gradientes de marca, sombras glow, grid background, animaciones pulse/float.
+
+### Contacto — Navy Neón (CHG-008, delta visual)
+
+- Hero y formulario alineados con tokens navy-elevated/navy-surface.
+- Misma estructura de campos; integración con `submitContact()` (API AWS, no Supabase).
 
 ### Layout (CHG-003)
 
-- Header sticky con blur, navegación de 6 ítems, CTA persistente y menú móvil.
-- Footer con contacto, redes (LinkedIn, Instagram, Facebook) y enlaces legales.
-- PageShell como wrapper consistente con Toaster/notificaciones.
-
-### Secciones landing (CHG-004, CHG-006)
-
-- Hero con badge, headline gradiente, dual CTA, stats inline y logo animado.
-- Grids de servicios y soluciones con cards hover (translate, border glow).
-- Testimonials reutilizando datos de `cases.ts`.
-- CTA reutilizable al final de páginas.
-
-### MultiAgentDemo (CHG-009) — Mayor complejidad
-
-- Diagrama SVG con nodos posicionados en porcentajes, curvas Bézier, partículas animadas (`animateMotion`).
-- Estado React: step, playing, timeline de 8 pasos con auto-advance cada 1.8s.
-- Controles: play/pause, step manual, indicadores de progreso.
-- **Recomendación:** implementar como componente aislado con props; considerar `prefers-reduced-motion` para accesibilidad.
-- **No copiar:** el SVG inline ni las clases de Lovable; traducir la intención del diagrama.
+- Header ahora con **7 ítems** de navegación (añadido "Registro empresas").
+- CTA persistente "Agenda una demo" → `/contact`.
 
 ---
 
@@ -69,42 +119,31 @@ El prototipo Lovable define un **sitio corporativo B2B completo** con design sys
 
 | Lovable (TanStack) | Productivo (React Router) |
 |--------------------|---------------------------|
-| `createFileRoute("/")` | `<Route path="/" />` |
-| `src/routes/solutions.$slug.tsx` | `/solutions/:slug` con `useParams()` |
-| `head()` meta tags | React Helmet o equivalente |
-| `Link` de TanStack | `Link` de react-router-dom |
-| `useRouterState` | `useLocation` / `useParams` |
+| `createFileRoute("/auth")` | `<Route path="/auth" />` |
+| `createFileRoute("/register-company")` | `<Route path="/register-company" />` |
+| Guard por sesión en useEffect | ProtectedRoute o loader con verificación auth |
+| `head()` meta noindex | React Helmet `robots: noindex` |
 
-Referencia de mapeo: `novus-nexus/reglasEmpalme/port-map.yml`.
+**Nota:** `port-map.yml` no incluye aún mapeo para `/auth` ni `/register-company`. El planner debe extender la tabla de rutas.
 
-### Formulario de contacto (CHG-008)
+### Formulario de contacto (CHG-008, CHG-011)
 
-- Campos: name*, company, email*, phone, solutionInterest (select), message*.
-- Estados: idle → submitting → done (con opción "enviar otro").
-- Validación client-side antes de submit.
-- Integración con API real (`VITE_NOVUS_API_URL`); **sin modo demo en producción**.
+- Sin cambios funcionales respecto al análisis anterior.
+- Integración con `POST /api/v1/contact` (AWS Lambda).
+- **Sin modo demo en producción.**
 
-### Páginas dinámicas (CHG-007)
+### MultiAgentDemo (CHG-009)
 
-- Loader de solución por slug con 404 custom.
-- Query param `interest` en link desde detalle → contacto.
-- Sección "También te puede interesar" con 3 soluciones relacionadas.
+- Sin cambios; permanece en `/solutions/ai-agents`.
+- Esfuerzo alto de traducción SVG + animaciones.
 
 ---
 
-## Contenido a sincronizar (CHG-005)
+## Contenido a sincronizar (CHG-005, CHG-018)
 
-Los archivos `src/content/` de Lovable son la fuente de intención de contenido. El planner debe validar coherencia con:
-
-- `.nadf/projects/novus-intelligence/memory/brand-context.md`
-- `.nadf/projects/novus-intelligence/memory/business-context.md` (si existe)
-
-Datos clave detectados en Lovable:
-
-- **Founder:** Andrés D. Rodríguez Vargas, Founder & CEO
-- **Contacto:** arodriguez@novusintelligencesolutions.com, +57 302 757 6511, Bogotá
-- **6 soluciones:** ai-agents, automation, integrations, analytics, documents-ai, customer-ai
-- **2 casos:** Banco Santa Cruz, doevents.com
+- Nuevo ítem nav: `{ label: "Registro empresas", to: "/register-company" }`.
+- Listas de formulario registro: 13 industrias, 6 rangos de tamaño, 10 países.
+- Validar coherencia con `memory/brand-context.md`.
 
 ---
 
@@ -112,13 +151,12 @@ Datos clave detectados en Lovable:
 
 | Componente Lovable (intención) | Acción en WEB |
 |--------------------------------|---------------|
-| Hero | Nuevo o extender existente |
-| ServicesGrid | Nuevo |
-| SolutionsGrid | Nuevo |
-| MultiAgentDemo | Nuevo (alta prioridad para ai-agents) |
-| CTA | Extraer como componente compartido |
-| NovusLogo | Verificar existente; adaptar si difiere |
-| PageShell | Extender layout actual |
+| AuthPage (tabs login/signup) | **Nuevo** — requiere proveedor auth AWS |
+| RegisterCompanyPage | **Nuevo** — requiere API companies |
+| NovusDevFrameworkDemo | **Nuevo** — modal en landing |
+| Hero (con trigger demo) | Extender existente |
+| MultiAgentDemo | Nuevo (ai-agents) |
+| CTA | Extraer como compartido |
 
 ---
 
@@ -126,35 +164,31 @@ Datos clave detectados en Lovable:
 
 | Lovable | Productivo | Acción |
 |---------|------------|--------|
-| TanStack Router/Start | React Router | Traducir rutas |
-| shadcn/ui | Verificar en WEB | Reutilizar si existe; no copiar de Lovable |
-| lucide-react | Probablemente ya en WEB | Reutilizar iconos |
-| sonner (toast) | Verificar en WEB | Equivalente o alternativa |
-| @tanstack/react-query | Verificar necesidad | Solo si se usa en WEB |
+| `@supabase/supabase-js` | **Prohibido** | Traducir a AWS Cognito + API Gateway |
+| TanStack Router/Start | React Router | Traducir rutas (+2 nuevas) |
+| shadcn/ui (Dialog, Tabs) | Verificar en WEB | Reutilizar si existe |
+| sonner (toast) | Verificar en WEB | Equivalente |
 
 ---
 
 ## SEO y meta
 
-Cada ruta Lovable define `head()` con title, description y og:*. El frontend productivo debe replicar:
-
-- Titles por página (ej. "Novus Intelligence Solutions — Inteligencia que genera resultados")
-- Descriptions orientadas a IA/multiagente
-- OG image: `/assets/novus/brand-publicidad.png`
+- Rutas `/auth` y `/register-company`: **noindex** (no indexar en producción).
+- Resto de rutas: mantener titles/descriptions/og:* del análisis anterior.
 
 ---
 
-## Estimación de esfuerzo relativo
+## Estimación de esfuerzo relativo (actualizada)
 
 | Área | Esfuerzo | Notas |
 |------|----------|-------|
-| Design tokens + layout | Alto | Base para todo el sitio |
-| Landing completa | Alto | 7 secciones |
-| Páginas estáticas (about, legal) | Medio | Contenido mayormente textual |
-| Soluciones + detalle | Medio | 6 slugs + routing dinámico |
-| MultiAgentDemo | Alto | SVG + animaciones + estado |
-| Contacto | Medio | Depende de API backend |
-| Assets | Bajo | Copiar assets reales (no código) |
+| Portal auth + registro empresa | **Muy alto** | Requiere decisión arquitectónica auth (ADR) |
+| NovusDevFrameworkDemo | Alto | Modal + animaciones |
+| Design tokens + layout | Alto | Base del sitio |
+| Landing completa | Alto | Hero actualizado + demo |
+| Contacto | Medio | API backend contact |
+| MultiAgentDemo | Alto | SVG + animaciones |
+| Resto páginas estáticas | Medio-Bajo | Sin cambios mayores |
 
 ---
 
@@ -162,10 +196,11 @@ Cada ruta Lovable define `head()` con title, description y og:*. El frontend pro
 
 - **NO_LOVABLE_CODE_COPY:** Reimplementar intención, no JSX/CSS literal.
 - **NO_PRODUCTIVE_CODE:** Este agente no implementa; solo documenta impacto.
-- Contenido debe alinearse con memoria de marca, no con placeholders Lovable.
+- **Supabase prohibido en producción:** Ver `port-map.yml` y `port-lovable-to-aws.md`.
+- Portal empresas **expande alcance** fuera de `initial_scope` en `project-context.yml` — requiere validación de stakeholder.
 
 ---
 
 ## Próximo agente
 
-**planner-agent** debe usar este documento junto con `cambios-lovable.json` y `backend-impact.md` para generar `plan-implementacion.md`.
+**planner-agent** debe usar este documento junto con `cambios-lovable.json` y `backend-impact.md` para generar `plan-implementacion.md`, incluyendo decisión sobre auth/registro empresas y extensión de `port-map.yml`.
