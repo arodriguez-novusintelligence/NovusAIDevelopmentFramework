@@ -4,6 +4,25 @@ Registro cronológico de decisiones del proyecto.
 
 ---
 
+## 2026-07-16 — Primera corrida Lovable→Web documentada (workflow bloqueado)
+
+**Contexto:** Finalización de la primera ejecución completa del workflow `novus-intelligence-lovable-to-web` (run `bc-7db90cca-6bbe-4914-bce2-8b237c3cd973`) sobre baseline Lovable `e3a9819` y plan `PLAN-NOVUS-LOVABLE-2026-07-14` (`approved`).
+
+**Decisión:**
+- Consolidar trazabilidad en `artifacts/resumen-ejecucion.md` con 17 agentes ejecutados, 8+ PRs Framework en draft y repos productivos mergeados en `main`.
+- Registrar **security PASS** (score 88) tras remediación SEC-001 (IAM SES) y SEC-002 (rate limit por IP) en NovusIntelligenceBack.
+- Registrar **paridad visual FAIL** como bloqueador principal: 0/12 capturas bajo umbral 0,2 %; `maxDiffRatio` 0,096091 (home móvil).
+- Mantener workflow **bloqueado** hasta remediación frontend (`gaps-paridad.json`) y re-validación QA/reviewer.
+- No desplegar a DEV de forma autónoma (`NO_DEPLOY`); CloudFront DEV refleja build local actual.
+
+**Rationale:** La documentación consolida el Blackboard NADF con evidencia auditable. Security y paridad visual demuestran que los gates bloqueantes funcionan: seguridad remediada permite avanzar; paridad visual detiene promoción hasta alinear tokens, layout y componentes con intención Lovable sin copiar código.
+
+**Artefactos:** `resumen-ejecucion.md`, `informe-seguridad.md`, `informe-paridad-visual.md`, `metricas-ejecucion.json`, `reflexion-ejecucion.md`
+
+**Próximo agente:** frontend-integration-agent
+
+---
+
 ## 2026-07-14 — MVP automatización + paridad visual exacta
 
 **Contexto:** El sitio DEV no igualaba Lovable y no había trigger automático ante `lovable.commit`.
