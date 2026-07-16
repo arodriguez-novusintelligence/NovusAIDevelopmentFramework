@@ -34,6 +34,14 @@ Verificar alineación con `propuesta-infra.md` del mismo workflow.
 - Artefactos: `artifacts/informe-seguridad.md`, `artifacts/propuesta-infra.md`
 - Agente responsable corrección: backend-agent
 
+## Estado de remediación
+
+| Campo | Valor |
+|-------|-------|
+| `remediationStatus` | resolved |
+| `resolutionDate` | 2026-07-16 |
+| Notas | ARN acotado a identidad dominio en `sa-east-1`; security-agent PASS score 88 |
+
 ## Metadatos
 
 | Campo | Valor |
@@ -42,3 +50,4 @@ Verificar alineación con `propuesta-infra.md` del mismo workflow.
 | Severidad | high |
 | Gate bloqueante | security_pass |
 | Fecha | 2026-07-14 |
+| Última actualización | 2026-07-16 |

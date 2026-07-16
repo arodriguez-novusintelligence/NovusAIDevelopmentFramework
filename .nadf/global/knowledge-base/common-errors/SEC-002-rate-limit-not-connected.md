@@ -26,6 +26,14 @@ Patrón «dead code security»: utilidades de protección definidas durante desa
 - Artefactos: `artifacts/informe-seguridad.md`, `artifacts/security-result.json`, `artifacts/especificacion-backend.md`
 - Agentes responsables: backend-agent, cloud-agent (si WAF)
 
+## Estado de remediación
+
+| Campo | Valor |
+|-------|-------|
+| `remediationStatus` | resolved |
+| `resolutionDate` | 2026-07-16 |
+| Notas | `rateLimitResponse()` conectado en handler contact.ts; security-agent PASS score 88 |
+
 ## Metadatos
 
 | Campo | Valor |
@@ -34,3 +42,4 @@ Patrón «dead code security»: utilidades de protección definidas durante desa
 | Severidad | high |
 | Gate bloqueante | security_pass |
 | Fecha | 2026-07-14 |
+| Última actualización | 2026-07-16 |

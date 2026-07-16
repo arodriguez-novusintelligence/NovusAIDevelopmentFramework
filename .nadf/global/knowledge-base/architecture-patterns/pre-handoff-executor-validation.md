@@ -15,13 +15,15 @@ Antes de activar qa-agent, el executor (o agente responsable) debe verificar:
 | 3 | Artefactos `resumen-{frontend,backend,cloud}.md` publicados en Blackboard | respectivos agentes |
 | 4 | `pipeline-config.md` presente si `requires_infra: true` y DevOps aplica | devops-agent |
 | 5 | Utilidades de seguridad definidas conectadas en handlers | backend-agent |
+| 6 | `visual-parity-result.json` generado si `visual_parity.enabled: true` | visual-parity-agent |
 
 ## Ejemplo
 
-Corrida novus-intelligence bloqueada por omitir pre-checks 1 y 2:
-- Build Vite OK pero lint FAIL (QA-001).
-- IAM SES wildcard no alineado con propuesta (SEC-001).
-- Evidencia: `artifacts/reflexion-ejecucion.md`, `artifacts/informe-qa.md`.
+Corrida novus-intelligence bloqueada por omitir pre-checks 1, 2 y 6:
+- Build Vite OK pero lint FAIL (QA-001) — resuelto 2026-07-16.
+- IAM SES wildcard no alineado con propuesta (SEC-001) — resuelto 2026-07-16.
+- Paridad declarada manualmente sin checker → VP-001 FAIL 0/12 capturas.
+- Evidencia: `artifacts/reflexion-ejecucion.md`, `artifacts/informe-qa.md`, `artifacts/informe-paridad-visual.md`.
 
 ## Proyectos donde se usa
 
@@ -31,7 +33,7 @@ Corrida novus-intelligence bloqueada por omitir pre-checks 1 y 2:
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | KB-004, ANTI-005 |
+| IDs reflexión | KB-004, ANTI-005, KB-010, ANTI-VP-001 |
 | Workflow origen | novus-intelligence-lovable-to-web |
 | Reusabilidad | high |
-| Fecha | 2026-07-14 |
+| Fecha | 2026-07-16 |

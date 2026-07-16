@@ -24,9 +24,17 @@ Primera corrida **novus-intelligence-lovable-to-web** (2026-07-14):
 
 - novus-intelligence
 
+## Paridad visual (ADR-0006)
+
+La reimplementación sin copia directa no garantiza paridad pixel. Cuando `visual_parity.enabled: true`:
+- Mapear tokens oklch explícitos (`oklch-token-mapping-lovable-to-web.md`).
+- Ejecutar visual-parity-agent antes de declarar paridad en `resumen-frontend.md`.
+- Seguir orden de remediación en `visual-parity-remediation-order.md`.
+
 ## Referencias
 
 - ADR-0003 (canonicalización Lovable→Web)
+- ADR-0006 (paridad visual)
 - `docs/lovable-integration.md`
 - `.nadf/global/rules/general-rules.md`
 
@@ -34,7 +42,7 @@ Primera corrida **novus-intelligence-lovable-to-web** (2026-07-14):
 
 | Campo | Valor |
 |-------|-------|
-| IDs reflexión | PAT-001, PAT-002, PAT-003, KB-006 |
+| IDs reflexión | PAT-001, PAT-002, PAT-003, KB-006, KB-008 |
 | Workflow origen | novus-intelligence-lovable-to-web |
 | Reusabilidad | high |
-| Fecha | 2026-07-14 |
+| Fecha | 2026-07-16 |

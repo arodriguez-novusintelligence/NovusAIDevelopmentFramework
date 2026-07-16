@@ -18,10 +18,15 @@ Registrar en `qa-result.json`:
 - `method: static_code_review`
 - Limitación declarada: sin prueba en viewport real ni Lighthouse.
 
+### Limitación crítica: no sustituye paridad visual
+
+El análisis estático de clases responsive **no valida** el gate `visual_exact_parity`. Cuando `visual_parity.enabled: true`, solo `visual-parity-agent` con checker Playwright+pixelmatch puede declarar PASS. Comparación manual en `resumen-frontend.md` produjo anti-patrón ANTI-VP-001 (0/12 capturas FAIL en corrida 2026-07-16).
+
 ## Ejemplo
 
 novus-intelligence (2026-07-14): QA aceptó PASS responsive/SEO por análisis estático.
 - Evidencia: `artifacts/informe-qa.md`, `artifacts/qa-result.json`.
+- Limitación confirmada 2026-07-16: paridad visual requiere checker automatizado independiente.
 
 ## Proyectos donde se usa
 
@@ -31,7 +36,7 @@ novus-intelligence (2026-07-14): QA aceptó PASS responsive/SEO por análisis es
 
 | Campo | Valor |
 |-------|-------|
-| ID reflexión | KB-007 |
+| IDs reflexión | KB-007, ANTI-VP-001 |
 | Workflow origen | novus-intelligence-lovable-to-web |
 | Reusabilidad | medium |
-| Fecha | 2026-07-14 |
+| Fecha | 2026-07-16 |

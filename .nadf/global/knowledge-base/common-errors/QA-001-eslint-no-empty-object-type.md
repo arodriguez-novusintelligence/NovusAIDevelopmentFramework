@@ -38,6 +38,14 @@ Alternativa: añadir al menos una prop semántica explícita a la interface.
 - Artefactos: `artifacts/informe-qa.md`, `artifacts/qa-result.json`
 - Agente responsable corrección: frontend-integration-agent
 
+## Estado de remediación
+
+| Campo | Valor |
+|-------|-------|
+| `remediationStatus` | resolved |
+| `resolutionDate` | 2026-07-16 |
+| Notas | Lint 0 errores tras `type` alias en Input, Label, Select, Textarea; QA-RE re-validación formal pendiente |
+
 ## Metadatos
 
 | Campo | Valor |
@@ -46,3 +54,4 @@ Alternativa: añadir al menos una prop semántica explícita a la interface.
 | Severidad | critical |
 | Gate bloqueante | build_success |
 | Fecha | 2026-07-14 |
+| Última actualización | 2026-07-16 |
