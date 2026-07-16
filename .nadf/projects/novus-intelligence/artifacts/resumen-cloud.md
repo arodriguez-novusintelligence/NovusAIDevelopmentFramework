@@ -4,17 +4,17 @@
 **Workflow:** novus-intelligence-lovable-to-web  
 **Paso:** paso-08-propuesta-infra  
 **Agente:** cloud-agent  
-**Fecha:** 2026-07-14  
+**Fecha:** 2026-07-16  
 **Runtime:** Cursor Cloud Agent (M6)  
 **Target environment:** DEV — AWS `sa-east-1`  
 **Plan:** PLAN-NOVUS-LOVABLE-2026-07-14 (`approved`)  
-**Rama:** `cursor/propuesta-infra-dev-1385`
+**Rama:** `cursor/propuesta-infra-paso08-fa5e`
 
 ---
 
 ## Resumen ejecutivo
 
-Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **sa-east-1**, reconciliando la configuración de `environments/dev.yml` (previamente `us-east-1`) con el target operativo del workflow.
+Se generó y revalidó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **sa-east-1**, alineada con `environments/dev.yml` (región ya reconciliada, recursos frontend parcialmente existentes).
 
 **Despliegue:** No realizado (`NO_DEPLOY`). La publicación requiere aprobación humana explícita y ejecución del checklist en `propuesta-infra.md`.
 
@@ -33,31 +33,32 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 ### Backend
 
-| Componente | Nombre / identificador |
-|------------|----------------------|
-| Stack Serverless / CloudFormation | **`novus-intelligence-back-dev`** |
-| HTTP API Gateway | **`novus-intelligence-api-dev`** |
-| Lambda | **`novus-contact-handler`** (Node.js 20, arm64, 256 MB, 10 s) |
-| Endpoint | `POST /api/v1/contact` |
-| URL pública | `https://api-dev.novusintelligence.com` |
-| Email | AWS SES — `noreply-dev@novusintelligence.com` |
-| Logs | `/aws/lambda/novus-contact-handler` |
+| Componente | Nombre / identificador | Estado |
+|------------|----------------------|--------|
+| Stack Serverless / CloudFormation | **`novus-intelligence-back-dev`** | Pendiente |
+| HTTP API Gateway | **`novus-intelligence-api-dev`** | Pendiente |
+| Lambda | **`novus-contact-handler`** (Node.js 20, arm64, 256 MB, 10 s) | Pendiente |
+| Endpoint | `POST /api/v1/contact` | Pendiente |
+| URL pública | `https://api-dev.novusintelligence.com` | DNS pendiente |
+| Email | AWS SES — `noreply-dev@novusintelligence.com` | Pendiente verificación |
+| Logs | `/aws/lambda/novus-contact-handler` | Pendiente |
 
 ### Frontend
 
-| Componente | Nombre / identificador |
-|------------|----------------------|
-| Bucket SPA | **`novus-intelligence-web-dev`** |
-| CloudFront | `novus-intelligence-web-dev-cdn` |
-| URL pública | `https://dev.novusintelligence.com` |
-| Certificado ACM (CloudFront) | `dev.novusintelligence.com` (us-east-1) |
+| Componente | Nombre / identificador | Estado |
+|------------|----------------------|--------|
+| Bucket SPA | **`novus-intelligence-web-dev-519010577666`** | Existente |
+| CloudFront | **`E8IN00J3MFCNO`** | Activo |
+| URL activa | `https://d1bfu6klutpp8m.cloudfront.net` | Operativa |
+| URL DNS objetivo | `https://dev.novusintelligence.com` | Pendiente alias |
+| Certificado ACM (CloudFront) | `dev.novusintelligence.com` (us-east-1) | Verificar |
 
 ### Assets
 
-| Componente | Nombre / identificador |
-|------------|----------------------|
-| Bucket assets | **`novus-intelligence-assets-dev`** |
-| Alternativa MVP | Assets en bucket SPA (`public/assets/novus/`) |
+| Componente | Nombre / identificador | Estado |
+|------------|----------------------|--------|
+| Bucket assets | **`novus-intelligence-assets-dev`** | Pendiente |
+| Alternativa MVP | Assets en bucket SPA (`public/assets/novus/`) | Opcional |
 
 ### Secrets y configuración
 
@@ -68,17 +69,18 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Secrets Manager | `/novus-intelligence/dev/crm` (opcional) |
 | SSM | `/novus-intelligence/dev/*` (CORS, rate limit, captcha flags, log level) |
 
-**Variables normalizadas (canónicas):** `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO` (reemplazan variantes `CONTACT_SES_*`).
+**Variables canónicas:** `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO` (normalización D-003).
 
 ---
 
 ## Reconciliación regional (TASK-INFRA-001)
 
-| Campo | Antes | Después |
-|-------|-------|---------|
-| `environments/dev.yml` → `region` | `us-east-1` | **`sa-east-1`** |
-| Recursos compute/API/SES/S3 | — | sa-east-1 |
-| Certificado CloudFront | — | us-east-1 (requisito AWS) |
+| Campo | Estado |
+|-------|--------|
+| `environments/dev.yml` → `region` | **`sa-east-1`** ✅ Completado |
+| `backend.region` | **`sa-east-1`** ✅ |
+| Recursos compute/API/SES/S3 | sa-east-1 |
+| Certificado CloudFront | us-east-1 (requisito AWS) |
 
 ---
 
@@ -86,9 +88,9 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 | Tarea | Estado | Evidencia |
 |-------|--------|-----------|
-| TASK-INFRA-001 | ✅ Documentada + `dev.yml` actualizado | Región sa-east-1 |
+| TASK-INFRA-001 | ✅ | `dev.yml` en sa-east-1 |
 | TASK-INFRA-002 | ✅ | API Gateway + Lambda + SES en propuesta |
-| TASK-INFRA-003 | ✅ | S3 + CloudFront frontend documentado |
+| TASK-INFRA-003 | ✅ | S3 + CloudFront documentado (CDN activo) |
 | TASK-INFRA-004 | ✅ | Bucket assets documentado |
 | TASK-INFRA-005 | ✅ | Secrets/SSM — solo nombres, sin valores |
 
@@ -110,10 +112,11 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 | Dependencia | Estado | Impacto |
 |-------------|--------|---------|
-| Backend implementado (`TASK-BE-*`) | Pendiente ejecución backend-agent | Deploy API requiere handler listo |
+| Backend implementado (`TASK-BE-*`) | Pendiente backend-agent | Deploy API requiere handler listo |
 | Secrets creados en AWS | Pendiente humano | Lambda no puede enviar email sin secrets |
 | SES dominio verificado | Pendiente humano | Bloqueante para envío real |
-| Frontend build CI | Pendiente devops-agent | Deploy SPA requiere pipeline |
+| Frontend build CI | Pendiente devops-agent | Sync SPA requiere pipeline |
+| DNS custom `dev.novusintelligence.com` | Pendiente | Alias Route 53 → CloudFront |
 
 **Despliegue DEV bloqueado hasta:** `deploy_human_approval` + prerrequisitos Fase A del checklist.
 
@@ -123,7 +126,7 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 
 ### Lambda / backend
 
-- `NODE_ENV`, `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO`
+- `NODE_ENV`, `AWS_REGION`, `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO`
 - `CORS_ALLOWED_ORIGINS`, `RATE_LIMIT_PER_IP`
 - `CAPTCHA_ENABLED`, `CAPTCHA_PROVIDER`, `CAPTCHA_SECRET`
 - `CRM_WEBHOOK_URL` (opcional), `LOG_LEVEL`
@@ -167,3 +170,4 @@ Se generó la **propuesta de infraestructura IaC** para el entorno DEV en AWS **
 | Fecha | Acción | Agente |
 |-------|--------|--------|
 | 2026-07-14 | Propuesta infra DEV sa-east-1 + resumen cloud | cloud-agent |
+| 2026-07-16 | Revalidación paso-08; alineación con dev.yml reconciliado y recursos existentes | cloud-agent |
