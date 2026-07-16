@@ -1,9 +1,9 @@
 {
-  "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
+  "planId": "PLAN-NOVUS-LOVABLE-2026-07-16",
   "workflow": "novus-intelligence-lovable-to-web",
   "step": "paso-02-generar-plan",
   "producer": "planner-agent",
-  "createdAt": "2026-07-14T09:01:00Z",
+  "createdAt": "2026-07-16T01:19:00Z",
   "status": "draft",
   "baseline": {
     "sourceRepo": "novus-nexus",
@@ -13,9 +13,10 @@
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1",
-    "frontendUrl": "https://dev.novusintelligence.com",
+    "frontendUrl": "https://d1bfu6klutpp8m.cloudfront.net",
+    "frontendUrlDnsPending": "https://dev.novusintelligence.com",
     "apiUrl": "https://api-dev.novusintelligence.com",
-    "note": "environments/dev.yml declara us-east-1; reconciliar en cloud-agent (TASK-INFRA-001)"
+    "stackName": "novus-intelligence-back-dev"
   },
   "scope": {
     "requiresBackend": true,
@@ -47,14 +48,14 @@
     {
       "id": "plan_approved",
       "blocking": true,
-      "description": "plan-implementacion.md:status debe ser approved antes de Execution"
+      "description": "plan-implementacion.md status debe ser approved antes de Execution"
     }
   ],
   "riskMitigations": [
     {
       "riskId": "R-001",
       "title": "Modo demo en formulario de contacto",
-      "tasks": ["TASK-FE-021", "TASK-FE-022", "TASK-BE-001", "TASK-QA-004"]
+      "tasks": ["TASK-FE-021", "TASK-FE-020", "TASK-BE-001", "TASK-DEVOPS-002", "TASK-QA-004"]
     },
     {
       "riskId": "R-002",
@@ -69,7 +70,7 @@
     {
       "riskId": "R-004",
       "title": "Complejidad MultiAgentDemo",
-      "tasks": ["TASK-FE-016", "TASK-FE-017", "TASK-FE-018", "TASK-QA-006"]
+      "tasks": ["TASK-FE-016", "TASK-FE-017", "TASK-QA-005"]
     },
     {
       "riskId": "R-008",
@@ -383,7 +384,7 @@
       "agent": "frontend-integration-agent",
       "phase": 6,
       "title": "Integrar submitContact con API real",
-      "description": "Conectar formulario a VITE_NOVUS_API_URL. Prohibido fallback demo de Lovable.",
+      "description": "Conectar formulario a VITE_NOVUS_API_URL. Prohibido fallback demo de Lovable (R-001).",
       "changeIds": ["CHG-008", "CHG-011"],
       "riskIds": ["R-001"],
       "dependencies": ["TASK-FE-019", "TASK-BE-003"],
@@ -542,20 +543,21 @@
         "requires_backend confirmado"
       ],
       "blockedByPlanApproval": false,
-      "note": "Tarea de planning; ejecutar antes de backend-agent"
+      "note": "Tarea de planning; ejecutar inmediatamente tras paso 02"
     },
     {
       "id": "TASK-INFRA-001",
       "agent": "cloud-agent",
       "phase": 7,
-      "title": "Reconciliar environments/dev.yml a región sa-east-1",
-      "description": "Alinear configuración DEV con target sa-east-1. Actualmente dev.yml declara us-east-1.",
+      "title": "Verificar alineación environments/dev.yml con sa-east-1",
+      "description": "Confirmar que dev.yml, project-context.yml y stacks Serverless usan región sa-east-1.",
       "changeIds": ["CHG-011"],
       "dependencies": ["TASK-BI-001"],
       "priority": "high",
       "acceptanceCriteria": [
-        "dev.yml actualizado con region sa-east-1",
-        "URLs DEV documentadas sin secrets"
+        "dev.yml confirma region sa-east-1",
+        "URLs DEV documentadas sin secrets",
+        "Stack novus-intelligence-back-dev alineado a región"
       ],
       "blockedByPlanApproval": true,
       "requiresHumanApprovalForDeploy": false
@@ -581,7 +583,7 @@
       "agent": "cloud-agent",
       "phase": 7,
       "title": "Configurar hosting frontend DEV (S3 + CloudFront)",
-      "description": "Bucket novus-intelligence-web-dev con CDN para https://dev.novusintelligence.com.",
+      "description": "Bucket novus-intelligence-web-dev-519010577666 con CDN para https://d1bfu6klutpp8m.cloudfront.net.",
       "changeIds": ["CHG-001"],
       "dependencies": ["TASK-INFRA-001"],
       "priority": "high",
@@ -644,7 +646,7 @@
       "agent": "devops-agent",
       "phase": 7,
       "title": "Configurar variables de build frontend",
-      "description": "VITE_NOVUS_API_URL apuntando a API DEV; VITE_DEMO_MODE=false obligatorio.",
+      "description": "VITE_NOVUS_API_URL apuntando a API DEV; VITE_DEMO_MODE=false obligatorio (mitigación R-001).",
       "changeIds": ["CHG-008", "CHG-011"],
       "riskIds": ["R-001"],
       "dependencies": ["TASK-DEVOPS-001"],
