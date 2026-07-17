@@ -1,187 +1,113 @@
 # Riesgos — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  
-**Fuente:** novus-nexus @ `e3a9819`  
-**Fecha:** 2026-07-14  
+**Fuente:** novus-nexus @ `974dc61` (delta último commit)  
+**Fecha:** 2026-07-17  
 **Agente:** lovable-analyzer-agent  
-**Estado:** Sin blockers críticos — repositorio accesible y analizado
+**Estado:** Sin blockers — repositorio accesible y delta analizado
 
 ---
 
-## Resumen de riesgos
+## Resumen de riesgos (delta `974dc61`)
 
 | ID | Riesgo | Severidad | Probabilidad | Mitigación |
 |----|--------|-----------|--------------|------------|
-| R-001 | Modo demo en formulario de contacto | **Alta** | Alta | No replicar fallback demo en producción; exigir API real |
-| R-002 | Copia directa de código Lovable | **Alta** | Media | Quality gate no_lovable_code_copy; reimplementar intención |
-| R-003 | Incompatibilidad routing TanStack → React Router | **Alta** | Alta | Seguir port-map.yml; planner define mapeo de rutas |
-| R-004 | Complejidad MultiAgentDemo (SVG + animaciones) | **Media** | Media | Componente aislado; prefers-reduced-motion; pruebas visuales |
-| R-005 | Design tokens oklch no portados correctamente | **Media** | Media | Traducir a tokens del design system WEB, no CSS literal |
-| R-006 | Contenido Lovable vs memoria de marca | **Media** | Baja | Validar con brand-context.md en planificación |
-| R-007 | Logo JPEG vs SVG vectorial | **Baja** | Alta | Usar asset actual; planificar SVG definitivo |
-| R-008 | Sin captcha en formulario contacto | **Media** | Alta | Implementar hCaptcha/Turnstile pre-prod |
-| R-009 | Datos de contacto expuestos en Lovable | **Baja** | Alta | Son datos públicos de negocio; no son secrets |
-| R-010 | Documentación cloud-agent-integration.md ausente | **Baja** | Alta | No bloquea análisis; adaptador M6 cursor-cloud operativo |
+| R-D001 | Discrepancia mode=visual-fast vs delta structural CI | **Media** | Alta | Validar SHA y contenido real antes de ejecutar ruta visual-fast |
+| R-D002 | Pipeline apunta a rama feature del framework | **Media** | Media | Confirmar que `feature/novus-intelligence` es el target correcto y estable |
+| R-D003 | Cambios funcionales previos no incluidos en delta | **Alta** | Alta | Si se esperaba sync de registro empresas (`e2aa094`), re-analizar con SHA adecuado |
+| R-D004 | auto_merge + auto_deploy_dev sin cambios UI | **Baja** | Media | Gates de paridad visual y build deben bloquear deploy vacío o redundante |
 
 ---
 
-## R-001: Modo demo en formulario de contacto
+## R-D001: Discrepancia mode vs contenido del commit
 
-**Descripción:** `src/lib/api/contact.ts` retorna éxito simulado cuando `VITE_DEMO_MODE=true` o en entorno DEV sin `VITE_NOVUS_API_URL`. El mensaje incluye `requestId: demo-{timestamp}`.
+**Descripción:** El commit `974dc61` declara `mode=visual-fast` en el dispatch CI, pero su delta real es exclusivamente un cambio **structural** en `.github/workflows/notify-nadf.yml`. No hay cambios visuales, de contenido ni funcionales de sitio.
 
-**Impacto:** Usuarios en producción podrían creer que su mensaje fue enviado cuando no lo fue.
+**Impacto:** El pipeline NADF podría ejecutar ruta acelerada visual sin cambios UI que traducir, generando ruido operativo o falsa sensación de sincronización completada.
 
 **Mitigación:**
-- Frontend productivo: eliminar fallback demo; mostrar error claro si API no disponible.
-- Backend: implementar `POST /api/v1/contact` antes de habilitar formulario.
-- Deploy: `VITE_DEMO_MODE=false` obligatorio en prod (documentado en `reglasInfra/aws-prod.yml`).
-- QA: validar que submit sin API retorna error, no éxito.
+- Planner-agent verifica `source_sha` y contenido del diff antes de planificar tareas frontend.
+- Si no hay delta UI, considerar skip o análisis del commit funcional previo.
+- Clasificar `summary.route` como **full** (presencia de cambio structural).
 
-**Responsable downstream:** frontend-integration-agent, backend-agent, qa-agent
+**Responsable downstream:** planner-agent, workflow-agent
 
 ---
 
-## R-002: Copia directa de código Lovable
+## R-D002: Target branch feature/novus-intelligence
 
-**Descripción:** El prototipo usa TanStack Start, shadcn/ui y utilities CSS propias. La tentación de copiar JSX/CSS es alta dado el volumen de código (~280 líneas solo en MultiAgentDemo).
+**Descripción:** El workflow dispatch usa `--ref feature/novus-intelligence` en NovusAIDevelopmentFramework, no `main`.
 
-**Impacto:** Deuda técnica, incompatibilidad de stack, violación de quality gate `no_lovable_code_copy`.
+**Impacto:** Sincronizaciones dependen de una rama de feature activa; cambios en main del framework no se usarían automáticamente.
 
 **Mitigación:**
-- Traducir intención visual/funcional al stack React Router + Tailwind de NovusIntelligenceWEB.
-- Usar componentes existentes del design system productivo.
-- Reviewer-agent valida ausencia de código copiado.
+- Confirmar que la rama existe y contiene el workflow "Lovable sync DEV" actualizado.
+- Documentar en plan si se debe migrar a main tras estabilización.
 
-**Responsable downstream:** frontend-integration-agent, reviewer-agent
+**Responsable downstream:** workflow-agent, devops-agent
 
 ---
 
-## R-003: Incompatibilidad de routing
+## R-D003: Cambios funcionales previos fuera del delta
 
-**Descripción:** Lovable usa TanStack Start (`src/routes/`, `createFileRoute`, `routeTree.gen.ts`). El frontend productivo usa React Router según `project-context.yml`. El port-map asume Next.js App Router como destino alternativo.
+**Descripción:** El commit padre `e2aa094` ("Añadió registro empresas") introduce `/register-company`, `/auth`, integración Supabase completa y migración SQL — cambios **functional/structural** con backend requerido. Este delta no los incluye.
 
-**Impacto:** Rutas mal mapeadas, links rotos, meta tags incorrectos, 404 en slugs dinámicos.
+**Impacto:** Si el equipo esperaba sincronizar registro de empresas, el análisis del último commit no cubre esa funcionalidad. Riesgo de desfase entre Lovable y producción.
 
 **Mitigación:**
-- Confirmar convención real de NovusIntelligenceWEB (React Router vs App Router).
-- Planner-agent documenta tabla de mapeo definitiva.
-- Probar navegación completa de 10 rutas + 6 slugs.
+- Ejecutar análisis dedicado sobre SHA `e2aa094` o posterior con cambios UI si aplica.
+- Usar ruta **full** para commits con Supabase/auth/registro.
+- No asumir que `visual-fast` cubre registro empresas.
 
-**Responsable downstream:** planner-agent, architect-agent
+**Responsable downstream:** planner-agent, backend-impact-agent
 
 ---
 
-## R-004: Complejidad MultiAgentDemo
+## R-D004: Auto merge/deploy sin delta UI
 
-**Descripción:** Componente nuevo (commit `e3a9819`) con SVG inline, `animateMotion`, estado React con intervalos, 7 nodos posicionados en porcentajes y timeline de 8 pasos.
+**Descripción:** El CI pasa `auto_merge=true` y `auto_deploy_dev=true` aunque este commit no modifica el sitio.
 
-**Impacto:** Alto esfuerzo de traducción; posibles problemas de accesibilidad (animaciones continuas) y rendimiento en mobile.
+**Impacto:** Posible deploy redundante o ejecución de pipeline completo sin cambios productivos derivados de Lovable.
 
 **Mitigación:**
-- Implementar como componente lazy-loaded solo en `/solutions/ai-agents`.
-- Respetar `prefers-reduced-motion: reduce` (pausar animaciones).
-- Simplificar SVG si la traducción literal es inviable; preservar intención educativa.
-- QA responsive en viewports sm/md/lg.
+- Quality gates (build, paridad visual) deben detectar ausencia de cambios.
+- Planner puede recomendar no-op si no hay tareas derivadas.
 
-**Responsable downstream:** frontend-integration-agent, qa-agent
+**Responsable downstream:** workflow-agent, qa-agent
 
 ---
 
-## R-005: Design tokens oklch
+## Riesgos históricos (referencia, no delta actual)
 
-**Descripción:** Todo el design system Lovable usa oklch en CSS custom properties. NovusIntelligenceWEB puede usar convención diferente (HSL, hex, Tailwind config).
+Los siguientes riesgos permanecen válidos para el sitio Lovable en general pero **no fueron reintroducidos** por el commit `974dc61`:
 
-**Impacto:** Inconsistencia visual entre prototipo y producción.
+| ID histórico | Riesgo | Estado |
+|--------------|--------|--------|
+| R-001 | Modo demo en formulario contacto | Vigente en codebase Lovable (commit anterior) |
+| R-002 | Copia directa código Lovable | Vigente como policy |
+| R-008 | Sin captcha en contacto | Vigente como gap |
 
-**Mitigación:**
-- Extraer tokens semánticos (primary, secondary, navy-deep, etc.) como referencia.
-- Mapear a variables del design system productivo.
-- No copiar valores oklch literalmente si el sistema productivo no los soporta.
-
-**Responsable downstream:** frontend-integration-agent
-
----
-
-## R-006: Contenido vs memoria de marca
-
-**Descripción:** `brand-context.md` define tono y paleta genérica; Lovable tiene contenido específico (founder, casos, 6 soluciones). Pueden existir divergencias.
-
-**Impacto:** Mensaje de marca inconsistente.
-
-**Mitigación:**
-- Planner valida copy contra `memory/brand-context.md` y `memory/business-context.md`.
-- Aprobar textos con stakeholder si hay conflicto.
-
-**Responsable downstream:** planner-agent
-
----
-
-## R-007: Logo JPEG
-
-**Descripción:** Lovable usa `logo.jpeg` (binario ~987KB). La documentación de reestructuración marca SVG vectorial como gap pendiente.
-
-**Impacto:** Calidad visual en retina/alto DPI; peso de asset.
-
-**Mitigación:**
-- Usar JPEG actual como asset real (permitido: assets, no código).
-- Planificar migración a SVG en iteración futura.
-
-**Responsable downstream:** frontend-integration-agent
-
----
-
-## R-008: Sin captcha
-
-**Descripción:** `docs/changes/reestructuracion-inicial.md` lista captcha (hCaptcha/Turnstile) como TODO pre-prod.
-
-**Impacto:** Spam en formulario de contacto; abuso de API.
-
-**Mitigación:**
-- Backend valida token captcha antes de procesar.
-- Frontend integra widget captcha.
-- Security-agent revisa en fase de validación.
-
-**Responsable downstream:** backend-agent, security-agent
-
----
-
-## R-009: Datos de contacto en código
-
-**Descripción:** Email, teléfono y redes sociales están en `src/content/site.ts`.
-
-**Impacto:** Bajo — son datos públicos de contacto comercial, no secrets.
-
-**Mitigación:** Ninguna acción requerida. No confundir con API keys o tokens.
-
----
-
-## R-010: Documentación cloud-agent ausente
-
-**Descripción:** `docs/cloud-agent-integration.md` no existe en el repositorio framework (referenciado en instrucciones de runtime).
-
-**Impacto:** Bajo para este paso. El análisis se completó vía acceso directo al workspace.
-
-**Mitigación:** Framework Architect puede crear el documento en iteración futura.
+Ver análisis previo para detalle completo.
 
 ---
 
 ## Blockers
 
-**Ninguno.** El repositorio `novus-nexus` está accesible en `/agent/repos/novus-nexus`, en branch `main`, commit `e3a9819`.
+**Ninguno.** El repositorio `novus-nexus` está accesible en `/agent/repos/novus-nexus`, branch `main`, commit `974dc61`.
 
 ---
 
 ## Checklist pre-planificación
 
 - [x] Repositorio Lovable accesible
-- [x] Cambios clasificados (visual, functional, content, structural)
-- [x] Modo demo documentado como riesgo alto
-- [x] Backend requirement identificado (contact API)
-- [x] port-map.yml referenciado para traducción routing
-- [x] MultiAgentDemo analizado como delta principal
+- [x] Delta del último commit analizado (no reclasificación completa)
+- [x] Cambios clasificados: structural (CI)
+- [x] `summary.route` = full (contiene structural)
+- [x] `summary.latestDelta.backendRequired` = false
+- [x] Discrepancia visual-fast documentada
 
 ---
 
 ## Próximo agente
 
-**planner-agent** debe incorporar mitigaciones R-001, R-002 y R-003 como tareas explícitas en el plan de implementación.
+**planner-agent** debe decidir si continuar el workflow con delta vacío de UI o re-analizar commit funcional previo (`e2aa094`) con ruta `full`.
