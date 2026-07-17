@@ -1,0 +1,15 @@
+id: database-default-mapping
+source_definition_id: database
+version: "1.0.0"
+field_mappings:
+  external_reference: row.id
+  title: row.title
+  description: row.description
+  priority: row.priority
+  status: row.status
+transformations: []
+defaults:
+  source_type: database
+validation_rules:
+  - title_required
+  - description_required

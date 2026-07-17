@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.1.0-rc.1",
+  "id": "ART-2026-000001",
+  "name": "profile-phone-field-change",
+  "producerAgent": "frontend-integration-agent",
+  "correlationId": "corr-golden-001",
+  "createdAt": "2026-07-15T12:40:00Z",
+  "status": "OK",
+  "integrity": {"payloadHash": "sha256:art-demo"}
+}

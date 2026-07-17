@@ -1,0 +1,44 @@
+id: manual
+name: Manual Requirement
+type: manual
+provider: nadf
+version: "1.0.0"
+status: active
+description: Requirement source definition for Manual Requirement (see ADR-0007)
+supported_events:
+  - manual_submitted
+ingestion_modes:
+  - MANUAL
+authentication_modes:
+  - none
+capabilities:
+  - manual_entry
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: false
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  title: title
+  description: description
+  acceptance_criteria: acceptance_criteria
+  priority: priority
+  requester: requester
+limitations:
+  - "Requires human author"
+risks:
+  - "Incomplete acceptance criteria"
+mcp_server_recommended: null
+fallback_api: "ui/form"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.1.0-rc.1",
+  "links": [
+    {
+      "id": "TRL-2026-000001",
+      "from_type": "RawRequirementEvent",
+      "from_id": "EVT-2026-000001",
+      "to_type": "Requirement",
+      "to_id": "REQ-2026-000001",
+      "relation": "normalized_to",
+      "created_at": "2026-07-15T12:01:00Z",
+      "correlation_id": "corr-golden-001"
+    },
+    {
+      "id": "TRL-2026-000002",
+      "from_type": "Requirement",
+      "from_id": "REQ-2026-000001",
+      "to_type": "Intent",
+      "to_id": "INT-2026-000001",
+      "relation": "converted_to",
+      "created_at": "2026-07-15T12:11:00Z",
+      "correlation_id": "corr-golden-001"
+    },
+    {
+      "id": "TRL-2026-000003",
+      "from_type": "Intent",
+      "from_id": "INT-2026-000001",
+      "to_type": "Mission",
+      "to_id": "MIS-2026-000001",
+      "relation": "planned_as",
+      "created_at": "2026-07-15T12:15:00Z",
+      "correlation_id": "corr-golden-001"
+    },
+    {
+      "id": "TRL-2026-000004",
+      "from_type": "ExecutionPlan",
+      "from_id": "PLAN-2026-000001",
+      "to_type": "Execution",
+      "to_id": "EXEC-2026-000001",
+      "relation": "executed_by",
+      "created_at": "2026-07-15T12:20:00Z",
+      "correlation_id": "corr-golden-001"
+    },
+    {
+      "id": "TRL-2026-000005",
+      "from_type": "Execution",
+      "from_id": "EXEC-2026-000001",
+      "to_type": "Artifact",
+      "to_id": "ART-2026-000001",
+      "relation": "produced",
+      "created_at": "2026-07-15T12:40:00Z",
+      "correlation_id": "corr-golden-001"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "06-webhook-invalid-signature",
+  "scenario": {
+    "event": {
+      "correlation_id": "corr-06",
+      "idempotency_key": "webhook|w1|webhook_received|h",
+      "signature_valid": false,
+      "expect_reject_signature": true
+    }
+  },
+  "expected": {
+    "pass": false,
+    "raw_status": "REJECTED"
+  }
+}

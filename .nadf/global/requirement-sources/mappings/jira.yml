@@ -1,0 +1,23 @@
+id: jira-default-mapping
+source_definition_id: jira
+version: "1.0.0"
+field_mappings:
+  external_reference: key
+  title: summary
+  description: description
+  priority: priority.name
+  labels: labels
+  requester: reporter.emailAddress
+  acceptance_criteria: customfield_acceptance
+  attachments: attachment
+  project: fields.project.key
+  assignee: assignee.displayName
+  components: components
+  issue_type: issuetype.name
+  status: status.name
+transformations: []
+defaults:
+  source_type: jira
+validation_rules:
+  - title_required
+  - description_required

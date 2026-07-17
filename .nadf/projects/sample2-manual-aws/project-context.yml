@@ -1,0 +1,19 @@
+project:
+  id: sample2-manual-aws
+  name: NADF Sample 2
+  kind: demonstration
+  application_path: examples/sample2-manual-aws
+source:
+  adapter: manual
+scope:
+  allowed_paths: [examples/sample2-manual-aws, .nadf/projects/sample2-manual-aws]
+  forbidden_repositories: [NovusIntelligenceWEB, NovusIntelligenceBack, novus-nexus]
+environment:
+  allowed: [dev]
+  aws_region: sa-east-1
+  stack_prefix: sample2-
+governance:
+  human_approval_model: enterprise-governance/human-approval-model.yml
+  budget_policy: budget-policy.yml
+  agent_selection: agent-selection.yml
+  production_deploy: forbidden

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JiraRequirementSourceConfig",
+  "type": "object",
+  "required": [
+    "definition_id",
+    "project_id",
+    "ingestion_mode",
+    "credential_reference"
+  ],
+  "properties": {
+    "definition_id": {
+      "const": "jira"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "ingestion_mode": {
+      "enum": [
+        "WEBHOOK",
+        "POLLING"
+      ]
+    },
+    "credential_reference": {
+      "type": "string",
+      "pattern": "^secret://"
+    },
+    "enabled": {
+      "type": "boolean"
+    }
+  }
+}

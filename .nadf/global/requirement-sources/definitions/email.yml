@@ -1,0 +1,49 @@
+id: email
+name: Email Inbound
+type: email
+provider: smtp_imap
+version: "1.0.0"
+status: active
+description: Requirement source definition for Email Inbound (see ADR-0007)
+supported_events:
+  - message_received
+ingestion_modes:
+  - EMAIL_INBOUND
+  - POLLING
+authentication_modes:
+  - mailbox_credential_reference
+capabilities:
+  - allowlist_sender
+  - attachment_fetch
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  external_reference: message_id
+  requester: from
+  recipients: to
+  title: subject
+  description: text_body
+  html_reference: sanitized_html_ref
+  attachments: attachments
+  thread_id: thread_id
+limitations:
+  - "HTML sanitization required"
+risks:
+  - "Phishing, malware attachments"
+mcp_server_recommended: email
+fallback_api: "IMAP/Graph Mail API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

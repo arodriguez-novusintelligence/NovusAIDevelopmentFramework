@@ -1,0 +1,36 @@
+version: "1.0"
+roles:
+  product_owner: human
+  technical_lead: human
+  solution_architect: human
+  security_owner: human
+  budget_owner: human
+  change_authority: human
+  nadf_orchestrator: ai_system
+  specialist_agents: ai_system
+activities:
+  requirement_acceptance:
+    responsible: product_owner
+    accountable: product_owner
+    consulted: [nadf_orchestrator]
+    informed: [technical_lead]
+  execution_plan:
+    responsible: nadf_orchestrator
+    accountable: technical_lead
+    consulted: [specialist_agents, solution_architect]
+    informed: [product_owner]
+  implementation:
+    responsible: specialist_agents
+    accountable: technical_lead
+    consulted: [solution_architect]
+    informed: [product_owner]
+  validation:
+    responsible: specialist_agents
+    accountable: technical_lead
+    consulted: [security_owner]
+    informed: [product_owner]
+  production_release:
+    responsible: technical_lead
+    accountable: change_authority
+    consulted: [security_owner, product_owner]
+    informed: [budget_owner]

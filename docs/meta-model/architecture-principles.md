@@ -1,16 +1,16 @@
-# NADF Meta Model — Principios Arquitectónicos Oficiales
+﻿# NADF Meta Model â€” Principios ArquitectÃ³nicos Oficiales
 
-**Versión:** 1.0  
+**VersiÃ³n:** 1.0  
 **Estado:** Normativo  
 **Autoridad:** ADR-0004
 
 ---
 
-## Propósito
+## PropÃ³sito
 
-Este documento consolida los **10 principios arquitectónicos oficiales** del NovusAIDevelopmentFramework. Cada principio deriva del NADF Meta Model v1.0 y es vinculante para agentes, workflows, proyectos y extensiones del framework.
+Este documento consolida los **10 principios arquitectÃ³nicos oficiales** del NovusAIDevelopmentFramework. Cada principio deriva del NADF Meta Model v1.0 y es vinculante para agentes, workflows, proyectos y extensiones del framework.
 
-Los principios complementan — no sustituyen — los documentos de dominio en `docs/meta-model/` y las reglas operativas en `CLAUDE.md`.
+Los principios complementan â€” no sustituyen â€” los documentos de dominio en `docs/meta-model/` y las reglas operativas en `CLAUDE.md`.
 
 ---
 
@@ -18,13 +18,13 @@ Los principios complementan — no sustituyen — los documentos de dominio en `
 
 **Todo comienza con Intent.**
 
-Ningún plan, workflow, ejecución ni validación puede iniciarse sin una entidad `Intent` formalizada. Las fuentes externas (Lovable, Jira, commits, solicitudes humanas) se transforman primero en contexto ensamblado (`Context`) y luego en `Intent` explícito.
+NingÃºn plan, workflow, ejecuciÃ³n ni validaciÃ³n puede iniciarse sin una entidad `Intent` formalizada. Las fuentes externas (Lovable, Jira, commits, solicitudes humanas) se transforman primero en contexto ensamblado (`Context`) y luego en `Intent` explÃ­cito.
 
 **Implicaciones:**
 
-- Lovable Analyzer produce artefactos que alimentan Intent, no código productivo.
+- Lovable Analyzer produce artefactos que alimentan Intent, no cÃ³digo productivo.
 - El Planner Agent opera exclusivamente sobre Intent validado.
-- Workflows sin Intent de entrada están incompletos por definición.
+- Workflows sin Intent de entrada estÃ¡n incompletos por definiciÃ³n.
 
 **Entidades relacionadas:** Context, Intent, Project, Domain
 
@@ -32,15 +32,15 @@ Ningún plan, workflow, ejecución ni validación puede iniciarse sin una entida
 
 ## 2. Planning before Execution
 
-**Planificación antes de ejecución.**
+**PlanificaciÃ³n antes de ejecuciÃ³n.**
 
-La capa de Planning (Planner, Architect, Workflow, Backend Impact) analiza, diseña y genera `Plan` aprobado **sin modificar código productivo**. Ningún agente Executor actúa sin Plan en estado `approved`.
+La capa de Planning (Planner, Architect, Workflow, Backend Impact) analiza, diseÃ±a y genera `Plan` aprobado **sin modificar cÃ³digo productivo**. NingÃºn agente Executor actÃºa sin Plan en estado `approved`.
 
 **Implicaciones:**
 
-- Separación estricta de permisos: Planner Pattern no codea; Executor Pattern no planifica.
+- SeparaciÃ³n estricta de permisos: Planner Pattern no codea; Executor Pattern no planifica.
 - Plan Review es gate bloqueante entre Planning y Execution.
-- Cambios de alcance durante ejecución requieren replanificación formal.
+- Cambios de alcance durante ejecuciÃ³n requieren replanificaciÃ³n formal.
 
 **Entidades relacionadas:** Intent, Plan, Workflow, Task, Agent (Planner)
 
@@ -48,14 +48,14 @@ La capa de Planning (Planner, Architect, Workflow, Backend Impact) analiza, dise
 
 ## 3. Validation before Delivery
 
-**Validación antes de entrega.**
+**ValidaciÃ³n antes de entrega.**
 
 Todo `Execution` que produce `Artifact` debe pasar por `Validation` antes de considerarse entregable. QA, Security y Reviewer operan sobre artefactos y ejecuciones, no sobre planes.
 
 **Implicaciones:**
 
-- Quality Gates son bloqueantes; fallos críticos detienen el workflow.
-- Validators no modifican lógica productiva salvo autorización explícita.
+- Quality Gates son bloqueantes; fallos crÃ­ticos detienen el workflow.
+- Validators no modifican lÃ³gica productiva salvo autorizaciÃ³n explÃ­cita.
 - Un PR solo se prepara tras Validation passed.
 
 **Entidades relacionadas:** Execution, Artifact, Validation, Quality Gate, Policy, Rule
@@ -64,13 +64,13 @@ Todo `Execution` que produce `Artifact` debe pasar por `Validation` antes de con
 
 ## 4. Knowledge after Reflection
 
-**Conocimiento tras reflexión.**
+**Conocimiento tras reflexiÃ³n.**
 
-El aprendizaje reutilizable (`Knowledge`) se genera exclusivamente después de la fase de Reflection post-ejecución. Métricas, artefactos y resultados de validación alimentan Reflection; Reflection consolida Knowledge y recomienda ADRs.
+El aprendizaje reutilizable (`Knowledge`) se genera exclusivamente despuÃ©s de la fase de Reflection post-ejecuciÃ³n. MÃ©tricas, artefactos y resultados de validaciÃ³n alimentan Reflection; Reflection consolida Knowledge y recomienda ADRs.
 
 **Implicaciones:**
 
-- Workflows de implementación relevantes incluyen fase Reflection obligatoria.
+- Workflows de implementaciÃ³n relevantes incluyen fase Reflection obligatoria.
 - Knowledge Base Agent actualiza patrones a partir de reflexiones, no de suposiciones.
 - La memoria evoluciona; no se descarta al cerrar un workflow.
 
@@ -82,12 +82,12 @@ El aprendizaje reutilizable (`Knowledge`) se genera exclusivamente después de l
 
 **Independencia de proveedor.**
 
-El framework abstrae proveedores de IA (Claude, OpenAI, Gemini), cloud (AWS, Azure, GCP), IDE (Cursor) y diseño (Lovable) mediante entidades `Provider`, `Tool` y `MCP Server`. Cambiar proveedor no requiere modificar el meta model.
+El framework abstrae proveedores de IA (Claude, OpenAI, Gemini), cloud (AWS, Azure, GCP), IDE (Cursor) y diseÃ±o (Lovable) mediante entidades `Provider`, `Tool` y `MCP Server`. Cambiar proveedor no requiere modificar el meta model.
 
 **Implicaciones:**
 
-- AWS es proveedor inicial; la arquitectura no está acoplada a AWS.
-- Acceso externo estandarizado vía MCP, no SDKs propietarios directos.
+- AWS es proveedor inicial; la arquitectura no estÃ¡ acoplada a AWS.
+- Acceso externo estandarizado vÃ­a MCP, no SDKs propietarios directos.
 - `project-context.yml` declara proveedores por proyecto sin alterar entidades core.
 
 **Entidades relacionadas:** Provider, Tool, MCP Server, Environment, Deployment
@@ -98,13 +98,13 @@ El framework abstrae proveedores de IA (Claude, OpenAI, Gemini), cloud (AWS, Azu
 
 **Orientado a eventos.**
 
-Todo cambio significativo en el ecosistema se modela como `Event` tipado con payload estructurado. Los workflows se disparan por eventos (commits, PRs, bugs, releases), no por invocación directa entre agentes.
+Todo cambio significativo en el ecosistema se modela como `Event` tipado con payload estructurado. Los workflows se disparan por eventos (commits, PRs, bugs, releases), no por invocaciÃ³n directa entre agentes.
 
 **Implicaciones:**
 
 - Workflow Agent clasifica eventos y selecciona workflow de la library.
-- El Orquestador (Mediator) enruta eventos; los agentes no se llaman entre sí.
-- Trazabilidad completa: cada transición queda registrada como evento.
+- El Orquestador (Mediator) enruta eventos; los agentes no se llaman entre sÃ­.
+- Trazabilidad completa: cada transiciÃ³n queda registrada como evento.
 
 **Entidades relacionadas:** Event, Workflow, Task, Orchestrator
 
@@ -114,12 +114,12 @@ Todo cambio significativo en el ecosistema se modela como `Event` tipado con pay
 
 **MCP primero.**
 
-Todo acceso externo a GitHub, AWS, bases de datos, Terraform, Jira, Docker/Kubernetes debe realizarse **vía MCP Server** cuando el servidor esté disponible. MCP es el conector estándar entre agentes y servicios externos.
+Todo acceso externo a GitHub, AWS, bases de datos, Terraform, Jira, Docker/Kubernetes debe realizarse **vÃ­a MCP Server** cuando el servidor estÃ© disponible. MCP es el conector estÃ¡ndar entre agentes y servicios externos.
 
 **Implicaciones:**
 
 - Skill registry declara servidores MCP permitidos por agente.
-- Tools nativos solo cuando MCP no esté disponible y esté documentado en ADR.
+- Tools nativos solo cuando MCP no estÃ© disponible y estÃ© documentado en ADR.
 - Nuevas integraciones externas se registran en mcp-model.md.
 
 **Entidades relacionadas:** MCP Server, Tool, Skill, Capability
@@ -128,13 +128,13 @@ Todo acceso externo a GitHub, AWS, bases de datos, Terraform, Jira, Docker/Kuber
 
 ## 8. Context Before Action
 
-**Contexto antes de acción.**
+**Contexto antes de acciÃ³n.**
 
-Ningún agente ejecuta tarea alguna sin leer previamente: `CLAUDE.md`, `meta-model-overview.md` y `project-context.yml` del proyecto activo. El contexto ensamblado (`Context`) precede a toda acción.
+NingÃºn agente ejecuta tarea alguna sin leer previamente: `CLAUDE.md`, `meta-model-overview.md` y `project-context.yml` del proyecto activo. El contexto ensamblado (`Context`) precede a toda acciÃ³n.
 
 **Implicaciones:**
 
-- Regla obligatoria en los 19 agentes (sección «Reglas obligatorias previas a la ejecución»).
+- Regla obligatoria en los 27 agentes (secciÃ³n Â«Reglas obligatorias previas a la ejecuciÃ³nÂ»).
 - Memory Engine y decision-log son fuentes de contexto complementarias.
 - Falta de contexto es criterio de bloqueo documentado por agente.
 
@@ -144,9 +144,9 @@ Ningún agente ejecuta tarea alguna sin leer previamente: `CLAUDE.md`, `meta-mod
 
 ## 9. Explicit Architecture Decisions
 
-**Decisiones arquitectónicas explícitas.**
+**Decisiones arquitectÃ³nicas explÃ­citas.**
 
-Toda decisión arquitectónica relevante genera un ADR (`Decision`) registrado en `.nadf/global/decision-history/adr/`. Las decisiones implícitas o no documentadas no tienen validez en el framework.
+Toda decisiÃ³n arquitectÃ³nica relevante genera un ADR (`Decision`) registrado en `.nadf/global/decision-history/adr/`. Las decisiones implÃ­citas o no documentadas no tienen validez en el framework.
 
 **Implicaciones:**
 
@@ -160,15 +160,15 @@ Toda decisión arquitectónica relevante genera un ADR (`Decision`) registrado e
 
 ## 10. Human Approval for Critical Operations
 
-**Aprobación humana para operaciones críticas.**
+**AprobaciÃ³n humana para operaciones crÃ­ticas.**
 
-Despliegues a QA o producción, cambios Major al meta model, deprecaciones de entidades core y operaciones irreversibles requieren aprobación humana explícita. Los agentes preparan artefactos; no publican ni despliegan autonomamente.
+Despliegues a QA o producciÃ³n, cambios Major al meta model, deprecaciones de entidades core y operaciones irreversibles requieren aprobaciÃ³n humana explÃ­cita. Los agentes preparan artefactos; no publican ni despliegan autonomamente.
 
 **Implicaciones:**
 
 - DevOps y Cloud Agent preparan configuraciones; no ejecutan deploy.
-- Plan Review incluye validación humana cuando el riesgo lo requiere.
-- Deployment es entidad sujeta a gate de aprobación en deployment-model.md.
+- Plan Review incluye validaciÃ³n humana cuando el riesgo lo requiere.
+- Deployment es entidad sujeta a gate de aprobaciÃ³n en deployment-model.md.
 
 **Entidades relacionadas:** Deployment, Environment, Quality Gate, Plan
 
@@ -189,8 +189,8 @@ Despliegues a QA o producción, cambios Major al meta model, deprecaciones de en
 
 ## Referencias
 
-- [Especificación oficial](specification.md)
-- [Visión general del Meta Model](meta-model-overview.md)
+- [EspecificaciÃ³n oficial](specification.md)
+- [VisiÃ³n general del Meta Model](meta-model-overview.md)
 - [Gobernanza](governance.md)
 - [ADR-0004](../../.nadf/global/decision-history/adr/ADR-0004-nadf-meta-model.md)
 - [CLAUDE.md](../../CLAUDE.md)

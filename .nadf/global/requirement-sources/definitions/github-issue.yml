@@ -1,0 +1,54 @@
+id: github-issue
+name: GitHub Issue
+type: vcs_issue
+provider: github
+version: "1.0.0"
+status: active
+description: Requirement source definition for GitHub Issue (see ADR-0007)
+supported_events:
+  - issues.opened
+  - issues.edited
+  - issues.labeled
+ingestion_modes:
+  - WEBHOOK
+  - POLLING
+authentication_modes:
+  - app_or_pat_reference
+capabilities:
+  - webhook
+  - polling
+  - fetch_attachments
+  - link_pr
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  repository: repository.full_name
+  external_reference: issue.number
+  title: issue.title
+  description: issue.body
+  labels: issue.labels
+  assignee: issue.assignee.login
+  milestone: issue.milestone.title
+  branch_reference: issue.pull_request.head.ref
+  pull_request_reference: issue.pull_request.url
+limitations:
+  - "Private repo permissions"
+risks:
+  - "Malicious issue body or scripts"
+mcp_server_recommended: github
+fallback_api: "GitHub REST API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

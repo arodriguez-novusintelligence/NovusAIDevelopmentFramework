@@ -1,0 +1,15 @@
+id: manual-default-mapping
+source_definition_id: manual
+version: "1.0.0"
+field_mappings:
+  title: title
+  description: description
+  acceptance_criteria: acceptance_criteria
+  priority: priority
+  requester: requester
+transformations: []
+defaults:
+  source_type: manual
+validation_rules:
+  - title_required
+  - description_required

@@ -1,0 +1,19 @@
+id: github-issue-default-mapping
+source_definition_id: github-issue
+version: "1.0.0"
+field_mappings:
+  repository: repository.full_name
+  external_reference: issue.number
+  title: issue.title
+  description: issue.body
+  labels: issue.labels
+  assignee: issue.assignee.login
+  milestone: issue.milestone.title
+  requester: issue.user.login
+transformations: []
+defaults:
+  source_type: github-issue
+validation_rules:
+  - title_required
+  - description_required
+  - external_reference_required

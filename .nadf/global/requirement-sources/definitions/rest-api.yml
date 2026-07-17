@@ -1,0 +1,50 @@
+id: rest-api
+name: REST API
+type: api
+provider: nadf
+version: "1.0.0"
+status: active
+description: Requirement source definition for REST API (see ADR-0007)
+supported_events:
+  - api_requirement_created
+ingestion_modes:
+  - API_PUSH
+authentication_modes:
+  - oauth2
+  - api_key_reference
+capabilities:
+  - versioned_payload
+  - schema_validation
+  - idempotency_key
+  - correlation_id
+  - rate_limit
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  title: body.title
+  description: body.description
+  acceptance_criteria: body.acceptance_criteria
+  priority: body.priority
+  requester: body.requester
+  external_reference: body.external_id
+limitations:
+  - "Client contract versioning"
+risks:
+  - "Abuse without rate limit"
+mcp_server_recommended: rest-api
+fallback_api: "NADF Intake HTTP API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

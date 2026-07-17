@@ -1,0 +1,49 @@
+nadf:
+  version: 1.1.0-rc.1
+  metaModelVersion: 1.1.0
+  workflowSchemaVersion: 1.1.0
+  agentSchemaVersion: 1.1.0
+  artifactSchemaVersion: 1.1.0
+  eventCatalogVersion: 1.0.0
+  errorCatalogVersion: 1.0.0
+  releaseStatus: release-candidate
+
+compatibility:
+  minimumProjectVersion: 1.0.0
+  requirementIntakeOptional: true
+  legacyProjectsWithoutSources: supported
+
+features:
+  core: stable
+  requirementIntake: release-candidate
+  manualConnector: stable
+  jiraConnector: experimental
+  slackConnector: experimental
+  githubIssueConnector: experimental
+  microsoftTeamsConnector: experimental
+  gitlabIssueConnector: experimental
+  bitbucketConnector: experimental
+  emailConnector: experimental
+  genericWebhookConnector: experimental
+  restApiConnector: experimental
+  fileUploadConnector: experimental
+  servicenowConnector: experimental
+  enterpriseFormConnector: experimental
+  databaseConnector: experimental
+  scheduledEventConnector: experimental
+  cursorAdapter: experimental
+  n8nAdapter: experimental
+  visualParityGate: experimental
+  autoDeployDev: experimental
+  autoDeployProd: forbidden
+
+counts:
+  agents: 27
+  workflows: 9
+  requirementSourceDefinitions: 15
+  normativeSchemas: 19
+
+notes:
+  - Mission and ExecutionPlan are aliases of Plan (Meta Model), not new core entities.
+  - Requirement Intake remains opt-in per project.
+  - Do not declare GA until MCP connectors and orchestrator E2E are proven.

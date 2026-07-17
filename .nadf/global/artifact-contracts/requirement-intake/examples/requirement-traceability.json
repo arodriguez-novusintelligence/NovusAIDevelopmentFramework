@@ -1,0 +1,20 @@
+{
+  "id": "art-demo",
+  "schemaVersion": "1.1.0",
+  "correlationId": "corr-demo",
+  "source": "manual",
+  "producerAgent": "requirement-traceability-agent",
+  "createdAt": "2026-07-15T00:00:00Z",
+  "status": "OK",
+  "references": {},
+  "integrity": {
+    "payloadHash": "sha256:demo"
+  },
+  "links": [
+    {
+      "from": "req-001",
+      "to": "int-001",
+      "type": "converted_to"
+    }
+  ]
+}

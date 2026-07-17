@@ -1,0 +1,234 @@
+# NADF Event Catalog (machine-readable)
+# version: 1.0.0 — aligns with Meta Model v1.1 / NADF 1.1.0-rc.1
+
+version: "1.0.0"
+events:
+  - name: requirement.manual.received
+    version: v1
+    producer: requirement-intake-agent
+    consumers: [requirement-normalization-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Manual requirement submitted
+
+  - name: requirement.jira.received
+    version: v1
+    producer: connector:jira
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Jira issue ingested
+
+  - name: requirement.slack.received
+    version: v1
+    producer: connector:slack
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Authorized Slack requirement
+
+  - name: requirement.teams.received
+    version: v1
+    producer: connector:microsoft-teams
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Teams requirement
+
+  - name: requirement.github_issue.received
+    version: v1
+    producer: connector:github-issue
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: GitHub issue ingested
+
+  - name: requirement.gitlab_issue.received
+    version: v1
+    producer: connector:gitlab-issue
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: GitLab issue ingested
+
+  - name: requirement.bitbucket.received
+    version: v1
+    producer: connector:bitbucket
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Bitbucket issue ingested
+
+  - name: requirement.email.received
+    version: v1
+    producer: connector:email
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Email inbound requirement
+
+  - name: requirement.webhook.received
+    version: v1
+    producer: connector:generic-webhook
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Generic webhook
+
+  - name: requirement.api.received
+    version: v1
+    producer: connector:rest-api
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: REST API push
+
+  - name: requirement.file.received
+    version: v1
+    producer: connector:file-upload
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: File upload intake
+
+  - name: requirement.servicenow.received
+    version: v1
+    producer: connector:servicenow
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: ServiceNow incident
+
+  - name: requirement.form.received
+    version: v1
+    producer: connector:enterprise-form
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Enterprise form
+
+  - name: requirement.database.received
+    version: v1
+    producer: connector:database
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Authorized DB change event
+
+  - name: requirement.schedule.received
+    version: v1
+    producer: connector:scheduled-event
+    consumers: [requirement-intake-agent]
+    payloadSchema: schemas/raw-requirement-event.schema.json
+    correlationRequired: true
+    causationRequired: false
+    audited: true
+    description: Scheduled template requirement
+
+  - name: requirement.normalized.v1
+    version: v1
+    producer: requirement-normalization-agent
+    consumers: [requirement-deduplication-agent, requirement-classification-agent]
+    payloadSchema: schemas/requirement.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Requirement normalized
+
+  - name: requirement.approved.v1
+    version: v1
+    producer: requirement-approval-agent
+    consumers: [requirement-traceability-agent, workflow-agent]
+    payloadSchema: schemas/requirement.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Human-approved requirement
+
+  - name: intent.created.v1
+    version: v1
+    producer: workflow-agent
+    consumers: [planner-agent]
+    payloadSchema: schemas/intent.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Intent created from approved Requirement or Lovable
+
+  - name: mission.created.v1
+    version: v1
+    producer: planner-agent
+    consumers: [architect-agent]
+    payloadSchema: schemas/mission.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Mission alias of Plan created
+
+  - name: execution.started.v1
+    version: v1
+    producer: orchestrator
+    consumers: [metrics-agent]
+    payloadSchema: schemas/execution.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Execution started
+
+  - name: execution.completed.v1
+    version: v1
+    producer: orchestrator
+    consumers: [qa-agent, metrics-agent]
+    payloadSchema: schemas/execution.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Execution completed
+
+  - name: execution.failed.v1
+    version: v1
+    producer: orchestrator
+    consumers: [reflection-agent, metrics-agent]
+    payloadSchema: schemas/execution.schema.json
+    correlationRequired: true
+    causationRequired: true
+    audited: true
+    description: Execution failed
+
+  - name: lovable.commit
+    version: v1
+    producer: design_source
+    consumers: [workflow-agent, lovable-analyzer-agent]
+    payloadSchema: schemas/event.schema.json
+    correlationRequired: false
+    causationRequired: false
+    audited: true
+    description: Legacy design-source trigger (v1.0 compatible)

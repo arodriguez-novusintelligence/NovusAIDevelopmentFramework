@@ -1,0 +1,16 @@
+id: bitbucket-default-mapping
+source_definition_id: bitbucket
+version: "1.0.0"
+field_mappings:
+  repository: repository.full_name
+  external_reference: issue.id
+  title: issue.title
+  description: issue.content.raw
+  labels: issue.labels
+  assignee: issue.assignee.display_name
+transformations: []
+defaults:
+  source_type: bitbucket
+validation_rules:
+  - title_required
+  - description_required

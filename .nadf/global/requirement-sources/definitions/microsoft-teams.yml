@@ -1,0 +1,51 @@
+id: microsoft-teams
+name: Microsoft Teams
+type: messaging
+provider: microsoft
+version: "1.0.0"
+status: active
+description: Requirement source definition for Microsoft Teams (see ADR-0007)
+supported_events:
+  - message
+  - adaptive_card_submit
+  - channel_mention
+ingestion_modes:
+  - WEBHOOK
+  - API_PUSH
+authentication_modes:
+  - azure_ad_app_reference
+capabilities:
+  - adaptive_card
+  - channel_filter
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  tenant: tenant_id
+  team: team_id
+  channel: channel_id
+  conversation: conversation_id
+  user: from.id
+  adaptive_card: value
+  message: text
+  attachments: attachments
+limitations:
+  - "Tenant admin consent"
+risks:
+  - "Cross-tenant spoofing"
+mcp_server_recommended: microsoft-teams
+fallback_api: "Bot Framework / Graph API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

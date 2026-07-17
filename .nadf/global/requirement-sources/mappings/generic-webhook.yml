@@ -1,0 +1,16 @@
+id: generic-webhook-default-mapping
+source_definition_id: generic-webhook
+version: "1.0.0"
+field_mappings:
+  title: payload.title
+  description: payload.description
+  external_reference: payload.id
+  priority: payload.priority
+  idempotency_key: headers.Idempotency-Key
+  correlation_id: headers.X-Correlation-Id
+transformations: []
+defaults:
+  source_type: generic-webhook
+validation_rules:
+  - title_required
+  - description_required

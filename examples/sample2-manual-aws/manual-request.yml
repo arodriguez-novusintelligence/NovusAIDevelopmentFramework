@@ -1,0 +1,11 @@
+id: sample2-calculator
+source: manual
+title: Crear calculadora serverless auditable
+description: API para sumar, restar, multiplicar y dividir; registrar resultado.
+acceptance_criteria:
+  - Operaciones válidas responden 200
+  - División por cero responde 400
+  - Infraestructura usa prefijo sample2- y solo entorno DEV
+  - Deploy requiere aprobación humana
+requested_environment: dev
+production_deploy: forbidden

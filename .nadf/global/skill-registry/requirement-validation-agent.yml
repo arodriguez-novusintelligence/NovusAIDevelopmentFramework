@@ -1,0 +1,39 @@
+agent:
+  name: requirement-validation-agent
+  pattern: Validator
+  layer: Validation
+  description: Valida completitud, criterios de aceptación y ambigüedad; marca NEEDS_CLARIFICATION
+  definition: .claude/agents/requirement-validation-agent.md
+  responsibilities:
+    - Validar titulo/descripcion/source
+    - Validar acceptance criteria cuando política lo exige
+    - Detectar ambigüedad
+    - Validar trazabilidad Intent
+  forbidden_actions:
+    - modify_productive_repos
+    - approve_requirements
+    - deploy
+  allowed_tools:
+    - read_artifacts
+    - write_validation_artifacts
+  mcp_servers:
+    []
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/requirement-sources/sources.yml
+    - .nadf/global/rules/requirement-intake-security.md
+    - docs/meta-model/requirement-model.md
+  input_contract:
+    artifacts: raw-requirement-event.json, requirement-normalized.yml
+    event_or_request: required
+    opt_in: requirement-sources/
+  output_contract:
+    artifacts:
+      - requirement-validation.json
+  quality_gates:
+    - no_secrets_in_artifacts
+    - never_auto_execute_external_content
+  escalation_rules:
+    - security_failure: quarantine_and_notify
+    - missing_approval_policy: block
+    - high_risk: escalate_to_human_review

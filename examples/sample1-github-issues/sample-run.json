@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "sample1-github-issues",
+  "runId": "sample1-dry-run-001",
+  "source": {"adapter": "github-issue", "reference": "issue-seed.md"},
+  "environment": "dev",
+  "humanWaitMs": 0,
+  "estimatedTokens": 0,
+  "skippedAgents": ["frontend", "database", "visual-parity"],
+  "approvals": [{"gate": "requirement", "status": "SIMULATED"}],
+  "steps": [
+    {"id": "intake", "status": "PASS", "durationMs": 5, "estimatedCostUsd": 0},
+    {"id": "scope-guard", "status": "PASS", "durationMs": 2, "estimatedCostUsd": 0},
+    {"id": "unit-tests", "status": "PASS", "durationMs": 100, "estimatedCostUsd": 0}
+  ],
+  "artifacts": ["examples/sample1-app/template.yml"]
+}

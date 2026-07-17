@@ -1,0 +1,15 @@
+{
+  "id": "07-api-idempotency-replay",
+  "scenario": {
+    "idempotency_replay": true,
+    "event": {
+      "correlation_id": "corr-07",
+      "idempotency_key": "api|ext-9|api_requirement_created|hashX",
+      "signature_valid": true
+    }
+  },
+  "expected": {
+    "pass": false,
+    "duplicate_or_ignored": true
+  }
+}

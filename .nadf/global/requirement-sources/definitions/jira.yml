@@ -1,0 +1,60 @@
+id: jira
+name: Jira
+type: ticketing
+provider: atlassian
+version: "1.0.0"
+status: active
+description: Requirement source definition for Jira (see ADR-0007)
+supported_events:
+  - issue_created
+  - issue_updated
+  - issue_commented
+ingestion_modes:
+  - WEBHOOK
+  - POLLING
+authentication_modes:
+  - oauth2
+  - api_token_reference
+capabilities:
+  - webhook
+  - polling
+  - fetch_attachments
+  - update_external_status
+  - add_external_comment
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  external_reference: key
+  title: summary
+  description: description
+  priority: priority.name
+  labels: labels
+  requester: reporter.emailAddress
+  acceptance_criteria: customfield_acceptance
+  attachments: attachment
+  project: fields.project.key
+  assignee: assignee.displayName
+  components: components
+  issue_type: issuetype.name
+  status: status.name
+limitations:
+  - "Cloud vs Server schema differences"
+risks:
+  - "Privilege escalation via issue fields"
+mcp_server_recommended: jira
+fallback_api: "REST Jira API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

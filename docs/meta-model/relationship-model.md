@@ -1,7 +1,7 @@
-# NADF Meta Model v1.0 — Modelo de Relaciones
+# NADF Meta Model v1.1 — Modelo de Relaciones
 
-**Versión:** 1.0  
-**Relacionado con:** [entity-model.md](entity-model.md), [meta-model-overview.md](meta-model-overview.md)
+**Versión:** 1.1  
+**Relacionado con:** [entity-model.md](entity-model.md), [requirement-model.md](requirement-model.md), [meta-model-overview.md](meta-model-overview.md)
 
 ---
 
@@ -316,6 +316,12 @@ graph TB
 | Policy → Rule | Composición | Toda Rule pertenece a una Policy |
 | Environment → Deployment | Composición | Deployment siempre en un Environment |
 | MCP Server → Provider | Dependencia | MCP abstrae un Provider concreto |
+| RawRequirementEvent → Requirement | Dependencia | Requirement referencia source_event_id (v1.1) |
+| Requirement → Intent | Asociación | Intent.requirement_id opcional (v1.1) |
+| TraceabilityLink → * | Asociación | Enlaza entidades de la cadena intake→deployment (v1.1) |
+| RequirementSourceInstance → CredentialReference | Dependencia | Secrets solo por referencia (v1.1) |
+| RequirementSourceInstance → RequirementSourceDefinition | Dependencia | Instancia tipada por definición (v1.1) |
+| RequirementPolicy → RequirementSourceInstance | Asociación | Política de aprobación/seguridad (v1.1) |
 
 ---
 
@@ -327,6 +333,8 @@ graph TB
 4. **ADR inmutable** — Decision(Accepted) no se modifica; se supersede con nuevo ADR.
 5. **Deployment con aprobación** — Relación Deployment → approved_by es obligatoria.
 6. **MCP first** — Relación Agent → Tool externa debe pasar por MCP Server cuando aplique.
+7. **Requirement antes de Intent (intake)** — Con intake habilitado, no crear Intent sin Requirement aprobado (ADR-0007).
+8. **Raw event no crea Plan** — Prohibida relación directa RawRequirementEvent → Plan|Execution.
 
 ---
 
@@ -334,5 +342,7 @@ graph TB
 
 - [entity-model.md](entity-model.md)
 - [intent-model.md](intent-model.md)
+- [requirement-model.md](requirement-model.md)
 - [event-model.md](event-model.md)
 - [ADR-0003](../../.nadf/global/decision-history/adr/ADR-0003-lovable-to-web-canonicalization.md)
+- [ADR-0007](../../.nadf/global/decision-history/adr/ADR-0007-requirement-intake-layer.md)

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/workflow.schema.json",
+  "title": "Workflow",
+  "description": "Declarative workflow definition",
+  "schemaVersion": "1.1.0-rc.1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "name",
+    "version",
+    "phases",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0-rc.1",
+      "description": "Schema package version"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

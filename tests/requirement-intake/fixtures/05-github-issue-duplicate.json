@@ -1,0 +1,23 @@
+{
+  "id": "05-github-issue-duplicate",
+  "scenario": {
+    "duplicate": true,
+    "event": {
+      "correlation_id": "corr-05",
+      "deduplication_key": "github|42|issues.opened|samehash",
+      "signature_valid": true
+    },
+    "requirement": {
+      "title": "Dup issue",
+      "description": "Already seen",
+      "source_type": "github-issue",
+      "external_reference": "42",
+      "source_event_id": "raw-05"
+    }
+  },
+  "expected": {
+    "pass": false,
+    "raw_status": "DUPLICATE",
+    "dedup": true
+  }
+}

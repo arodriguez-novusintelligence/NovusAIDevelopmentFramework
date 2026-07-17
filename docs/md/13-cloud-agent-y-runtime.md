@@ -1,0 +1,16 @@
+# Cloud Agent y runtime
+
+NADF define roles, contratos, gates y artifacts. Cursor Cloud Agent es un motor
+de ejecución intercambiable; no es el Framework.
+
+El runtime:
+
+1. recibe contexto del proyecto y referencias de credenciales;
+2. aplica scope, budget y pattern guards;
+3. invoca agentes seleccionados;
+4. propone código/PR;
+5. deja que CI valide y despliegue DEV.
+
+Cloud Agent no recibe AWS keys. Un fallo genera evidencia y relanzamiento, no
+merge parcial. El proyecto vivo de Novus usa el prototipo
+`prototypes/m6-cloud-agent`; samples no dependen de Lovable.

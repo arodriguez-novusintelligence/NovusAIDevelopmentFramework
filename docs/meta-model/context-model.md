@@ -1,7 +1,7 @@
-# NADF Meta Model v1.0 — Modelo de Contexto
+# NADF Meta Model v1.1 — Modelo de Contexto
 
-**Versión:** 1.0  
-**Relacionado con:** [entity-model.md](entity-model.md), [memory-model.md](memory-model.md)
+**Versión:** 1.1  
+**Relacionado con:** [entity-model.md](entity-model.md), [memory-model.md](memory-model.md), [requirement-model.md](requirement-model.md)
 
 ---
 
@@ -22,6 +22,9 @@ El **Modelo de Contexto** define cómo NADF ensambla información de múltiples 
 | **GitHub** | VCS | Código, diffs, PRs, issues, historial | GitHub MCP |
 | **Conversaciones** | Interacción humana | Solicitudes, aclaraciones, decisiones informales | IDE (Cursor, Claude Code) |
 | **Knowledge bases** | Conocimiento | Patrones, errores, ADRs, convenciones | `.nadf/global/knowledge-base/` |
+| **Requirement (v1.1)** | Intake | Requirement aprobado (multi-fuente) | Requirement Intake Layer |
+
+Las fuentes Jira/GitHub/conversación pueden alimentar Context **directamente** (v1.0) o vía **Requirement normalizado** cuando el proyecto habilita `requirement-sources/` (v1.1).
 
 ---
 
@@ -96,8 +99,8 @@ context:
     - source: knowledge_base
       ref: pattern-id
       content_summary: string
-    - source: conversation
-      ref: session_id
+    - source: requirement
+      ref: requirement_id
       content_summary: string
   assembled_for:
     task_id: string

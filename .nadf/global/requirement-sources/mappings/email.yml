@@ -1,0 +1,18 @@
+id: email-default-mapping
+source_definition_id: email
+version: "1.0.0"
+field_mappings:
+  external_reference: message_id
+  requester: from
+  recipients: to
+  title: subject
+  description: text_body
+  html_reference: sanitized_html_ref
+  attachments: attachments
+  thread_id: thread_id
+transformations: []
+defaults:
+  source_type: email
+validation_rules:
+  - title_required
+  - description_required

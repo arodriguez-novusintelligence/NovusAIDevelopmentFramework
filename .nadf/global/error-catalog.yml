@@ -1,0 +1,106 @@
+version: "1.0.0"
+errors:
+  - code: NADF-REQ-001
+    category: REQUIREMENT
+    message: Requirement missing title or description
+    severity: error
+    retryable: false
+    requiredAction: Provide complete requirement fields
+
+  - code: NADF-REQ-002
+    category: REQUIREMENT
+    message: Requirement not approved for Intent conversion
+    severity: error
+    retryable: true
+    requiredAction: Obtain human approval
+
+  - code: NADF-REQ-003
+    category: REQUIREMENT
+    message: Duplicate requirement detected
+    severity: warning
+    retryable: false
+    requiredAction: Link or reject duplicate
+
+  - code: NADF-INT-001
+    category: INTENT
+    message: Intent created without Requirement or design-source trace
+    severity: error
+    retryable: false
+    requiredAction: Attach Requirement or Lovable event reference
+
+  - code: NADF-MIS-001
+    category: MISSION
+    message: Mission alias missing Plan linkage
+    severity: error
+    retryable: false
+    requiredAction: Create Plan with kind=mission
+
+  - code: NADF-PLAN-001
+    category: PLAN
+    message: Plan used without approved Intent
+    severity: error
+    retryable: true
+    requiredAction: Accept Intent first
+
+  - code: NADF-AGT-001
+    category: AGENT
+    message: Agent definition missing skill-registry entry
+    severity: error
+    retryable: false
+    requiredAction: Register skill YAML
+
+  - code: NADF-WF-001
+    category: WORKFLOW
+    message: Workflow references unregistered event or agent
+    severity: error
+    retryable: false
+    requiredAction: Register event/agent or fix workflow
+
+  - code: NADF-SEC-001
+    category: SECURITY
+    message: Missing CredentialReference for required connector/repo access
+    severity: error
+    retryable: true
+    requiredAction: Configure credential reference
+
+  - code: NADF-SEC-002
+    category: SECURITY
+    message: Possible secret material detected in repository files
+    severity: critical
+    retryable: false
+    requiredAction: Remove secret and rotate credentials
+
+  - code: NADF-EXE-001
+    category: EXECUTION
+    message: Invalid execution state transition
+    severity: error
+    retryable: false
+    requiredAction: Follow state machine
+
+  - code: NADF-VAL-001
+    category: VALIDATION
+    message: Schema validation failed
+    severity: error
+    retryable: false
+    requiredAction: Fix payload against schema
+
+  - code: NADF-CON-001
+    category: CONNECTOR
+    message: Source connection health failed
+    severity: error
+    retryable: true
+    requiredAction: Run connection test and fix configuration
+
+  - code: NADF-CMP-001
+    category: COMPATIBILITY
+    message: Project metaModel version incompatible with framework
+    severity: error
+    retryable: false
+    requiredAction: Upgrade project or pin compatible NADF
+
+  - code: NADF-SCH-001
+    category: SCHEMA
+    message: Unknown or missing schema file
+    severity: error
+    retryable: false
+    requiredAction: Add schema under schemas/

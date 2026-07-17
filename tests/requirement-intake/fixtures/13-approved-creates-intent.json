@@ -1,0 +1,28 @@
+{
+  "id": "13-approved-creates-intent",
+  "scenario": {
+    "requirement": {
+      "title": "Approved feature",
+      "description": "Ready",
+      "source_type": "manual",
+      "external_reference": "man-13",
+      "source_event_id": "raw-13",
+      "acceptance_criteria": [
+        "AC1"
+      ],
+      "status": "APPROVED"
+    },
+    "intent": {
+      "id": "intent-13",
+      "requirement_id": "req-13"
+    },
+    "event": {
+      "correlation_id": "corr-13",
+      "idempotency_key": "manual|man-13|manual_submitted|h"
+    }
+  },
+  "expected": {
+    "pass": true,
+    "creates_intent": true
+  }
+}

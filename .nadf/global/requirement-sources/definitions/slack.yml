@@ -1,0 +1,62 @@
+id: slack
+name: Slack
+type: messaging
+provider: slack
+version: "1.0.0"
+status: active
+description: Requirement source definition for Slack (see ADR-0007)
+supported_events:
+  - app_mention
+  - slash_command
+  - reaction_added
+  - view_submission
+ingestion_modes:
+  - WEBHOOK
+  - API_PUSH
+authentication_modes:
+  - bot_token_reference
+  - signing_secret_reference
+capabilities:
+  - command
+  - reaction_gate
+  - modal_form
+  - thread_context
+authorization_gates:
+  - authorized_command
+  - authorized_reaction
+  - authorized_channel
+  - modal_form
+  - authorized_role
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  workspace: team_id
+  channel: channel_id
+  thread: thread_ts
+  user: user_id
+  message: text
+  attachments: files
+  command: command
+  reactions: reaction
+  timestamp: ts
+limitations:
+  - "Not every message is a requirement"
+risks:
+  - "Channel spam, unauthorized users"
+mcp_server_recommended: slack
+fallback_api: "Slack Events API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

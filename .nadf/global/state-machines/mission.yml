@@ -1,0 +1,10 @@
+entity: Mission
+# Alias of Plan (kind=mission) — versioned
+states: [DRAFT, PENDING_REVIEW, APPROVED, REJECTED, SUPERSEDED]
+transitions:
+  - [DRAFT, PENDING_REVIEW]
+  - [PENDING_REVIEW, APPROVED]
+  - [PENDING_REVIEW, REJECTED]
+  - [APPROVED, SUPERSEDED]
+terminal: [REJECTED, SUPERSEDED]
+versioned: true

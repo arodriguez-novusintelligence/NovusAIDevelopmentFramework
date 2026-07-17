@@ -1,0 +1,20 @@
+id: servicenow-default-mapping
+source_definition_id: servicenow
+version: "1.0.0"
+field_mappings:
+  table: sys_class_name
+  external_reference: number
+  sys_id: sys_id
+  title: short_description
+  description: description
+  priority: priority
+  status: state
+  requester: caller_id
+  assignment_group: assignment_group
+  acceptance_criteria: u_acceptance_criteria
+transformations: []
+defaults:
+  source_type: servicenow
+validation_rules:
+  - title_required
+  - description_required

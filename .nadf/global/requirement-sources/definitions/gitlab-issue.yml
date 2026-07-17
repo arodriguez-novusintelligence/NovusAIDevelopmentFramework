@@ -1,0 +1,49 @@
+id: gitlab-issue
+name: GitLab Issue
+type: vcs_issue
+provider: gitlab
+version: "1.0.0"
+status: active
+description: Requirement source definition for GitLab Issue (see ADR-0007)
+supported_events:
+  - Issue Hook
+  - Note Hook
+ingestion_modes:
+  - WEBHOOK
+  - POLLING
+authentication_modes:
+  - token_reference
+capabilities:
+  - webhook
+  - polling
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  repository: project.path_with_namespace
+  external_reference: object_attributes.iid
+  title: object_attributes.title
+  description: object_attributes.description
+  labels: labels
+  assignee: assignees
+  milestone: object_attributes.milestone_id
+limitations:
+  - "Self-managed URL variance"
+risks:
+  - "Webhook secret missing"
+mcp_server_recommended: gitlab
+fallback_api: "GitLab REST API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

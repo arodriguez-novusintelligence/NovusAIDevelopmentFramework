@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/requirement.schema.json",
+  "title": "Requirement",
+  "description": "Normalized requirement; mutable until APPROVED",
+  "schemaVersion": "1.1.0-rc.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "source_event_id",
+    "source_type",
+    "title",
+    "description",
+    "status",
+    "correlation_id",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0-rc.1",
+      "description": "Schema package version"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[A-Z]{2,6}-[0-9]{4}-[0-9]{6}$|^[a-z0-9][a-z0-9_.:-]{2,}$"
+    },
+    "source_event_id": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string"
+    },
+    "external_reference": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "description": {
+      "type": "string",
+      "minLength": 3
+    },
+    "requester": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "priority": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "RECEIVED",
+        "CLASSIFYING",
+        "NEEDS_CLARIFICATION",
+        "AWAITING_APPROVAL",
+        "APPROVED",
+        "REJECTED",
+        "CONVERTED_TO_INTENT",
+        "IN_EXECUTION",
+        "VALIDATING",
+        "COMPLETED",
+        "BLOCKED",
+        "CANCELLED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 8
+    }
+  }
+}

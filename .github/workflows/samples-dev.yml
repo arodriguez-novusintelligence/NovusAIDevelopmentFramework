@@ -1,0 +1,52 @@
+name: NADF samples DEV
+
+on:
+  workflow_dispatch:
+    inputs:
+      sample:
+        type: choice
+        required: true
+        options: [sample1, sample2]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: nadf-${{ inputs.sample }}-dev
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Test sample
+        run: |
+          if [ "${{ inputs.sample }}" = "sample1" ]; then
+            python -m unittest discover -s examples/sample1-app/tests
+          else
+            python -m unittest discover -s examples/sample2-manual-aws/tests
+          fi
+      - uses: aws-actions/setup-sam@v2
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: sa-east-1
+      - name: Build and deploy DEV
+        shell: bash
+        run: |
+          if [ "${{ inputs.sample }}" = "sample1" ]; then
+            TEMPLATE=examples/sample1-app/template.yml
+            STACK=sample1-api-dev
+          else
+            TEMPLATE=examples/sample2-manual-aws/template.yml
+            STACK=sample2-calculator-dev
+          fi
+          sam build -t "$TEMPLATE"
+          sam deploy --stack-name "$STACK" --region sa-east-1 \
+            --capabilities CAPABILITY_IAM --resolve-s3 --no-confirm-changeset \
+            --tags nadf-example="${{ inputs.sample }}"

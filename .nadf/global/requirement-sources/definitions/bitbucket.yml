@@ -1,0 +1,49 @@
+id: bitbucket
+name: Bitbucket Issue
+type: vcs_issue
+provider: atlassian
+version: "1.0.0"
+status: active
+description: Requirement source definition for Bitbucket Issue (see ADR-0007)
+supported_events:
+  - issue:created
+  - issue:updated
+ingestion_modes:
+  - WEBHOOK
+  - POLLING
+authentication_modes:
+  - app_password_reference
+  - oauth2
+capabilities:
+  - webhook
+  - polling
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  repository: repository.full_name
+  external_reference: issue.id
+  title: issue.title
+  description: issue.content.raw
+  labels: issue.labels
+  assignee: issue.assignee.display_name
+limitations:
+  - "Cloud vs Data Center"
+risks:
+  - "Workspace mis-scoping"
+mcp_server_recommended: bitbucket
+fallback_api: "Bitbucket REST API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

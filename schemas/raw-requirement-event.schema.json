@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/raw-requirement-event.schema.json",
+  "title": "RawRequirementEvent",
+  "description": "Immutable event prior to normalization (ADR-0007)",
+  "schemaVersion": "1.1.0-rc.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "source_instance_id",
+    "event_type",
+    "received_at",
+    "correlation_id",
+    "deduplication_key",
+    "processing_status",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0-rc.1",
+      "description": "Schema package version"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[A-Z]{2,6}-[0-9]{4}-[0-9]{6}$|^[a-z0-9][a-z0-9_.:-]{2,}$"
+    },
+    "source_instance_id": {
+      "type": "string"
+    },
+    "external_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payload_reference": {
+      "type": "string"
+    },
+    "payload_hash": {
+      "type": "string"
+    },
+    "signature_valid": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "deduplication_key": {
+      "type": "string"
+    },
+    "processing_status": {
+      "type": "string",
+      "enum": [
+        "RECEIVED",
+        "AUTHENTICATING",
+        "VALIDATING",
+        "REJECTED",
+        "NORMALIZING",
+        "DUPLICATE",
+        "ACCEPTED",
+        "FAILED",
+        "QUARANTINED"
+      ]
+    }
+  }
+}

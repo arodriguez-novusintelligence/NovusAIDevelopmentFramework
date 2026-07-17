@@ -1,0 +1,8 @@
+entity: WorkflowVersion
+states: [DRAFT, PUBLISHED, DEPRECATED, RETIRED]
+transitions:
+  - [DRAFT, PUBLISHED]
+  - [PUBLISHED, DEPRECATED]
+  - [DEPRECATED, RETIRED]
+terminal: [RETIRED]
+published_immutable: true

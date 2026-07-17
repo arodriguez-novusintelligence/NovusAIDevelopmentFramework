@@ -1,0 +1,9 @@
+extends: enterprise-governance/agent-selection.yml
+preset: cost-optimized
+disabled:
+  - frontend
+  - database
+  - visual-parity
+riskAcknowledgements:
+  - "API-only sample: frontend y visual parity no aplican"
+  - "No hay persistencia: database no aplica"

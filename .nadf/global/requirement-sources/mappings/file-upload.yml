@@ -1,0 +1,14 @@
+id: file-upload-default-mapping
+source_definition_id: file-upload
+version: "1.0.0"
+field_mappings:
+  title: metadata.title
+  description: extracted_text_or_ref
+  attachments: file
+  external_reference: file_id
+transformations: []
+defaults:
+  source_type: file-upload
+validation_rules:
+  - title_required
+  - description_required

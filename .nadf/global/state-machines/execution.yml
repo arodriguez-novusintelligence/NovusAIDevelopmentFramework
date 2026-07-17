@@ -1,0 +1,12 @@
+entity: Execution
+immutable_historical: true
+states: [STARTED, RUNNING, COMPLETED, FAILED, BLOCKED, CANCELLED]
+transitions:
+  - [STARTED, RUNNING]
+  - [RUNNING, COMPLETED]
+  - [RUNNING, FAILED]
+  - [RUNNING, BLOCKED]
+  - [BLOCKED, RUNNING]
+  - [STARTED, CANCELLED]
+  - [RUNNING, CANCELLED]
+terminal: [COMPLETED, FAILED, CANCELLED]

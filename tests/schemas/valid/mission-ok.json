@@ -1,0 +1,13 @@
+{
+  "$schemaRef": "mission.schema.json",
+  "instance": {
+    "schemaVersion": "1.1.0-rc.1",
+    "id": "MIS-2026-000010",
+    "intent_id": "INT-2026-000010",
+    "kind": "mission",
+    "status": "APPROVED",
+    "tasks": ["TASK-2026-000010"],
+    "correlation_id": "corr-mission-valid-001",
+    "version": "1.0.0"
+  }
+}

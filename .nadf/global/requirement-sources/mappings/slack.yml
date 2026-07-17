@@ -1,0 +1,19 @@
+id: slack-default-mapping
+source_definition_id: slack
+version: "1.0.0"
+field_mappings:
+  workspace: team_id
+  channel: channel_id
+  thread: thread_ts
+  user: user_id
+  message: text
+  attachments: files
+  command: command
+  reactions: reaction
+  timestamp: ts
+transformations: []
+defaults:
+  source_type: slack
+validation_rules:
+  - title_required
+  - description_required

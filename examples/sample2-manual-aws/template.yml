@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: NADF Sample 2 - manual requirement to serverless calculator
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues: [dev]
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10
+    MemorySize: 128
+    Tags: {nadf-example: sample2}
+Resources:
+  Calculations:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub sample2-calculations-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: [{AttributeName: operation, AttributeType: S}]
+      KeySchema: [{AttributeName: operation, KeyType: HASH}]
+      Tags: [{Key: nadf-example, Value: sample2}]
+  Calculator:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub sample2-calculator-${Stage}
+      CodeUri: src/
+      Handler: app.handler
+      Environment:
+        Variables: {TABLE_NAME: !Ref Calculations}
+      Policies:
+        - DynamoDBWritePolicy: {TableName: !Ref Calculations}
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors: {AllowOrigins: ["*"], AllowMethods: ["POST"]}
+Outputs:
+  CalculatorUrl:
+    Value: !GetAtt CalculatorUrl.FunctionUrl

@@ -1,0 +1,31 @@
+{
+  "id": "02-jira-valid",
+  "scenario": {
+    "source": {
+      "definition": "jira",
+      "credential_reference": "secret://nadf/dev/jira-main",
+      "mapping": "mappings/jira.yml",
+      "policy": {
+        "requires_human_approval": true
+      }
+    },
+    "event": {
+      "correlation_id": "corr-02",
+      "deduplication_key": "jira|NOVUS-10|issue_created|hash2",
+      "signature_valid": true
+    },
+    "requirement": {
+      "title": "Contact API rate limit",
+      "description": "Limitar /contact",
+      "source_type": "jira",
+      "external_reference": "NOVUS-10",
+      "source_event_id": "raw-02",
+      "acceptance_criteria": [
+        "429 after threshold"
+      ]
+    }
+  },
+  "expected": {
+    "pass": true
+  }
+}

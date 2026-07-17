@@ -1,8 +1,8 @@
-# NADF Meta Model v1.0 — Modelo de Entidades (Core Domain)
+# NADF Meta Model v1.1 — Modelo de Entidades (Core Domain + Intake)
 
-**Versión:** 1.0  
-**Entidades:** 24 entidades del Core Domain  
-**Relacionado con:** [relationship-model.md](relationship-model.md), [meta-model-overview.md](meta-model-overview.md)
+**Versión:** 1.1  
+**Entidades:** Core Domain v1.0 + extensión Requirement Intake (ADR-0007)  
+**Relacionado con:** [relationship-model.md](relationship-model.md), [requirement-model.md](requirement-model.md), [meta-model-overview.md](meta-model-overview.md)
 
 ---
 
@@ -54,7 +54,7 @@ stateDiagram-v2
 ```
 
 ### Ejemplo (novus-intelligence)
-Proyecto corporativo Novus Intelligence Solutions con 19 agentes, workflow `lovable-to-web`, repos NovusIntelligenceWEB/Back/novus-nexus.
+Proyecto corporativo Novus Intelligence Solutions con agentes core + Intake opt-in (ADR-0007), workflow `lovable-to-web`, repos NovusIntelligenceWEB/Back/novus-nexus.
 
 ---
 
@@ -140,11 +140,13 @@ Representación formal de la intención visual, funcional o de negocio capturada
 | `priority` | Enum | `critical`, `high`, `medium`, `low` |
 | `status` | Enum | Ver [intent-model.md](intent-model.md) |
 | `event_id` | Referencia | Evento que lo originó |
+| `requirement_id` | Referencia | Requirement origen (opcional, v1.1 ADR-0007) |
 
 ### Responsabilidades
 - Capturar el *qué* y *por qué* sin prescribir implementación
 - Servir como referencia de trazabilidad durante todo el ciclo
 - Alimentar la generación de Plan
+- Cuando nace vía intake, conservar enlace a `Requirement`
 
 ### Relaciones
 - **Dependencia:** Context, Event
@@ -883,8 +885,29 @@ Rule `no_lovable_code_copy`: prohibido copiar código Lovable a repos productivo
 
 ---
 
+## Extensión v1.1 — Requirement Intake (ADR-0007)
+
+Entidades adicionales **opt-in** (detalle normativo en [requirement-model.md](requirement-model.md)):
+
+| # | Entidad | Dominio |
+|---|---------|---------|
+| 26 | RequirementSourceDefinition | Intake |
+| 27 | RequirementSourceInstance | Intake |
+| 28 | CredentialReference | Seguridad |
+| 29 | RawRequirementEvent | Intake / Eventos |
+| 30 | Requirement | Intake |
+| 31 | RequirementAttachment | Intake |
+| 32 | RequirementMapping | Intake |
+| 33 | RequirementPolicy | Gobernanza |
+| 34 | TraceabilityLink | Relación / Trazabilidad |
+
+Estas entidades **no** invalidan el Core Domain v1.0. Los proyectos sin `requirement-sources/` no las requieren.
+
+---
+
 ## Referencias
 
 - [relationship-model.md](relationship-model.md)
 - [intent-model.md](intent-model.md)
+- [requirement-model.md](requirement-model.md)
 - [meta-model-overview.md](meta-model-overview.md)

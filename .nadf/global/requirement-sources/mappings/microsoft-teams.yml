@@ -1,0 +1,18 @@
+id: microsoft-teams-default-mapping
+source_definition_id: microsoft-teams
+version: "1.0.0"
+field_mappings:
+  tenant: tenant_id
+  team: team_id
+  channel: channel_id
+  conversation: conversation_id
+  user: from.id
+  adaptive_card: value
+  message: text
+  attachments: attachments
+transformations: []
+defaults:
+  source_type: microsoft-teams
+validation_rules:
+  - title_required
+  - description_required

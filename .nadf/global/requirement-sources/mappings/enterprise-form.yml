@@ -1,0 +1,16 @@
+id: enterprise-form-default-mapping
+source_definition_id: enterprise-form
+version: "1.0.0"
+field_mappings:
+  title: fields.title
+  description: fields.description
+  acceptance_criteria: fields.acceptance_criteria
+  priority: fields.priority
+  requester: fields.requester
+  labels: fields.labels
+transformations: []
+defaults:
+  source_type: enterprise-form
+validation_rules:
+  - title_required
+  - description_required

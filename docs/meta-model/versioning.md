@@ -3,7 +3,7 @@
 **Versión del documento:** 1.0  
 **Estado:** Normativo  
 **Autoridad:** ADR-0004  
-**Meta Model vigente:** v1.0
+**Meta Model vigente:** v1.1
 
 ---
 
@@ -23,7 +23,7 @@ El Meta Model sigue **Versionado Semántico** (SemVer): `MAJOR.MINOR.PATCH`
 | **MINOR** | Extensión compatible | Nuevas entidades, atributos opcionales, relaciones adicionales, dominios nuevos |
 | **PATCH** | Corrección compatible | Clarificaciones, correcciones tipográficas, ejemplos, glosario; sin cambio semántico |
 
-**Versión actual:** `1.0.0` (publicada como **v1.0** en documentación)
+**Versión actual:** `1.1.0` (publicada como **v1.1** en documentación)
 
 ---
 
@@ -35,7 +35,7 @@ El Meta Model sigue **Versionado Semántico** (SemVer): `MAJOR.MINOR.PATCH`
 
 - ADR dedicado que documente la ruptura, motivación, plan de migración y timeline
 - Aprobación del Framework Architect Agent
-- Revisión de impacto en los 19 agentes, 8 workflows y proyectos activos
+- Revisión de impacto en los 27 agentes, workflows globales y proyectos activos
 - Periodo de deprecación mínimo de **90 días** para entidades/relaciones eliminadas
 - Actualización de `specification.md`, `meta-model-overview.md` y documentos de dominio afectados
 
@@ -159,6 +159,7 @@ Los ADRs que afecten el meta model deben declarar:
 
 | Versión | Fecha | Tipo | Descripción |
 |---------|-------|------|-------------|
+| **1.1.0** | 2026-07-14 | Minor | Requirement Intake Layer — entidades Requirement*, conectores multi-fuente, ADR-0007 (opt-in) |
 | **1.0.0** | 2026-07-04 | Major | Adopción oficial v1.0 — 24 entidades, 13 documentos de dominio, ADR-0004 |
 
 ---

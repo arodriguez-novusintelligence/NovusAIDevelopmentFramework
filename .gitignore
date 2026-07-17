@@ -1,10 +1,38 @@
-﻿.env
+﻿# NADF
+.git/
+node_modules/
+dist/
+build/
+coverage/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.log
+.DS_Store
+Thumbs.db
+
+# Secrets / local env
+.env
 .env.*
 !.env.example
 !**/.env.example
-*.pem
-credentials.json
-secrets/
-node_modules/
-.DS_Store
-Thumbs.db
+
+# Local IDE / OS
+.idea/
+.vscode/
+*.swp
+
+# Packaging
+*.tgz
+*.zip
+!.github/**
+
+# Prototype local state
+prototypes/**/node_modules/
+prototypes/**/dist/
+prototypes/**/.env
+
+# Generated NADF execution evidence
+.nadf/projects/*/output/**
+!.nadf/projects/*/output/README.md

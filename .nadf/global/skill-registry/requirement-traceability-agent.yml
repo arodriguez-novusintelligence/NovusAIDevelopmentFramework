@@ -1,0 +1,41 @@
+agent:
+  name: requirement-traceability-agent
+  pattern: Blackboard
+  layer: Knowledge
+  description: Crea TraceabilityLink Requirement → Intent → Plan → Execution → Artifact
+  definition: .claude/agents/requirement-traceability-agent.md
+  responsibilities:
+    - Crear Intent desde Requirement aprobado
+    - Registrar TraceabilityLink
+    - Publicar requirement-to-intent-map y requirement-traceability
+  forbidden_actions:
+    - create_intent_without_approved_requirement
+    - modify_productive_repos
+    - deploy
+    - break_trace_chain
+  allowed_tools:
+    - read_artifacts
+    - write_trace_artifacts
+    - create_intent_record
+  mcp_servers:
+    []
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/requirement-sources/sources.yml
+    - .nadf/global/rules/requirement-intake-security.md
+    - docs/meta-model/requirement-model.md
+  input_contract:
+    artifacts: raw-requirement-event.json, requirement-normalized.yml
+    event_or_request: required
+    opt_in: requirement-sources/
+  output_contract:
+    artifacts:
+      - requirement-to-intent-map.yml
+      - requirement-traceability.json
+  quality_gates:
+    - no_secrets_in_artifacts
+    - never_auto_execute_external_content
+  escalation_rules:
+    - security_failure: quarantine_and_notify
+    - missing_approval_policy: block
+    - high_risk: escalate_to_human_review

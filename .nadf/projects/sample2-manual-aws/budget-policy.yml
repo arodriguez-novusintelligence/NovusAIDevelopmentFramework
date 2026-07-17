@@ -1,0 +1,6 @@
+extends: enterprise-governance/budget-policy.yml
+limits:
+  per_run: 8
+  per_day: 15
+  per_month: 75
+  max_concurrency: 3

@@ -1,0 +1,15 @@
+{
+  "id": "08-email-unauthorized-domain",
+  "scenario": {
+    "email_domain_allowed": false,
+    "event": {
+      "correlation_id": "corr-08",
+      "idempotency_key": "email|m1|message_received|h",
+      "signature_valid": true
+    }
+  },
+  "expected": {
+    "pass": false,
+    "raw_status": "REJECTED"
+  }
+}

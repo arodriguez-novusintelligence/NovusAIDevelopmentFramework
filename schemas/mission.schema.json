@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/mission.schema.json",
+  "title": "Mission (Plan alias)",
+  "description": "Compatibility alias of Plan with kind=mission. Not a separate Meta Model entity.",
+  "schemaVersion": "1.1.0-rc.1",
+  "allOf": [
+    {
+      "$ref": "execution-plan.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "mission"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    }
+  ]
+}

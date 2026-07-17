@@ -1,0 +1,45 @@
+{
+  "id": "14-full-traceability",
+  "scenario": {
+    "requirement": {
+      "title": "Traced",
+      "description": "Full chain",
+      "source_type": "jira",
+      "external_reference": "NOVUS-99",
+      "source_event_id": "raw-14",
+      "status": "APPROVED"
+    },
+    "intent": {
+      "id": "intent-14",
+      "requirement_id": "req-14"
+    },
+    "traceability": {
+      "links": [
+        {
+          "from_entity_type": "RawRequirementEvent",
+          "to_entity_type": "Requirement",
+          "relation": "normalized_to"
+        },
+        {
+          "from_entity_type": "Requirement",
+          "to_entity_type": "Intent",
+          "relation": "converted_to"
+        },
+        {
+          "from_entity_type": "Intent",
+          "to_entity_type": "Plan",
+          "relation": "planned_as"
+        }
+      ]
+    },
+    "event": {
+      "correlation_id": "corr-14",
+      "deduplication_key": "jira|NOVUS-99|issue_created|h"
+    }
+  },
+  "expected": {
+    "pass": true,
+    "creates_intent": true,
+    "full_trace": true
+  }
+}

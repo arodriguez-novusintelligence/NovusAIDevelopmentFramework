@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/agent-definition.schema.json",
+  "title": "AgentDefinition",
+  "description": "Official or workspace agent definition",
+  "schemaVersion": "1.1.0-rc.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "layer",
+    "pattern",
+    "official",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0-rc.1",
+      "description": "Schema package version"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*-agent$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "layer": {
+      "type": "string"
+    },
+    "pattern": {
+      "type": "string"
+    },
+    "official": {
+      "type": "boolean"
+    },
+    "version": {
+      "type": "string"
+    }
+  }
+}

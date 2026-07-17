@@ -86,6 +86,7 @@ metrics:
 | security-review | `security-review.yml` | Revisión de seguridad |
 | qa-validation | `qa-validation.yml` | Validación QA independiente |
 | reflection-learning | `reflection-learning.yml` | Reflexión y KB post-workflow |
+| requirement-intake | `requirement-intake.yml` | Ingesta multi-fuente → Requirement → Intent (ADR-0007, opt-in) |
 
 ## Herencia con `extends:`
 

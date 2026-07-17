@@ -1,0 +1,6 @@
+extends: enterprise-governance/agent-selection.yml
+preset: cost-optimized
+enabled: [planner, architect, backend, database, cloud, devops, qa, security, reviewer, metrics]
+disabled: [frontend, visual-parity]
+riskAcknowledgements:
+  - "API-only sample: frontend y visual parity no aplican"

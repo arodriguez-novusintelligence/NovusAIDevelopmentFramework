@@ -1,0 +1,21 @@
+project:
+  id: sample1-github-issues
+  name: NADF Sample 1
+  kind: demonstration
+  application_path: examples/sample1-app
+source:
+  adapter: github-issue
+  required_label: sample1
+  approval_label: "nadf:approved"
+scope:
+  allowed_paths: [examples/sample1-app, .nadf/projects/sample1-github-issues]
+  forbidden_repositories: [NovusIntelligenceWEB, NovusIntelligenceBack, novus-nexus]
+environment:
+  allowed: [dev]
+  aws_region: sa-east-1
+  stack_prefix: sample1-
+governance:
+  human_approval_model: enterprise-governance/human-approval-model.yml
+  budget_policy: budget-policy.yml
+  agent_selection: agent-selection.yml
+  production_deploy: forbidden

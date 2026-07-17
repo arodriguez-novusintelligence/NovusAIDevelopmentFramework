@@ -1,18 +1,18 @@
 # NADF Meta Model — Especificación Oficial
 
-**Versión:** 1.0  
+**Versión:** 1.1  
 **Estado:** Normativo  
-**Fecha de adopción:** 2026-07-04  
-**Autoridad:** ADR-0004  
+**Fecha de adopción:** 2026-07-04 (v1.0) · **Actualización minor:** 2026-07-14 (v1.1)  
+**Autoridad:** ADR-0004 · ADR-0007  
 **Ámbito:** NovusAIDevelopmentFramework (NADF)
 
 ---
 
 ## Declaración de autoridad
 
-> **Esta documentación constituye la especificación oficial (v1.0) de NovusAIDevelopmentFramework.**
+> **Esta documentación constituye la especificación oficial (v1.1) de NovusAIDevelopmentFramework.**
 
-El NADF Meta Model v1.0 es la **especificación central y normativa** del framework. Define el lenguaje conceptual, las entidades, relaciones, eventos, ciclos de vida y flujos semánticos que rigen todos los agentes, workflows, artefactos, integraciones MCP y proyectos bajo NADF.
+El NADF Meta Model v1.1 es la **especificación central y normativa** del framework. Define el lenguaje conceptual, las entidades, relaciones, eventos, ciclos de vida y flujos semánticos que rigen todos los agentes, workflows, artefactos, integraciones MCP y proyectos bajo NADF. La v1.1 extiende de forma **compatible** el Core Domain con la Requirement Intake Layer (ADR-0007), sin invalidar contratos v1.0.
 
 Ningún componente del framework — agente, workflow, comando, skill registry, ADR o extensión de proyecto — puede contradecir esta especificación sin seguir el proceso de evolución definido en [governance.md](governance.md) y [versioning.md](versioning.md).
 
@@ -24,9 +24,9 @@ Ningún componente del framework — agente, workflow, comando, skill registry, 
 
 | Ámbito | Descripción |
 |--------|-------------|
-| **Core Domain** | 24 entidades con atributos, responsabilidades, relaciones y ciclos de vida |
-| **Dominios complementarios** | Intención, contexto, capacidades, memoria, calidad, aprendizaje, artefactos, despliegue, herramientas y MCP |
-| **Flujos semánticos** | Context → Intent → Plan → Workflow → Task → Execution → Artifact → Validation → Knowledge |
+| **Core Domain** | Entidades v1.0 + extensión Requirement Intake (opt-in) |
+| **Dominios complementarios** | Intención, requerimientos, contexto, capacidades, memoria, calidad, aprendizaje, artefactos, despliegue, herramientas y MCP |
+| **Flujos semánticos** | Context → Intent → Plan → Workflow → Task → Execution → Artifact → Validation → Knowledge; rama opt-in RawRequirementEvent → Requirement → Intent |
 | **Eventos** | Catálogo oficial de eventos tipados con payloads estructurados |
 | **Gobernanza** | Políticas, reglas y quality gates como entidades de primera clase |
 | **Principios arquitectónicos** | 10 principios oficiales documentados en [architecture-principles.md](architecture-principles.md) |
@@ -62,6 +62,7 @@ Ningún componente del framework — agente, workflow, comando, skill registry, 
 | [relationship-model.md](relationship-model.md) | Composición, agregación, dependencia, asociación |
 | [event-model.md](event-model.md) | Catálogo de eventos y enrutamiento |
 | [intent-model.md](intent-model.md) | Flujo Intent → Knowledge |
+| [requirement-model.md](requirement-model.md) | Requirement Intake Layer (v1.1, ADR-0007) |
 | [capability-model.md](capability-model.md) | Capability, Skill, Tool |
 | [memory-model.md](memory-model.md) | 6 tipos de memoria NADF |
 | [quality-model.md](quality-model.md) | Quality Gate, Policy, Rule, Validation |
@@ -78,7 +79,7 @@ Ningún componente del framework — agente, workflow, comando, skill registry, 
 |-----------|----------|
 | [architecture.md](../architecture.md) | Capas arquitectónicas reconciliadas con entidades del meta model |
 | [multiagent-architecture.md](../multiagent-architecture.md) | Patrones multiagente mapeados a entidades Agent, Workflow, Knowledge |
-| [agent-model.md](../agent-model.md) | Catálogo de 19 agentes como instancias de Agent + Skill + Capability |
+| [agent-model.md](../agent-model.md) | Catálogo de 27 agentes (core + Requirement Intake) como instancias de Agent + Skill + Capability |
 | [workflow-model.md](../workflow-model.md) | Workflows como instancias de Workflow + Task |
 | [ADR-0002](../../.nadf/global/decision-history/adr/ADR-0002-multiagent-patterns.md) | Arquitectura multiagente base |
 | [ADR-0004](../../.nadf/global/decision-history/adr/ADR-0004-nadf-meta-model.md) | Decisión de adopción formal |
@@ -108,7 +109,14 @@ Antes de implementar cualquier funcionalidad o ejecutar cualquier tarea:
 Context → Intent → Plan → Workflow → Task → Execution → Artifact → Validation → Knowledge
 ```
 
+Rama opt-in (proyectos con `requirement-sources/`):
+
+```
+RawRequirementEvent → Requirement → Context → Intent → (flujo canónico)
+```
+
 - **Planner** opera sobre Intent; produce Plan.
+- **Requirement Intake** opera antes de Intent; nunca produce Execution de código.
 - **Execution** opera sobre Plan aprobado; produce Execution y Artifact.
 - **Validation** opera sobre Execution y Artifact; produce Validation.
 - **Reflection** opera post-ejecución; produce Knowledge.

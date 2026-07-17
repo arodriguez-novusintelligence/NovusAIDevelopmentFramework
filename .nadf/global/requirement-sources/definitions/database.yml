@@ -1,0 +1,50 @@
+id: database
+name: Database Events
+type: database
+provider: any_rdbms
+version: "1.0.0"
+status: active
+description: Requirement source definition for Database Events (see ADR-0007)
+supported_events:
+  - row_inserted
+  - row_updated
+  - cdc_change
+ingestion_modes:
+  - DATABASE_CDC
+  - POLLING
+authentication_modes:
+  - db_credential_reference
+capabilities:
+  - parameterized_query
+  - authorized_view
+  - cdc
+  - checkpoint
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  external_reference: row.id
+  title: row.title
+  description: row.description
+  priority: row.priority
+  status: row.status
+limitations:
+  - "No arbitrary SQL from agents"
+risks:
+  - "Data exfiltration via wide views"
+mcp_server_recommended: database-events
+fallback_api: "authorized view polling"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

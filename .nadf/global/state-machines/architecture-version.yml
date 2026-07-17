@@ -1,0 +1,8 @@
+entity: ArchitectureVersion
+states: [DRAFT, REVIEW, ACCEPTED, SUPERSEDED]
+transitions:
+  - [DRAFT, REVIEW]
+  - [REVIEW, ACCEPTED]
+  - [ACCEPTED, SUPERSEDED]
+terminal: [SUPERSEDED]
+versioned: true
