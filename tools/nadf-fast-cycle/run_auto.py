@@ -26,7 +26,9 @@ PROJECT_DIR = REPO_ROOT / ".nadf" / "projects" / "sample2-manual-aws"
 OUTPUT_DIR = PROJECT_DIR / "output"
 REPORTER = REPO_ROOT / "tools" / "nadf-output-reporter" / "reporter.py"
 DEFAULT_TARGET = "https://github.com/arodriguez-novusintelligence/sample2.git"
-WORKTREE = REPO_ROOT.parent / "sample2-work"
+WORKTREE = Path(
+    os.environ.get("NADF_WORKTREE", str(REPO_ROOT.parent / "sample2-work"))
+).resolve()
 
 
 def load_yaml(path: Path) -> dict:
@@ -288,17 +290,19 @@ def deploy_stack(root: Path, stack: str, region: str) -> tuple[str, int, dict[st
     build = subprocess.run([sam, "build", "-t", "template.yml"], cwd=root, capture_output=True, text=True)
     if build.returncode != 0:
         return "FAILED", int((time.monotonic() - start) * 1000), {"error": build.stderr[-800:]}
+    deploy_args = [
+        sam, "deploy",
+        "--stack-name", stack,
+        "--region", region,
+        "--capabilities", "CAPABILITY_IAM",
+        "--no-confirm-changeset",
+        "--no-fail-on-empty-changeset",
+        "--tags", "nadf-example=sample2",
+    ]
+    sam_bucket = os.environ.get("NADF_SAM_BUCKET", "").strip()
+    deploy_args.extend(["--s3-bucket", sam_bucket] if sam_bucket else ["--resolve-s3"])
     deploy = subprocess.run(
-        [
-            sam, "deploy",
-            "--stack-name", stack,
-            "--region", region,
-            "--capabilities", "CAPABILITY_IAM",
-            "--resolve-s3",
-            "--no-confirm-changeset",
-            "--no-fail-on-empty-changeset",
-            "--tags", "nadf-example=sample2",
-        ],
+        deploy_args,
         cwd=root,
         capture_output=True,
         text=True,
