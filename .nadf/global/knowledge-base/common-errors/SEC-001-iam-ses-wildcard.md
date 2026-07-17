@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Error: SEC-001.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Error: SEC-001
 
 ## Síntoma

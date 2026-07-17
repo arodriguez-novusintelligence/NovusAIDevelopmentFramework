@@ -1,4 +1,8 @@
-﻿# IntegraciÃ³n de Cursor Cloud Agent con NADF
+<!-- NADF-GUIDE
+Propósito: Documenta Integración de Cursor Cloud Agent con NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# IntegraciÃ³n de Cursor Cloud Agent con NADF
 
 **VersiÃ³n:** 1.0.0  
 **Fecha:** 2026-07-14  

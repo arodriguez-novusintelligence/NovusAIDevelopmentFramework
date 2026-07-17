@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reglas de impacto backend — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reglas de impacto backend — Novus Intelligence Solutions
 
 Reglas específicas para evaluación e implementación backend en `NovusIntelligenceBack`.

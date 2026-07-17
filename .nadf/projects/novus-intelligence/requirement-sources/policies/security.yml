@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define novus-intelligence-security como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 id: novus-intelligence-security
 max_attachment_size: 10485760
 allowed_file_types:

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reglas de integración Lovable — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reglas de integración Lovable — Novus Intelligence Solutions
 
 Reglas específicas del proyecto para la interacción con la fuente de diseño Lovable (`novus-nexus`).

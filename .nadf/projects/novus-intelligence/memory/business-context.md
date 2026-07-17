@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Contexto de negocio — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Contexto de negocio — Novus Intelligence Solutions
 
 ## Empresa

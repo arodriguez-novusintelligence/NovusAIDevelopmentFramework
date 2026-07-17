@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Test Results — NADF v1.1.0-rc.1.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Test Results — NADF v1.1.0-rc.1
 
 **Fecha:** 2026-07-15

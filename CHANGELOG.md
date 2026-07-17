@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta CHANGELOG — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # CHANGELOG — NADF
 
 ## [1.1.0-rc.1] — 2026-07-15

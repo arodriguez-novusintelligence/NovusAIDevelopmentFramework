@@ -1,4 +1,7 @@
-﻿# NADF
+﻿# NADF-GUIDE
+# Propósito: Excluye secretos, dependencias, outputs generados y estado local del control de versiones.
+# Configuración: Añadir patrones de estado local; mantener visibles templates y archivos .env.example.
+# NADF
 .git/
 node_modules/
 dist/

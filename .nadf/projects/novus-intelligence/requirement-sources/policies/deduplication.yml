@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define novus-intelligence-deduplication como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 id: novus-intelligence-deduplication
 deduplication_window: PT24H
 exact_match:

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Implementation Report — Requirement Intake Layer.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Implementation Report — Requirement Intake Layer
 
 **Fecha:** 2026-07-14  

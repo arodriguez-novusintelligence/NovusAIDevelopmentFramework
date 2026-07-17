@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Versioning Policy — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Versioning Policy — NADF
 
 See also `docs/meta-model/versioning.md`.

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Separación planificación, ejecución y validación.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Separación planificación, ejecución y validación
 
 ## Principio rector

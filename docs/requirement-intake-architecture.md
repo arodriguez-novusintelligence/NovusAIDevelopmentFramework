@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Requirement Intake Architecture.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Requirement Intake Architecture
 
 **Versión:** 1.0  

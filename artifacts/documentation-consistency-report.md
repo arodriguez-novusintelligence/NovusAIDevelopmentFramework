@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Documentation Consistency Report.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Documentation Consistency Report
 
 **Fecha:** 2026-07-15

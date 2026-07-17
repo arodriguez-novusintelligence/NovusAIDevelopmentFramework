@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Impacto Frontend — Análisis Lovable (paso-01).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Impacto Frontend — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  

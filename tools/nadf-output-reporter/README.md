@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF output reporter.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF output reporter
 
 Genera evidencia JSON determinista sin usar un LLM.

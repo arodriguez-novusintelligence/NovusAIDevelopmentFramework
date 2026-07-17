@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Planner Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Planner Agent
 
 ## Identidad

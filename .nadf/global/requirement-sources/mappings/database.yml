@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define database-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
 id: database-default-mapping
 source_definition_id: database
 version: "1.0.0"

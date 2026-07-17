@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Modifica funcionalidad existente con modelo multiagente de 9 fases como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: modify-feature
 name: Modify Feature
 version: "2.0.0"

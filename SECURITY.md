@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta SECURITY — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # SECURITY — NADF
 
 ## Principles

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Contexto técnico — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Contexto técnico — Novus Intelligence Solutions
 
 ## Arquitectura multiagente NADF

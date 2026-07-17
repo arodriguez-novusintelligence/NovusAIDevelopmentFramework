@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define slack-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 id: slack-default-mapping
 source_definition_id: slack
 version: "1.0.0"

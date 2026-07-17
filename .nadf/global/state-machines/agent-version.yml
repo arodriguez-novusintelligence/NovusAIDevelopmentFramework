@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define agent version como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
 entity: AgentVersion
 states: [DRAFT, PUBLISHED, DEPRECATED, RETIRED]
 transitions:

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Resumen Frontend — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Resumen Frontend — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

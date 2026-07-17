@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón: Checklist pre-handoff executor → validation.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón: Checklist pre-handoff executor → validation
 
 ## Contexto

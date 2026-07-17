@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define contracts como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
 # Artifact contracts — Requirement Intake Layer
 # schemaVersion: 1.1.0 — ADR-0007
 

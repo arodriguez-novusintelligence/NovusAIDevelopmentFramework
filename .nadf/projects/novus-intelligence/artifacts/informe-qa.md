@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Informe QA — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Informe QA — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

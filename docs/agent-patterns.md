@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrones de agentes NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrones de agentes NADF
 
 ## Visión general

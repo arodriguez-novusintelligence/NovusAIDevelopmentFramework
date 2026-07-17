@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Prepara despliegue cloud sin ejecutar deploy — requiere aprobación humana como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: cloud-deployment
 name: Cloud Deployment Preparation
 version: "1.0.0"

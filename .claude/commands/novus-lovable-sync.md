@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Comando: novus-lovable-sync.
+Configuración: Ajustar proyecto activo, workflow, gates y rutas sin incorporar secretos.
+-->
 # Comando: novus-lovable-sync
 
 ## Descripción

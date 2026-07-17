@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta State Machines — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # State Machines — NADF
 
 **Version:** 1.1.0-rc.1  

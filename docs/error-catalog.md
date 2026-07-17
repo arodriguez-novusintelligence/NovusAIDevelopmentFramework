@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Error Catalog — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Error Catalog — NADF
 
 **Version:** 1.0.0  

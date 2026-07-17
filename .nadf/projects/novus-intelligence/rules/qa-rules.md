@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reglas QA — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reglas QA — Novus Intelligence Solutions
 
 Reglas específicas de validación de calidad para el proyecto Novus Intelligence Solutions.

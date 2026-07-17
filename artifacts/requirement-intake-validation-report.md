@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Validation Report — Requirement Intake.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Validation Report — Requirement Intake
 
 **Fecha:** 2026-07-14  

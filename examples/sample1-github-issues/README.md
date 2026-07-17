@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Sample 1 — GitHub Issues.
+Configuración: Adaptar IDs, paths y criterios del sample manteniendo aislamiento y PROD prohibido.
+-->
 # Sample 1 — GitHub Issues
 
 1. Crear un issue con label `sample1`.

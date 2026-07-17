@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Sample 1 app.
+Configuración: Adaptar IDs, paths y criterios del sample manteniendo aislamiento y PROD prohibido.
+-->
 # Sample 1 app
 
 Aplicación demo **dentro del Framework**. Demuestra:

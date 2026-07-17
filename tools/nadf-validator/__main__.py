@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NADF-GUIDE
+# Propósito: Implementa NADF repository validator — v1.1.0-rc.1 stabilization.
+# Configuración: Configurar mediante argumentos CLI documentados; no hardcodear proyectos o secretos.
 """NADF repository validator — v1.1.0-rc.1 stabilization."""
 from __future__ import annotations
 

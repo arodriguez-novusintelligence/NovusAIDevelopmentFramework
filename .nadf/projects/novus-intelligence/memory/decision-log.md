@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Decision Log — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Decision Log — Novus Intelligence Solutions
 
 Registro cronológico de decisiones del proyecto.

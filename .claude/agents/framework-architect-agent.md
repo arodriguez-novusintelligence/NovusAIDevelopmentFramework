@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Framework Architect Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Framework Architect Agent
 
 ## Identidad

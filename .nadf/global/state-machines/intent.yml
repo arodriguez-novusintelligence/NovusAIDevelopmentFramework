@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define intent como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
 entity: Intent
 immutable_after: ACCEPTED
 states: [DRAFT, ACCEPTED, CANCELLED, IN_PLANNING, FULFILLED]

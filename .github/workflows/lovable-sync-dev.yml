@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Lovable sync DEV como configuración declarativa NADF.
+# Configuración: Configurar variables del repositorio, environment DEV y rol AWS OIDC; nunca añadir keys.
 # Lovable → NADF → agents → post-pipeline
 #
 # Modes:

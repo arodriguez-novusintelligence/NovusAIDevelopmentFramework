@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura lovable analyzer dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 import type { AgentInvocation } from "../types.js";
 
 /**

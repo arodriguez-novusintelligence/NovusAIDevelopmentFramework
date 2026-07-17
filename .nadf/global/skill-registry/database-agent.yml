@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define database agent como configuración declarativa NADF.
+# Configuración: Revisar capacidades, herramientas, restricciones y artifacts esperados del rol.
 agent:
   name: database-agent
   pattern: Executor

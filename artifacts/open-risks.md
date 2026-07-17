@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Open Risks — NADF v1.1.0-rc.1.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Open Risks — NADF v1.1.0-rc.1
 
 | ID | Riesgo | Severidad | Mitigación / próximo paso |

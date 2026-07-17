@@ -1,4 +1,8 @@
-﻿# Roadmap de implementaciÃ³n â€” NovusAIDevelopmentFramework (NADF 2.0.0)
+﻿<!-- NADF-GUIDE
+Propósito: Documenta Roadmap de implementaciÃ³n â€” NovusAIDevelopmentFramework (NADF 2.0.0).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# Roadmap de implementaciÃ³n â€” NovusAIDevelopmentFramework (NADF 2.0.0)
 
 **VersiÃ³n del documento:** 1.0.0  
 **Fecha:** 2026-07-04  

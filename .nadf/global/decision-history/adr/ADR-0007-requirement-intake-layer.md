@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta ADR-0007 — Requirement Intake Layer and Multi-Source Requirement Connectors.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # ADR-0007 — Requirement Intake Layer and Multi-Source Requirement Connectors
 
 **Estado:** Accepted  

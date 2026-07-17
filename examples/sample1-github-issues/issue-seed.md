@@ -2,6 +2,10 @@
 title: "[sample1] Añadir endpoint health"
 labels: ["sample1"]
 ---
+<!-- NADF-GUIDE
+Propósito: Documenta issue seed.
+Configuración: Adaptar IDs, paths y criterios del sample manteniendo aislamiento y PROD prohibido.
+-->
 
 ## Necesidad
 

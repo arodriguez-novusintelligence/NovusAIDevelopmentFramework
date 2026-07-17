@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define execution como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
 entity: Execution
 immutable_historical: true
 states: [STARTED, RUNNING, COMPLETED, FAILED, BLOCKED, CANCELLED]

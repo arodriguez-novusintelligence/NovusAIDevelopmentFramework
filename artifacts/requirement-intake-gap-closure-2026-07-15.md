@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Requirement Intake — Gap Closure Report (2026-07-15).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Requirement Intake — Gap Closure Report (2026-07-15)
 
 **Estado final:** `IMPLEMENTED`  

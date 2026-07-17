@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura CursorCloudAdapter dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 import { Agent, CursorAgentError } from "@cursor/sdk";
 import type {
   AgentInvocation,

@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define human approval model como configuración declarativa NADF.
+# Configuración: Copiar al proyecto y ajustar responsables, límites y excepciones con evidencia auditable.
 version: "1.0"
 policy: deny_by_default
 approval_mechanisms:

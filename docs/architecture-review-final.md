@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Revisión arquitectónica final — Correcciones críticas aplicadas.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Revisión arquitectónica final — Correcciones críticas aplicadas
 
 **Repositorio:** `NovusAIDevelopmentFramework`  

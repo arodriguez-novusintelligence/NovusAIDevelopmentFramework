@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Visual Parity Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Visual Parity Agent
 
 ## Identidad

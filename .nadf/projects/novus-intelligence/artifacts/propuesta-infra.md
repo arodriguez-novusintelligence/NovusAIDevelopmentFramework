@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Propuesta de Infraestructura — Novus Intelligence Solutions (DEV).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Propuesta de Infraestructura — Novus Intelligence Solutions (DEV)
 
 **Proyecto:** novus-intelligence  

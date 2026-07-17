@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NADF-GUIDE
+# Propósito: Implementa Generate NADF requirement source definition YAML files.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 """Generate NADF requirement source definition YAML files."""
 from __future__ import annotations
 

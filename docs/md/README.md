@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Enterprise Documentation.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Enterprise Documentation
 
 NADF es un **Enterprise Framework for AI-Driven Software Delivery**:

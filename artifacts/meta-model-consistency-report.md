@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Meta Model Consistency Report — NADF v1.1.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Meta Model Consistency Report — NADF v1.1
 
 **Fecha:** 2026-07-15

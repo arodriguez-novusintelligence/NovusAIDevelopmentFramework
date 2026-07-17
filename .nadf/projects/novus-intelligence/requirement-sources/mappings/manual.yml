@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define manual-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 id: manual-default-mapping
 source_definition_id: manual
 version: "1.0.0"

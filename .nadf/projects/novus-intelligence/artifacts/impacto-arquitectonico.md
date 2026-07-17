@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Impacto Arquitectónico — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Impacto Arquitectónico — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Meta Model Change Proposal — v1.0.0 → v1.1.0.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Meta Model Change Proposal — v1.0.0 → v1.1.0
 
 **Tipo:** MINOR (extensión compatible)  

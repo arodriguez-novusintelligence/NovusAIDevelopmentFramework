@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define template como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: NADF Sample 2 - manual requirement to serverless calculator

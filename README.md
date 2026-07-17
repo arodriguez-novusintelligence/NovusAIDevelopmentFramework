@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NovusAIDevelopmentFramework (NADF).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NovusAIDevelopmentFramework (NADF)
 
 **Distribution version:** `1.1.0-rc.1` · **Meta Model:** `1.1.0` · Manifest: [`nadf-manifest.yml`](nadf-manifest.yml)

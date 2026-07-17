@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Evaluación Backend — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Evaluación Backend — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

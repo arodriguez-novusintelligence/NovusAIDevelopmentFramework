@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta MIGRATION GUIDE — → NADF 1.1.0-rc.1.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # MIGRATION GUIDE — → NADF 1.1.0-rc.1
 
 ## From Meta Model 1.0 / framework without Intake

@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Ejecuta fases de reflexión, métricas y actualización de knowledge base post-workflow como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: reflection-learning
 name: Reflection and Learning
 version: "1.0.0"

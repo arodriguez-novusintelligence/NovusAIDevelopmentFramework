@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta CLAUDE.md — Reglas globales para agentes NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # CLAUDE.md — Reglas globales para agentes NADF
 
 Este archivo define las reglas obligatorias que **todo agente** del NovusAIDevelopmentFramework debe seguir en cada sesión de trabajo.

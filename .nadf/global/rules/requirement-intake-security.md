@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reglas de seguridad — Requirement Intake Layer.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reglas de seguridad — Requirement Intake Layer
 
 **Autoridad:** ADR-0007  

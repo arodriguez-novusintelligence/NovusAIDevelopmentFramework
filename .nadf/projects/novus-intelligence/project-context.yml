@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define project context como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 application:
   name: Novus Intelligence Solutions
   type: corporate_website

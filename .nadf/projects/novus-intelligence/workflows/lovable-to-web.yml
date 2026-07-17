@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Workflow de 19 pasos (incluye visual-parity) para sincronizar cambios novus-nexus al stack productivo con paridad visual exacta y deploy automático DEV. como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 id: novus-intelligence-lovable-to-web
 name: Novus Intelligence — Lovable to Web
 version: "2.1.0"

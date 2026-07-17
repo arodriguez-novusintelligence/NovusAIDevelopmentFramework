@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Modelo de agentes NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Modelo de agentes NADF
 
 ## Concepto

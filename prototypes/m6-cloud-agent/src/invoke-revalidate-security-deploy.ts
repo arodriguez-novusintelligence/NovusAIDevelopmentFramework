@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura invoke revalidate security deploy dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Revalida security tras merge de SEC-CORS-001 y lanza post-pipeline DEV.
  */

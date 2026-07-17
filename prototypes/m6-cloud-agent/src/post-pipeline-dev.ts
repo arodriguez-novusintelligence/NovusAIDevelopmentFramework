@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura post pipeline dev dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Post-pipeline DEV automation (M6 companion).
  *

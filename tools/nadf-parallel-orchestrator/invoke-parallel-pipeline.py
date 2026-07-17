@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NADF-GUIDE
+# Propósito: Implementa NADF fan-out/fan-in prototype. Dry-run by default.
+# Configuración: Configurar mediante argumentos CLI documentados; no hardcodear proyectos o secretos.
 """NADF fan-out/fan-in prototype. Dry-run by default."""
 from __future__ import annotations
 

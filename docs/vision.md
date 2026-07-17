@@ -1,4 +1,8 @@
-﻿# VisiÃ³n del NovusAIDevelopmentFramework
+﻿<!-- NADF-GUIDE
+Propósito: Documenta VisiÃ³n del NovusAIDevelopmentFramework.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# VisiÃ³n del NovusAIDevelopmentFramework
 
 ## PropÃ³sito
 

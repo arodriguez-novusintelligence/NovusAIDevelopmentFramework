@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Arquitectura multiagente NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Arquitectura multiagente NADF
 
 ## Propósito

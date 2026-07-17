@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NADF-GUIDE
+# Propósito: Implementa Deterministic NADF execution reporter (no LLM calls).
+# Configuración: Configurar mediante argumentos CLI documentados; no hardcodear proyectos o secretos.
 """Deterministic NADF execution reporter (no LLM calls)."""
 from __future__ import annotations
 

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Informe de Seguridad — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Informe de Seguridad — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

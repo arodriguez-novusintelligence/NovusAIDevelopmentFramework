@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Ola 1 — Informe de reestructuración.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Ola 1 — Informe de reestructuración
 
 Fecha: 2026-07-17

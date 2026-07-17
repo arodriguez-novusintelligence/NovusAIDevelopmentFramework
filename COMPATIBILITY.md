@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta COMPATIBILITY — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # COMPATIBILITY — NADF
 
 See also `docs/compatibility-matrix.yml`.

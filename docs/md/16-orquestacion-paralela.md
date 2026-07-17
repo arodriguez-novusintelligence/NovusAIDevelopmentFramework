@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Orquestación paralela.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Orquestación paralela
 
 El prototipo usa grafo fan-out/fan-in con `maxConcurrency: 3`:

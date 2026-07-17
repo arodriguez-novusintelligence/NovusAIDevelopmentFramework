@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define agent selection como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 extends: enterprise-governance/agent-selection.yml
 preset: cost-optimized
 disabled:

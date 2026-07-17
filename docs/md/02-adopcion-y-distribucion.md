@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Adopción y Customer Distribution.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Adopción y Customer Distribution
 
 ## Oferta

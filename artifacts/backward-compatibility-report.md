@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Backward Compatibility Report — NADF v1.1.0-rc.1.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Backward Compatibility Report — NADF v1.1.0-rc.1
 
 **Fecha:** 2026-07-15

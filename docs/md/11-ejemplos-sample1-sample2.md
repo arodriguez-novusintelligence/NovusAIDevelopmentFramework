@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Ejemplos ejecutables.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Ejemplos ejecutables
 
 ## Sample 1

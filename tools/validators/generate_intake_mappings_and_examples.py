@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Implementa generate intake mappings and examples.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 from pathlib import Path
 import json
 import re

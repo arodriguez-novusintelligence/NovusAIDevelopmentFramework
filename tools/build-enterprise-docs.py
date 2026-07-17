@@ -34,8 +34,15 @@ def markdown(text: str) -> str:
     output: list[str] = []
     in_list = False
     in_code = False
+    in_comment = False
     for raw in text.splitlines():
         line = raw.rstrip()
+        if line.strip().startswith("<!--"):
+            in_comment = True
+        if in_comment:
+            if "-->" in line:
+                in_comment = False
+            continue
         if line.startswith("```"):
             output.append("</code></pre>" if in_code else "<pre><code>")
             in_code = not in_code
@@ -74,7 +81,10 @@ def main() -> None:
         content = markdown(path.read_text(encoding="utf-8"))
         title = next((line[2:] for line in path.read_text(encoding="utf-8").splitlines() if line.startswith("# ")), path.stem)
         page = (
-            "<!doctype html><html lang='es'><head><meta charset='utf-8'>"
+            "<!doctype html><!-- NADF-GUIDE\n"
+            f"Propósito: Presenta {html.escape(title)} en formato HTML.\n"
+            "Configuración: No editar directamente; actualizar docs/md y ejecutar tools/build-enterprise-docs.py.\n"
+            "--><html lang='es'><head><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width'><title>{html.escape(title)}</title>"
             f"<style>{STYLE}</style></head><body><header><a href='index.html'>NADF Enterprise</a></header>"
             f"<main>{content}</main></body></html>\n"

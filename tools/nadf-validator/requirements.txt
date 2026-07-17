@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Declara dependencias Python necesarias para validar y operar herramientas NADF.
+# Configuración: Fijar rangos compatibles y validar instalación en el runtime Python soportado.
 jsonschema>=4.22.0
 referencing>=0.35.0
 PyYAML>=6.0.1

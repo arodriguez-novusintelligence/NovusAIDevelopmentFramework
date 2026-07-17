@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Migration Guide — Requirement Intake Layer (v1.1).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Migration Guide — Requirement Intake Layer (v1.1)
 
 **Desde:** Meta Model v1.0  

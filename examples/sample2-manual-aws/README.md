@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Sample 2 — Manual → AWS.
+Configuración: Adaptar IDs, paths y criterios del sample manteniendo aislamiento y PROD prohibido.
+-->
 # Sample 2 — Manual → AWS
 
 Demuestra una solicitud manual greenfield que produce una calculadora Lambda,

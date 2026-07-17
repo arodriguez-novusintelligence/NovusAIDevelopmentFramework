@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Frontend Integration Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Frontend Integration Agent
 
 ## Identidad

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model — Especificación Oficial.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Meta Model — Especificación Oficial
 
 **Versión:** 1.1  

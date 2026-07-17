@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Implementa Sample 1: minimal customer-visible Lambda application.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 """Sample 1: minimal customer-visible Lambda application."""
 import json
 

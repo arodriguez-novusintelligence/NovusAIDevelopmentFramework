@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define execution plan como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
 entity: ExecutionPlan
 # Alias of Plan after approval + tasks
 states: [DRAFT, PENDING_REVIEW, APPROVED, REJECTED, SUPERSEDED]

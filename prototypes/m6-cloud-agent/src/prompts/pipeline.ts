@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura pipeline dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Prompts for remaining pipeline agents (Execution → Validation → Knowledge).
  */

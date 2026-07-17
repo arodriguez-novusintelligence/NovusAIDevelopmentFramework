@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.0 — Modelo de Capacidades.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Meta Model v1.0 — Modelo de Capacidades
 
 **Versión:** 1.0  

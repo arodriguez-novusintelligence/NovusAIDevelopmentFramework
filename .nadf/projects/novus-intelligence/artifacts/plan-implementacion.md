@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Plan de Implementación — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Plan de Implementación — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

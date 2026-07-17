@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Error: DEVOPS-001.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Error: DEVOPS-001
 
 ## Síntoma

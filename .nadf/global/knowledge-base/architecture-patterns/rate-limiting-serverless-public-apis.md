@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón: Rate limiting en APIs públicas serverless.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón: Rate limiting en APIs públicas serverless
 
 ## Contexto

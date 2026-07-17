@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura invoke remediate cors dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Remediación DEV: SEC-CORS-001 → security re-check → post-pipeline (merge+deploy).
  * No toca arquetipo a mano: Cloud Agent (backend) abre PR en Back.

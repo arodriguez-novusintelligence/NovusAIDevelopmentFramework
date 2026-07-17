@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta When Lovable syncs to this repo, ask NADF Framework to run lovable-to-web + DEV deploy..
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # When Lovable syncs to this repo, ask NADF Framework to run lovable-to-web + DEV deploy.
 #
 # Secret on this repo: NADF_DISPATCH_TOKEN (PAT with repo scope on Framework)

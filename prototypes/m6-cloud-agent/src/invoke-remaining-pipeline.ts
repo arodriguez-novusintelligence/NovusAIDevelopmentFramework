@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura invoke remaining pipeline dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Ejecuta el resto del workflow lovable-to-web (post Plan Review approved)
  * en secuencia vía Cursor Cloud Agent.

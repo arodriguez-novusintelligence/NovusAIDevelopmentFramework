@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define jira-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
 id: jira-default-mapping
 source_definition_id: jira
 version: "1.0.0"

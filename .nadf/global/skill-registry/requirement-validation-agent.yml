@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define requirement validation agent como configuración declarativa NADF.
+# Configuración: Revisar capacidades, herramientas, restricciones y artifacts esperados del rol.
 agent:
   name: requirement-validation-agent
   pattern: Validator

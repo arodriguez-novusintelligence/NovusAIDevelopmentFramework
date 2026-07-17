@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define workflow version como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
 entity: WorkflowVersion
 states: [DRAFT, PUBLISHED, DEPRECATED, RETIRED]
 transitions:

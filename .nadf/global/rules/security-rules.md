@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reglas de seguridad del framework NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reglas de seguridad del framework NADF
 
 Estas reglas aplican a todos los agentes y proyectos. Su incumplimiento es **bloqueante** y detiene el workflow.

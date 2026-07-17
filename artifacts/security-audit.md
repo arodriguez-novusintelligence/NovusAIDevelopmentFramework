@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Security Audit — Stabilization RC.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Security Audit — Stabilization RC
 
 **Fecha:** 2026-07-15  
