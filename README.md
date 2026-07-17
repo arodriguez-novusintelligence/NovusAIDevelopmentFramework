@@ -45,23 +45,10 @@ Automatizar el ciclo de desarrollo con agentes IA, manteniendo:
 - Trazabilidad via ADRs, métricas, reflexión y Requirement Intake (opt-in)
 - Independencia de proveedor de nube e IA
 
-## Proyecto vivo de referencia
-
-**Novus Intelligence Solutions** — flujo Lovable → Web de **18 pasos** multiagente (canónico global; ver [ADR-0003](.nadf/global/decision-history/adr/ADR-0003-lovable-to-web-canonicalization.md)).
-
-## Repositorios
-
-| Rol | Repositorio |
-|-----|-------------|
-| Framework | NovusAIDevelopmentFramework |
-| Diseño | novus-nexus (Lovable) |
-| Frontend | NovusIntelligenceWEB |
-| Backend | NovusIntelligenceBack |
-
 ## Flujo multiagente
 
 ```
-Lovable → GitHub → Orquestador → Planning → Execution → Validation
+Fuente reemplazable → Requirement → Orquestador → Planning → Execution → Validation
 → Knowledge → PR → Cursor Review → Deployment (aprobado)
 ```
 
@@ -130,30 +117,22 @@ NovusAIDevelopmentFramework/
     └── projects/
         └── <project>/requirement-sources/  # Opt-in
 ```
-## Cursor Cloud Agent (runtime M6)
+## Runtime
 
 NADF define **roles** (`.claude/agents/`, 27 agentes). **Cursor Cloud Agent** es un **motor de ejecución** que interpreta esos roles (no recrees el catálogo completo en la UI Cloud).
 
 | Documento | Contenido |
 |-----------|-----------|
-| [docs/cloud-agent-integration.md](docs/cloud-agent-integration.md) | Guía operativa: onboarding de apps, prompts, anti-patrones |
-| [docs/runtime/agent-runtime-contract.md](docs/runtime/agent-runtime-contract.md) | Contrato `AgentRuntime` (M6) |
-| [ADR-0005](.nadf/global/decision-history/adr/ADR-0005-agent-runtime-bridge.md) | Decisión de adopción del puente runtime |
-| [prototypes/m6-cloud-agent/](prototypes/m6-cloud-agent/) | Prototipo: paso 1 `lovable-analyzer` vía Cloud Agent |
-
-```bash
-cd prototypes/m6-cloud-agent
-cp .env.example .env   # CURSOR_API_KEY + URLs de repos
-npm install
-npm run invoke:lovable-analyzer
-```
+| [docs/cloud-agent-integration.md](docs/cloud-agent-integration.md) | Guía neutral de integración |
+| [docs/runtime/agent-runtime-contract.md](docs/runtime/agent-runtime-contract.md) | Contrato portable `AgentRuntime` |
+| [tools/nadf-parallel-orchestrator/](tools/nadf-parallel-orchestrator/) | Prototipo fan-out/fan-in |
 
 ## Cómo empezar
 
 1. Leer `CLAUDE.md`, Meta Model y `docs/multiagent-architecture.md`
-2. Revisar `.nadf/projects/novus-intelligence/project-context.yml`
-3. Ejecutar `novus-lovable-sync` (18 pasos) **o** el prototipo Cloud Agent del paso 1
-4. Consultar `docs/project-onboarding.md` y `docs/cloud-agent-integration.md` para nuevas apps
+2. Copiar un project template a `.nadf/projects/<su-app>/`
+3. Elegir adapter de entrada, budget y Human Gates
+4. Ejecutar sample1 o sample2 y consultar `docs/project-onboarding.md`
 
 ## Principios fundamentales
 
@@ -163,12 +142,6 @@ npm run invoke:lovable-analyzer
 - Todo acceso externo vía MCP cuando aplique
 - Sin mocks en producción; sin deploy sin aprobación; sin secrets en código
 - Toda decisión arquitectónica → ADR; todo aprendizaje reutilizable → Knowledge Base
-
-## Autenticación GitHub
-
-Este workspace (`NovusAIDevelopmentFramework`) debe autenticarse con la cuenta u organización **arodriguez-novusintelligence**. Otros proyectos Cursor pueden usar **doeventsrepo**; no mezclar credenciales entre workspaces.
-
-Si `git push` falla con **403**, suele deberse a la variable de entorno `GH_TOKEN` apuntando a otra cuenta. Consulta la guía completa: [docs/workspace-github-auth.md](docs/workspace-github-auth.md).
 
 ## Licencia
 

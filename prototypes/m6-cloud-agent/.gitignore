@@ -1,7 +1,0 @@
-node_modules/
-dist/
-.env
-*.log
-.DS_Store
-pipeline-results.json
-visual-parity-shots/

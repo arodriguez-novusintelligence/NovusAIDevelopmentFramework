@@ -39,8 +39,8 @@ sequenceDiagram
 |-------|-----------------|-------------|
 | `agentId` | string | Id canónico (ej. `lovable-analyzer-agent`) |
 | `projectId` | string | Id bajo `.nadf/projects/` |
-| `workflowId` | string | Id de workflow (ej. `novus-intelligence-lovable-to-web`) |
-| `stepId` | string | Paso YAML (ej. `paso-01-analizar-lovable`) |
+| `workflowId` | string | Id de workflow (ej. `sample1-issue-to-dev`) |
+| `stepId` | string | Paso YAML (ej. `step-01-normalize-requirement`) |
 | `pattern` | enum | `planner` \| `executor` \| `validator` \| `event_driven` \| `blackboard` \| `reflection` \| `mediator` |
 | `repos` | RepoRef[] | Repos a clonar/usar |
 | `inputs` | string[] | Rutas de contexto / artifacts de entrada |
@@ -185,7 +185,7 @@ Este contrato garantiza que M5 **no** importe APIs de Cursor.
 
 ## 10. Referencias
 
-- Prototipo: `prototypes/m6-cloud-agent/`
+- Prototipo neutral: `tools/nadf-parallel-orchestrator/`
 - Guía: `docs/cloud-agent-integration.md`
 - Skill registry: `.nadf/global/skill-registry/`
 - Metrics: `.nadf/global/metrics/metrics-schema.json`
