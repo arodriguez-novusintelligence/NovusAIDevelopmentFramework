@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Aprobaciones y responsabilidades.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Aprobaciones y responsabilidades
 
 Este es el **único capítulo normativo** de Human Approval en la documentación

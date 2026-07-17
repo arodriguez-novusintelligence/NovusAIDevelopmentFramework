@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón: Validación en ramas feature multi-repo.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón: Validación en ramas feature multi-repo
 
 ## Contexto

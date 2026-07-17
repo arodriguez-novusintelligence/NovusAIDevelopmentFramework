@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Workflow Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Workflow Agent
 
 ## Identidad

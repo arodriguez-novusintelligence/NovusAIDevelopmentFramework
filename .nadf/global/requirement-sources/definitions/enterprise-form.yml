@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Requirement source definition for Enterprise Form (see ADR-0007) como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
 id: enterprise-form
 name: Enterprise Form
 type: form

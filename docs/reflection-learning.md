@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reflexión y aprendizaje.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reflexión y aprendizaje
 
 ## Propósito

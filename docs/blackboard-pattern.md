@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón Blackboard.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón Blackboard
 
 ## Propósito

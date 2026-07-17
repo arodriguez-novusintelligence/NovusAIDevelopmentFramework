@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Requirement Normalization.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Requirement Normalization
 
 **Autoridad:** ADR-0007

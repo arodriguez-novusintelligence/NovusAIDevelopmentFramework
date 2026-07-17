@@ -1,4 +1,8 @@
-﻿# Integración neutral con Cloud Agent
+﻿<!-- NADF-GUIDE
+Propósito: Documenta Integración neutral con Cloud Agent.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# Integración neutral con Cloud Agent
 
 NADF es el sistema de gobierno; Cloud Agent es un runtime intercambiable.
 

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Entregables y outputs.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Entregables y outputs
 
 Cada ejecución deja evidencia en `.nadf/projects/<project>/output/`:

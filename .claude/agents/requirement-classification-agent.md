@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Requirement Classification Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Requirement Classification Agent
 
 ## Identidad

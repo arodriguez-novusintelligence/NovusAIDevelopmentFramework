@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define framework architect agent como configuración declarativa NADF.
+# Configuración: Revisar capacidades, herramientas, restricciones y artifacts esperados del rol.
 agent:
   name: framework-architect-agent
   pattern: Mediator

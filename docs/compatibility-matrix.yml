@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define compatibility matrix como configuración declarativa NADF.
+# Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
 nadf: "1.1.0-rc.1"
 metaModel: "1.1.0"
 matrix:

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Cloud Agent y runtime.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Cloud Agent y runtime
 
 NADF define roles, contratos, gates y artifacts. Cursor Cloud Agent es un motor

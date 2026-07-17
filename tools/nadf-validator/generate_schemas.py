@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Implementa Generate NADF normative JSON Schemas for v1.1.0-rc.1 stabilization.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 """Generate NADF normative JSON Schemas for v1.1.0-rc.1 stabilization."""
 from __future__ import annotations
 

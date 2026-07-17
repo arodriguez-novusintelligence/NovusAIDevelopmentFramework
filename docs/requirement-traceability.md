@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Requirement Traceability.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Requirement Traceability
 
 **Autoridad:** ADR-0007

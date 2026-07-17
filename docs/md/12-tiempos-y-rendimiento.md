@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Tiempos y rendimiento.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Tiempos y rendimiento
 
 Una corrida completa secuencial observada puede durar **45–60 minutos**. No es

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Parallel orchestrator prototype.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Parallel orchestrator prototype
 
 Valida el grafo fan-out/fan-in sin llamar modelos ni mutar repositorios:

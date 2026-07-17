@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Naming Conventions — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Naming Conventions — NADF
 
 **Version:** 1.1.0-rc.1

@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define event catalog como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
 # NADF Event Catalog (machine-readable)
 # version: 1.0.0 — aligns with Meta Model v1.1 / NADF 1.1.0-rc.1
 

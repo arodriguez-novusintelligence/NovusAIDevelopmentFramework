@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define nadf manifest como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
 nadf:
   version: 1.1.0-rc.1
   metaModelVersion: 1.1.0

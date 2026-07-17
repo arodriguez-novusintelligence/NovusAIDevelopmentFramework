@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF — reglas globales para agentes.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF — reglas globales para agentes
 
 Estas reglas aplican a cualquier Customer Distribution.

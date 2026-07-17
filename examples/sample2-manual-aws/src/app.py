@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Implementa Sample 2: calculator with optional DynamoDB audit persistence.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 """Sample 2: calculator with optional DynamoDB audit persistence."""
 import json
 import os

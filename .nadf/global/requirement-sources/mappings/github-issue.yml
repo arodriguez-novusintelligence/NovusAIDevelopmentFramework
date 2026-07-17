@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define github-issue-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
 id: github-issue-default-mapping
 source_definition_id: github-issue
 version: "1.0.0"

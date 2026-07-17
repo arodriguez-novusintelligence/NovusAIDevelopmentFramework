@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define API para sumar, restar, multiplicar y dividir; registrar resultado. como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
 id: sample2-calculator
 source: manual
 title: Crear calculadora serverless auditable

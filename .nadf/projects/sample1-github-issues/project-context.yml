@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define project context como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 project:
   id: sample1-github-issues
   name: NADF Sample 1

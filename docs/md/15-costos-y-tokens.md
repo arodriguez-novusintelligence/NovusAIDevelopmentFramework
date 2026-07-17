@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Costos, budget y selección de agentes.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Costos, budget y selección de agentes
 
 Estimaciones internas (no SLA ni precio de venta), suponiendo referencia de

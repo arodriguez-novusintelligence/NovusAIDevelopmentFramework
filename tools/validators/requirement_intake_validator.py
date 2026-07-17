@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NADF-GUIDE
+# Propósito: Implementa NADF Requirement Intake validator and fixture runner (ADR-0007).
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 """
 NADF Requirement Intake validator and fixture runner (ADR-0007).
 

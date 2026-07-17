@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NADF-GUIDE
+# Propósito: Implementa Generate requirement-* agent definitions and skill registries.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 """Generate requirement-* agent definitions and skill registries."""
 from __future__ import annotations
 

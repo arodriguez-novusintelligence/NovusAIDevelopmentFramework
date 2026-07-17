@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta QA Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # QA Agent
 
 ## Identidad

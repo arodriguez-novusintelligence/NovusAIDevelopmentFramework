@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Informe final — Ola 1 + Ola 2.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Informe final — Ola 1 + Ola 2
 
 Fecha: 2026-07-17

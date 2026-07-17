@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define generic-webhook-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
 id: generic-webhook-default-mapping
 source_definition_id: generic-webhook
 version: "1.0.0"

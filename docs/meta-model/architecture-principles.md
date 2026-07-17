@@ -1,4 +1,8 @@
-﻿# NADF Meta Model â€” Principios ArquitectÃ³nicos Oficiales
+﻿<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model â€” Principios ArquitectÃ³nicos Oficiales.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# NADF Meta Model â€” Principios ArquitectÃ³nicos Oficiales
 
 **VersiÃ³n:** 1.0  
 **Estado:** Normativo  

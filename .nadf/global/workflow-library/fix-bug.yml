@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Corrige bug reportado con modelo multiagente de 9 fases como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: fix-bug
 name: Fix Bug
 version: "2.0.0"

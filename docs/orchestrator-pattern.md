@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón Orquestador (Mediator).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón Orquestador (Mediator)
 
 ## Propósito

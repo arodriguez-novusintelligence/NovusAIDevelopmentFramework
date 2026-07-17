@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.1 — Visión General.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Meta Model v1.1 — Visión General
 
 **Versión:** 1.1 (especificación oficial; compatible con v1.0)  

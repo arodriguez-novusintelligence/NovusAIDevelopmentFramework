@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Modelo de workflows NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Modelo de workflows NADF
 
 ## Concepto

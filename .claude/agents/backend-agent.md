@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Backend Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Backend Agent
 
 ## Identidad

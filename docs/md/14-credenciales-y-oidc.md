@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Credenciales y OIDC.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Credenciales y OIDC
 
 ## Modelo recomendado

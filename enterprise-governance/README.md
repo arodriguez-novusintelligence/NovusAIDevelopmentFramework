@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Enterprise governance.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Enterprise governance
 
 Controles reutilizables para implantar NADF en una organización sin copiar

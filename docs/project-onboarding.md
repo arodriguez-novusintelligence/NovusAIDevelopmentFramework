@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Onboarding de proyectos.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Onboarding de proyectos
 
 ## Crear una instancia

@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Incorpora un nuevo proyecto al framework NADF con modelo multiagente como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: create-project
 name: Create Project
 version: "2.0.0"

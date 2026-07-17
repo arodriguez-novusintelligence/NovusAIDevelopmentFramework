@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define rest-api-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
 id: rest-api-default-mapping
 source_definition_id: rest-api
 version: "1.0.0"

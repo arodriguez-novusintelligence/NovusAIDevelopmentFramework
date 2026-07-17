@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Error: SEC-002.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Error: SEC-002
 
 ## Síntoma

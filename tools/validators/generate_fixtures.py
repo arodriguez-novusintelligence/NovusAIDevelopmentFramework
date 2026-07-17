@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NADF-GUIDE
+# Propósito: Implementa Generate requirement-intake fixtures.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 """Generate requirement-intake fixtures."""
 from __future__ import annotations
 

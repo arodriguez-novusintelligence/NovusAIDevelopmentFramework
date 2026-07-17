@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define requirement como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
 entity: Requirement
 mutable_until: APPROVED
 states:

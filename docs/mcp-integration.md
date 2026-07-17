@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Integración MCP en NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Integración MCP en NADF
 
 ## Propósito

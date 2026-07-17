@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Requirement Deduplication Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Requirement Deduplication Agent
 
 ## Identidad

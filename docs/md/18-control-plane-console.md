@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Visión: control plane y consola.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Visión: control plane y consola
 
 La consola multi-tenant es una evolución, no parte de esta reestructuración.

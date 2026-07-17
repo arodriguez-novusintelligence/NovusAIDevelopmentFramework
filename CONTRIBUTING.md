@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta CONTRIBUTING — NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # CONTRIBUTING — NADF
 
 1. Read `CLAUDE.md`, Meta Model overview, and ADRs.

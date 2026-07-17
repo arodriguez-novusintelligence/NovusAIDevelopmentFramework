@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reglas generales del framework NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reglas generales del framework NADF
 
 Estas reglas aplican a **todos los agentes** en **todos los proyectos** del NovusAIDevelopmentFramework.

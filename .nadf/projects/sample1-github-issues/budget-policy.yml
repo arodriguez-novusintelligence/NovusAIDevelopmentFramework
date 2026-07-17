@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define budget policy como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 extends: enterprise-governance/budget-policy.yml
 limits:
   per_run: 5

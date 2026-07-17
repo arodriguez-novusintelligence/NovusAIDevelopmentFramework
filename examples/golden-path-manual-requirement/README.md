@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Golden Path — Manual Requirement.
+Configuración: Adaptar IDs, paths y criterios del sample manteniendo aislamiento y PROD prohibido.
+-->
 # Golden Path — Manual Requirement
 
 **Caso:** Agregar campo teléfono al formulario Mi Perfil  

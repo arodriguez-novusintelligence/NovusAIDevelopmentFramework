@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model — Versionado.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Meta Model — Versionado
 
 **Versión del documento:** 1.0  

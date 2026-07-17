@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define > como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: requirement-intake
 name: Requirement Intake Multi-Source
 version: "1.0.0"

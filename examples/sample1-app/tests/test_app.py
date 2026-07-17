@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Implementa test app.
+# Configuración: No requiere configuración directa; conservar rutas relativas y ejecución determinista.
 import importlib.util
 import pathlib
 import unittest

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Arquitectura del NovusAIDevelopmentFramework.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Arquitectura del NovusAIDevelopmentFramework
 
 ## Visión general

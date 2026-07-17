@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta ADR-0005: NADF adopta Agent Runtime Bridge (M6) con Cursor Cloud Agent como primer adaptador.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # ADR-0005: NADF adopta Agent Runtime Bridge (M6) con Cursor Cloud Agent como primer adaptador
 
 ## Estado

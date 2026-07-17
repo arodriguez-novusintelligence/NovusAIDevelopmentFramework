@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define art-demo como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
 id: "art-demo"
 schemaVersion: "1.1.0"
 correlationId: "corr-demo"

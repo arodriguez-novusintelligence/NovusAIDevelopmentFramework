@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define raw requirement event como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
 # RawRequirementEvent — immutable after RECEIVED persistence
 entity: RawRequirementEvent
 immutable_after: ACCEPTED

@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.1 — Modelo de Intención.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Meta Model v1.1 — Modelo de Intención
 
 **Versión:** 1.1  

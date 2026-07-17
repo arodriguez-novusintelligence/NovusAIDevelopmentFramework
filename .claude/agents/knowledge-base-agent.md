@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Knowledge Base Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Knowledge Base Agent
 
 ## Identidad

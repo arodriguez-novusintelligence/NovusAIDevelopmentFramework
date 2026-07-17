@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Security Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Security Agent
 
 ## Identidad

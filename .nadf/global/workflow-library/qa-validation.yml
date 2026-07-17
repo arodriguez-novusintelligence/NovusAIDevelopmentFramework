@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Validación QA independiente sobre cambios implementados como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: qa-validation
 name: QA Validation
 version: "1.0.0"

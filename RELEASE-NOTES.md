@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta RELEASE NOTES — NADF v1.1.0-rc.1.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # RELEASE NOTES — NADF v1.1.0-rc.1
 
 ## Highlights

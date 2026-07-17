@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Release Definition of Done — NADF v1.1.0-rc.1.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Release Definition of Done — NADF v1.1.0-rc.1
 
 ```text

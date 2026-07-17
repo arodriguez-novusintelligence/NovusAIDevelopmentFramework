@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta AgentRuntime Contract — NADF M6.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # AgentRuntime Contract — NADF M6
 
 **Versión:** 0.1.0 (diseño + prototipo)  

@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define error catalog como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
 version: "1.0.0"
 errors:
   - code: NADF-REQ-001
