@@ -1,208 +1,51 @@
 {
-  "analysisDate": "2026-07-14T08:52:00Z",
+  "analysisDate": "2026-07-17T16:13:00Z",
   "sourceRepo": "novus-nexus",
   "targetFrontend": "NovusIntelligenceWEB",
   "baseline": {
-    "commit": "e3a9819",
-    "message": "Añadió ejemplo multiagente",
-    "previousBaseline": "8f106a6 (Reestructuró sitio de Novus)",
-    "note": "Primera ejecución del analyzer; se documenta snapshot completo más delta del último commit."
+    "commit": "974dc61",
+    "message": "ci: enviar cambios Lovable a NADF visual-fast",
+    "note": "Análisis incremental: solo delta del último commit Lovable."
   },
   "changes": [
     {
-      "id": "CHG-001",
-      "type": "structural",
-      "component": "site-architecture",
-      "description": "Reestructuración completa del sitio corporativo B2B con 10 rutas navegables: Home, Servicios, Soluciones (grid + detalle dinámico), Nosotros, Casos, Contacto y páginas legales (privacidad, tratamiento de datos, términos).",
-      "severity": "high",
-      "requiresBackend": false,
-      "affectedPages": ["landing", "services", "solutions", "about", "cases", "contact", "privacy", "data-treatment", "terms"],
-      "designTokens": {
-        "colors": [],
-        "typography": [],
-        "spacing": []
-      }
-    },
-    {
-      "id": "CHG-002",
-      "type": "visual",
-      "component": "design-system",
-      "description": "Sistema de diseño dark-first: navy profundo + cyan neón (primary) + púrpura (secondary) en oklch. Utilities: bg-gradient-brand, text-gradient-brand, shadow-glow, grid-bg. Animaciones novus-pulse y novus-float.",
-      "severity": "high",
-      "requiresBackend": false,
-      "affectedPages": ["landing", "services", "solutions", "about", "cases", "contact"],
-      "designTokens": {
-        "colors": ["navy-deep: oklch(0.16 0.04 264)", "cyan-neon/primary: oklch(0.82 0.16 220)", "purple-neon/secondary: oklch(0.65 0.22 295)", "navy-surface: oklch(0.21 0.045 265)"],
-        "typography": ["Space Grotesk (display/headings)", "Inter (body)"],
-        "spacing": ["container max-width 1280px", "section padding 5rem–6rem"]
-      }
-    },
-    {
-      "id": "CHG-003",
-      "type": "visual",
-      "component": "layout-Header-Footer-PageShell",
-      "description": "Header sticky con backdrop-blur, navegación principal de 6 ítems, indicador activo con gradiente, CTA 'Agenda una demo' y menú móvil colapsable. Footer con datos de contacto, redes sociales y enlaces legales.",
-      "severity": "high",
-      "requiresBackend": false,
-      "affectedPages": ["landing", "services", "solutions", "about", "cases", "contact"],
-      "designTokens": {
-        "colors": ["border/60 opacity", "bg-background/80"],
-        "typography": ["text-sm font-medium nav"],
-        "spacing": ["h-16 header height"]
-      }
-    },
-    {
-      "id": "CHG-004",
-      "type": "visual",
+      "id": "CHG-DELTA-001",
+      "type": "content",
       "component": "Hero",
-      "description": "Hero de landing con badge 'Building Autonomous Intelligence', headline con gradiente de marca, dos CTAs (demo + soluciones), stats de partners/foco/sede y logo animado con glow y float.",
-      "severity": "high",
-      "requiresBackend": false,
-      "affectedPages": ["landing"],
-      "designTokens": {
-        "colors": ["bg-gradient-hero", "primary/20 blur orbs"],
-        "typography": ["font-display text-4xl–6xl"],
-        "spacing": ["py-24 lg:py-32"]
-      }
-    },
-    {
-      "id": "CHG-005",
-      "type": "content",
-      "component": "content-modules",
-      "description": "Módulos de contenido estático tipado: site.ts (marca, contacto, founder), services.ts (5 pilares), solutions.ts (6 productos), cases.ts (2 casos de éxito). Sin mocks runtime en contenido.",
-      "severity": "medium",
-      "requiresBackend": false,
-      "affectedPages": ["landing", "services", "solutions", "about", "cases", "contact"],
-      "designTokens": {
-        "colors": [],
-        "typography": [],
-        "spacing": []
-      }
-    },
-    {
-      "id": "CHG-006",
-      "type": "visual",
-      "component": "sections-landing",
-      "description": "Secciones de landing: Partners (logos cloud), ServicesGrid (5 pilares en grid), SolutionsGrid (6 cards con hover), ImpactStats (métricas), Testimonials (casos), CTA final reutilizable.",
-      "severity": "medium",
-      "requiresBackend": false,
-      "affectedPages": ["landing"],
-      "designTokens": {
-        "colors": ["bg-gradient-card", "hover:border-primary/50"],
-        "typography": ["uppercase tracking-[0.25em] labels"],
-        "spacing": ["py-20–24 sections"]
-      }
-    },
-    {
-      "id": "CHG-007",
-      "type": "functional",
-      "component": "solutions-detail",
-      "description": "Página detalle de solución con loader por slug, hero contextual, listas de capacidades/resultados, soluciones relacionadas y CTA 'Solicitar demo' con query param interest.",
-      "severity": "medium",
-      "requiresBackend": false,
-      "affectedPages": ["solutions"],
-      "designTokens": {
-        "colors": ["bg-gradient-hero hero section"],
-        "typography": ["font-display text-4xl–5xl"],
-        "spacing": ["py-20 sections"]
-      }
-    },
-    {
-      "id": "CHG-008",
-      "type": "functional",
-      "component": "contact-form",
-      "description": "Formulario de contacto con campos nombre, empresa, email, teléfono, selector de solución de interés y mensaje. Validación inline, estados submitting/done, toast sonner y llamada a submitContact().",
-      "severity": "high",
-      "requiresBackend": true,
-      "affectedPages": ["contact"],
-      "designTokens": {
-        "colors": ["bg-gradient-card form container"],
-        "typography": [],
-        "spacing": ["grid 2-column layout"]
-      }
-    },
-    {
-      "id": "CHG-009",
-      "type": "functional",
-      "component": "MultiAgentDemo",
-      "description": "Nuevo componente interactivo en /solutions/ai-agents: diagrama SVG de arquitectura multiagente con 7 nodos, 8 conexiones animadas, timeline de 8 pasos, controles play/pausa/step y leyenda técnica (Frontend Lovable, Orquestación, AWS).",
-      "severity": "high",
-      "requiresBackend": false,
-      "affectedPages": ["solutions"],
-      "designTokens": {
-        "colors": ["tone primary/secondary/muted por nodo", "edgeGrad oklch gradients"],
-        "typography": ["font-mono text-xs log panel"],
-        "spacing": ["aspect-ratio 16/9 diagram"]
-      }
-    },
-    {
-      "id": "CHG-010",
-      "type": "structural",
-      "component": "routing-stack",
-      "description": "Stack de routing TanStack Start (src/routes/, createFileRoute, routeTree.gen.ts) difiere del stack productivo React Router/Vite. port-map.yml documenta traducción a rutas Next.js App Router.",
-      "severity": "high",
-      "requiresBackend": false,
-      "affectedPages": ["landing", "services", "solutions", "about", "cases", "contact"],
-      "designTokens": {
-        "colors": [],
-        "typography": [],
-        "spacing": []
-      }
-    },
-    {
-      "id": "CHG-011",
-      "type": "structural",
-      "component": "api-contract",
-      "description": "Contrato OpenAPI POST /api/v1/contact definido en reglasInfra/backend-endpoints.yml y contact-api.contract.ts. submitContact() con fallback demo si VITE_DEMO_MODE o DEV sin API_URL.",
-      "severity": "high",
-      "requiresBackend": true,
-      "affectedPages": ["contact"],
-      "designTokens": {
-        "colors": [],
-        "typography": [],
-        "spacing": []
-      }
-    },
-    {
-      "id": "CHG-012",
-      "type": "content",
-      "component": "legal-pages",
-      "description": "Páginas legales completas: privacidad, tratamiento de datos (Ley 1581/2012 Colombia) y términos y condiciones. Enlazadas desde footer y formulario de contacto.",
-      "severity": "medium",
-      "requiresBackend": false,
-      "affectedPages": ["privacy", "data-treatment", "terms"],
-      "designTokens": {
-        "colors": [],
-        "typography": [],
-        "spacing": []
-      }
-    },
-    {
-      "id": "CHG-013",
-      "type": "visual",
-      "component": "assets-brand",
-      "description": "Assets de marca: logo.jpeg y brand-publicidad.png en public/assets/novus/. Logo usado en Hero y NovusLogo; OG image en meta tags.",
+      "description": "Badge superior del Hero en landing: texto actualizado de 'Building Autonomous Intelligence' (EN) a 'Inteligencia Autónoma para Empresas' (ES). Sin cambios de layout, estilos, CTAs ni comportamiento.",
       "severity": "low",
       "requiresBackend": false,
-      "affectedPages": ["landing", "solutions", "about"],
+      "affectedPages": ["landing"],
       "designTokens": {
         "colors": [],
         "typography": [],
         "spacing": []
+      },
+      "delta": {
+        "commit": "df1b9f9",
+        "file": "src/components/sections/Hero.tsx",
+        "before": "Building Autonomous Intelligence",
+        "after": "Inteligencia Autónoma para Empresas"
       }
     }
   ],
   "summary": {
-    "totalChanges": 13,
-    "visualChanges": 5,
-    "functionalChanges": 3,
-    "contentChanges": 2,
-    "structuralChanges": 3,
-    "backendRequired": true,
+    "totalChanges": 1,
+    "visualChanges": 0,
+    "functionalChanges": 0,
+    "contentChanges": 1,
+    "structuralChanges": 0,
+    "backendRequired": false,
+    "route": "visual-fast",
     "latestDelta": {
-      "commit": "e3a9819",
-      "filesChanged": 4,
-      "primaryChange": "MultiAgentDemo integrado condicionalmente en solución ai-agents"
+      "commit": "df1b9f9",
+      "message": "style(hero): actualizar titulo de inteligencia autonoma",
+      "author": "NADF visual-fast test",
+      "date": "2026-07-17T16:12:07Z",
+      "filesChanged": 1,
+      "primaryChange": "Localización del badge Hero a español corporativo",
+      "changeTypes": ["content"],
+      "backendRequired": false
     }
   }
 }
