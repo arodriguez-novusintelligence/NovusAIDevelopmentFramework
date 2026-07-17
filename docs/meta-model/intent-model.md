@@ -1,8 +1,12 @@
-# NADF Meta Model v1.0 — Modelo de Intención
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.1 — Modelo de Intención.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# NADF Meta Model v1.1 — Modelo de Intención
 
-**Versión:** 1.0  
+**Versión:** 1.1  
 **Prioridad:** Crítica — documento más importante del meta model  
-**Relacionado con:** [entity-model.md](entity-model.md), [context-model.md](context-model.md), [event-model.md](event-model.md)
+**Relacionado con:** [entity-model.md](entity-model.md), [context-model.md](context-model.md), [event-model.md](event-model.md), [requirement-model.md](requirement-model.md)
 
 ---
 
@@ -34,6 +38,9 @@ El **Modelo de Intención** define el flujo semántico completo desde la captura
 | GitHub | Issue o PR | `github.issue.opened` |
 | Markdown / PDF | Documento de requisitos | `context.document.ingested` |
 | Knowledge Base | Patrón reutilizable | `knowledge.pattern.requested` |
+| Requirement Intake (v1.1) | Requirement aprobado multi-fuente | `RequirementConvertedToIntent` |
+
+> **v1.1:** Cuando el proyecto tiene intake habilitado, Jira/Slack/GitHub/etc. deben producir `Requirement` antes de `Intent`. Sin intake, el nacimiento directo Event → Intent (v1.0) permanece válido.
 
 ### Proceso de nacimiento
 
@@ -59,6 +66,7 @@ Al nacer, un `Intent` contiene como mínimo:
 - `id`, `source`, `type`, `scope`, `priority`
 - Referencia al `Context` ensamblado
 - Referencia al `Event` disparador
+- `requirement_id` (opcional, ADR-0007)
 - `status: captured`
 
 ---

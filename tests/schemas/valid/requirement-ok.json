@@ -1,0 +1,15 @@
+{
+  "$schemaRef": "requirement.schema.json",
+  "instance": {
+    "schemaVersion": "1.1.0-rc.1",
+    "id": "REQ-2026-000010",
+    "source_event_id": "EVT-2026-000010",
+    "source_type": "manual",
+    "title": "Valid requirement title",
+    "description": "Valid description long enough",
+    "status": "RECEIVED",
+    "correlation_id": "corr-schema-valid-001",
+    "created_at": "2026-07-15T00:00:00Z",
+    "updated_at": "2026-07-15T00:00:00Z"
+  }
+}

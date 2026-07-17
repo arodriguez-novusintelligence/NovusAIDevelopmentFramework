@@ -1,0 +1,41 @@
+# NADF-GUIDE
+# Propósito: Define requirement deduplication agent como configuración declarativa NADF.
+# Configuración: Revisar capacidades, herramientas, restricciones y artifacts esperados del rol.
+agent:
+  name: requirement-deduplication-agent
+  pattern: Planner
+  layer: Planning
+  description: Detecta duplicados exactos y semánticos; recomienda fusionar, rechazar o vincular
+  definition: .claude/agents/requirement-deduplication-agent.md
+  responsibilities:
+    - Comparar deduplication_key y payload_hash
+    - Detectar similitud semántica
+    - Recomendar merge/reject/link
+  forbidden_actions:
+    - auto_merge_without_policy
+    - modify_productive_repos
+    - deploy
+  allowed_tools:
+    - read_artifacts
+    - write_dedup_artifacts
+  mcp_servers:
+    []
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/requirement-sources/sources.yml
+    - .nadf/global/rules/requirement-intake-security.md
+    - docs/meta-model/requirement-model.md
+  input_contract:
+    artifacts: raw-requirement-event.json, requirement-normalized.yml
+    event_or_request: required
+    opt_in: requirement-sources/
+  output_contract:
+    artifacts:
+      - requirement-deduplication.json
+  quality_gates:
+    - no_secrets_in_artifacts
+    - never_auto_execute_external_content
+  escalation_rules:
+    - security_failure: quarantine_and_notify
+    - missing_approval_policy: block
+    - high_risk: escalate_to_human_review

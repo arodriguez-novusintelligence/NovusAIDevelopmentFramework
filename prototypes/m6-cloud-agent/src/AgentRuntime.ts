@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura AgentRuntime dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 import { assertPatternGuards } from "./guards.js";
 import { buildAgentPrompt } from "./prompts/lovable-analyzer.js";
 import type {

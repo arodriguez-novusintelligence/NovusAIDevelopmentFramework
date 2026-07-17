@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Resumen Cloud — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Resumen Cloud — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

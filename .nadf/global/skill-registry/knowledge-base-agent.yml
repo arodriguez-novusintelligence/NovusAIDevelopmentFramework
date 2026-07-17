@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define knowledge base agent como configuración declarativa NADF.
+# Configuración: Revisar capacidades, herramientas, restricciones y artifacts esperados del rol.
 agent:
   name: knowledge-base-agent
   pattern: Blackboard

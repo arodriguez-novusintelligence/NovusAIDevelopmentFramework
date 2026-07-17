@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.1.0-rc.1",
+  "id": "PLAN-2026-000001",
+  "intent_id": "INT-2026-000001",
+  "kind": "execution-plan",
+  "status": "APPROVED",
+  "tasks": ["TASK-2026-000001", "TASK-2026-000002"],
+  "correlation_id": "corr-golden-001",
+  "version": "1.0.0"
+}

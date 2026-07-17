@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reflexión de Ejecución — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reflexión de Ejecución — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

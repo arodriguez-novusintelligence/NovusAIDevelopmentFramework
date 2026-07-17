@@ -1,0 +1,17 @@
+{
+  "id": "art-demo",
+  "schemaVersion": "1.1.0",
+  "correlationId": "corr-demo",
+  "source": "manual",
+  "producerAgent": "requirement-intake-agent",
+  "createdAt": "2026-07-15T00:00:00Z",
+  "status": "OK",
+  "references": {},
+  "integrity": {
+    "payloadHash": "sha256:demo"
+  },
+  "rawEvent": {
+    "id": "raw-001",
+    "processing_status": "ACCEPTED"
+  }
+}

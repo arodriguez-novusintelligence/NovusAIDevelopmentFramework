@@ -1,0 +1,23 @@
+{
+  "id": "12-incomplete-needs-clarification",
+  "scenario": {
+    "require_acceptance_criteria": true,
+    "requirement": {
+      "title": "Something vague",
+      "description": "Do the thing",
+      "source_type": "manual",
+      "external_reference": "man-12",
+      "source_event_id": "raw-12",
+      "acceptance_criteria": [],
+      "status": "NEEDS_CLARIFICATION"
+    },
+    "event": {
+      "correlation_id": "corr-12",
+      "idempotency_key": "manual|man-12|manual_submitted|h"
+    }
+  },
+  "expected": {
+    "pass": false,
+    "status": "NEEDS_CLARIFICATION"
+  }
+}

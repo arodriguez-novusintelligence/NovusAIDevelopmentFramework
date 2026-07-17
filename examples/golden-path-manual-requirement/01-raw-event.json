@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.1.0-rc.1",
+  "id": "EVT-2026-000001",
+  "source_instance_id": "manual-default",
+  "external_id": null,
+  "event_type": "requirement.manual.received",
+  "received_at": "2026-07-15T12:00:00Z",
+  "payload_reference": "payloads/manual-phone-field.json",
+  "payload_hash": "sha256:demo001",
+  "signature_valid": null,
+  "correlation_id": "corr-golden-001",
+  "deduplication_key": "manual:phone-profile:demo001",
+  "processing_status": "ACCEPTED"
+}

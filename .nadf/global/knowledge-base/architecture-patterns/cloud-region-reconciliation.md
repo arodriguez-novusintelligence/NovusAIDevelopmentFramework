@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón: Reconciliación de región cloud en planning constraints.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón: Reconciliación de región cloud en planning constraints
 
 ## Contexto

@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Sincroniza cambios de Lovable al stack productivo con modelo multiagente de 9 fases como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: lovable-to-web
 name: Lovable to Web Sync
 version: "2.0.0"

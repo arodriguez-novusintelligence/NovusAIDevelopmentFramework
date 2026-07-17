@@ -1,0 +1,51 @@
+# NADF-GUIDE
+# Propósito: Define requirement intake agent como configuración declarativa NADF.
+# Configuración: Revisar capacidades, herramientas, restricciones y artifacts esperados del rol.
+agent:
+  name: requirement-intake-agent
+  pattern: Event Driven
+  layer: Planning
+  description: Recibe RawRequirementEvent, verifica seguridad y coordina normalización sin crear código ni aprobar
+  definition: .claude/agents/requirement-intake-agent.md
+  responsibilities:
+    - Recibir RawRequirementEvent
+    - Verificar estado de seguridad y firma
+    - Coordinar normalización
+    - Cargar configuración de fuente
+    - Ensamblar Context post-aprobación
+  forbidden_actions:
+    - modify_productive_repos
+    - deploy
+    - create_secrets
+    - approve_requirements
+    - create_code
+    - create_plan_from_raw_event
+  allowed_tools:
+    - read_source_config
+    - receive_event
+    - write_intake_artifacts
+  mcp_servers:
+    - jira
+    - github
+    - slack
+    - generic-webhook
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/requirement-sources/sources.yml
+    - .nadf/global/rules/requirement-intake-security.md
+    - docs/meta-model/requirement-model.md
+  input_contract:
+    artifacts: raw-requirement-event.json, requirement-normalized.yml
+    event_or_request: required
+    opt_in: requirement-sources/
+  output_contract:
+    artifacts:
+      - raw-requirement-event.json
+      - source-connection-test.json
+  quality_gates:
+    - no_secrets_in_artifacts
+    - never_auto_execute_external_content
+  escalation_rules:
+    - security_failure: quarantine_and_notify
+    - missing_approval_policy: block
+    - high_risk: escalate_to_human_review

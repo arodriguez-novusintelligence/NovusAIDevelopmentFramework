@@ -1,0 +1,218 @@
+# NADF-GUIDE
+# Propósito: Define > como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
+id: requirement-intake
+name: Requirement Intake Multi-Source
+version: "1.0.0"
+description: >
+  Ingesta, valida, normaliza, deduplica, clasifica, aprueba y convierte
+  requerimientos externos en Intent NADF. No ejecuta código productivo.
+  Opt-in por proyecto vía requirement-sources/. Autoridad ADR-0007.
+project: "*"
+extends: null
+meta_model: "1.1"
+
+triggers:
+  - manual
+  - event:requirement.manual.received
+  - event:requirement.jira.received
+  - event:requirement.slack.received
+  - event:requirement.teams.received
+  - event:requirement.github_issue.received
+  - event:requirement.gitlab_issue.received
+  - event:requirement.bitbucket.received
+  - event:requirement.email.received
+  - event:requirement.webhook.received
+  - event:requirement.api.received
+  - event:requirement.file.received
+  - event:requirement.servicenow.received
+  - event:requirement.form.received
+  - event:requirement.database.received
+  - event:requirement.schedule.received
+
+model:
+  phases:
+    - event_trigger
+    - planning
+    - plan_review
+    - execution
+    - validation
+    - documentation
+    - metrics
+    - reflection
+    - knowledge_base_update
+
+agents:
+  - workflow-agent
+  - requirement-intake-agent
+  - requirement-normalization-agent
+  - requirement-deduplication-agent
+  - requirement-classification-agent
+  - requirement-validation-agent
+  - requirement-approval-agent
+  - requirement-traceability-agent
+  - documentation-agent
+  - metrics-agent
+  - reflection-agent
+  - knowledge-base-agent
+  - adr-agent
+
+steps:
+  - id: event-trigger
+    phase: event_trigger
+    agent: workflow-agent
+    action: Clasificar evento requirement.*.received y preparar plan-workflow
+    outputs:
+      - artifacts/evento-clasificado.json
+      - artifacts/plan-workflow.md
+
+  - id: load-source-configuration
+    phase: event_trigger
+    agent: requirement-intake-agent
+    action: Cargar RequirementSourceInstance, mapping y policy del proyecto
+    outputs:
+      - artifacts/source-connection-test.json
+
+  - id: authenticate-and-validate
+    phase: event_trigger
+    agent: requirement-intake-agent
+    action: Autenticar firma, validar schema, rate limit y seguridad
+    outputs:
+      - artifacts/raw-requirement-event.json
+
+  - id: persist-raw-event
+    phase: event_trigger
+    agent: requirement-intake-agent
+    action: Persistir RawRequirementEvent (RECEIVED→VALIDATING/ACCEPTED/REJECTED/QUARANTINED)
+    outputs:
+      - artifacts/raw-requirement-event.json
+
+  - id: normalize-requirement
+    phase: planning
+    agent: requirement-normalization-agent
+    action: Aplicar RequirementMapping y producir Requirement normalizado
+    inputs:
+      - artifacts/raw-requirement-event.json
+    outputs:
+      - artifacts/requirement-normalized.yml
+
+  - id: deduplicate
+    phase: planning
+    agent: requirement-deduplication-agent
+    action: Detectar duplicados exactos y semánticos
+    inputs:
+      - artifacts/requirement-normalized.yml
+    outputs:
+      - artifacts/requirement-deduplication.json
+
+  - id: classify
+    phase: planning
+    agent: requirement-classification-agent
+    action: Clasificar tipo, dominio, prioridad, impacto, riesgo y workflow candidato
+    inputs:
+      - artifacts/requirement-normalized.yml
+    outputs:
+      - artifacts/requirement-classification.yml
+
+  - id: validate-completeness
+    phase: planning
+    agent: requirement-validation-agent
+    action: Validar completitud, AC y ambigüedad (NEEDS_CLARIFICATION si aplica)
+    inputs:
+      - artifacts/requirement-normalized.yml
+      - artifacts/requirement-classification.yml
+    outputs:
+      - artifacts/requirement-validation.json
+
+  - id: human-approval-or-clarification
+    phase: plan_review
+    agent: requirement-approval-agent
+    action: Preparar aprobación humana / clarificación según RequirementPolicy
+    conditions:
+      - requirement-validation.json:status != rejected
+    outputs:
+      - artifacts/requirement-approval.yml
+
+  - id: assemble-context
+    phase: execution
+    agent: requirement-intake-agent
+    action: Ensamblar Context incluyendo Requirement aprobado (sin código)
+    conditions:
+      - requirement-approval.yml:status == approved
+    outputs:
+      - contexto-cargado
+
+  - id: create-intent
+    phase: execution
+    agent: requirement-traceability-agent
+    action: Convertir Requirement APPROVED en Intent y registrar TraceabilityLink
+    conditions:
+      - requirement-approval.yml:status == approved
+    outputs:
+      - artifacts/requirement-to-intent-map.yml
+      - artifacts/requirement-traceability.json
+
+  - id: select-downstream-workflow
+    phase: execution
+    agent: workflow-agent
+    action: Seleccionar workflow NADF downstream (no ejecutar código aquí)
+    conditions:
+      - requirement-to-intent-map.yml:intent_id != null
+    outputs:
+      - artifacts/workflow-seleccionado.yml
+
+  - id: validate-conversion
+    phase: validation
+    agent: requirement-validation-agent
+    action: Validar Intent con trazabilidad completa y adjuntos limpios
+    inputs:
+      - artifacts/requirement-to-intent-map.yml
+      - artifacts/requirement-traceability.json
+    outputs:
+      - artifacts/requirement-validation.json
+
+  - id: documentation
+    phase: documentation
+    agent: documentation-agent
+    action: Documentar ciclo de intake en memoria/resumen
+    outputs:
+      - artifacts/resumen-ejecucion.md
+
+  - id: metrics
+    phase: metrics
+    agent: metrics-agent
+    action: Registrar métricas de intake
+    outputs:
+      - artifacts/metricas-ejecucion.json
+
+  - id: reflection
+    phase: reflection
+    agent: reflection-agent
+    action: Reflexionar sobre calidad de normalización y políticas
+    outputs:
+      - artifacts/reflexion-ejecucion.md
+
+  - id: knowledge-base-update
+    phase: knowledge_base_update
+    agent: knowledge-base-agent
+    action: Actualizar KB con patrones de mapeo/errores de intake
+    outputs:
+      - artifacts/actualizacion-kb.md
+
+quality_gates:
+  - raw_event_authenticated
+  - requirement_normalized
+  - human_approval_when_required
+  - intent_has_requirement_trace
+  - no_secrets_in_artifacts
+  - attachments_security_clean
+
+metrics:
+  enabled: true
+  schema: metrics-schema.json
+
+constraints:
+  - never_execute_code_from_external_content
+  - never_auto_deploy
+  - never_create_plan_directly_from_raw_event
+  - opt_in_requires_requirement_sources_folder

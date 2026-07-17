@@ -1,0 +1,11 @@
+# NADF-GUIDE
+# Propósito: Define architecture version como configuración declarativa NADF.
+# Configuración: Cambiar solo con versionado, fixtures, compatibilidad y validator actualizados.
+entity: ArchitectureVersion
+states: [DRAFT, REVIEW, ACCEPTED, SUPERSEDED]
+transitions:
+  - [DRAFT, REVIEW]
+  - [REVIEW, ACCEPTED]
+  - [ACCEPTED, SUPERSEDED]
+terminal: [SUPERSEDED]
+versioned: true

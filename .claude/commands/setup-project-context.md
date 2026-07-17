@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Comando: setup-project-context.
+Configuración: Ajustar proyecto activo, workflow, gates y rutas sin incorporar secretos.
+-->
 # Comando: setup-project-context
 
 ## Descripción

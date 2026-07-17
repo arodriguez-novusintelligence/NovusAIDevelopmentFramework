@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Riesgos — Análisis Lovable (paso-01).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Riesgos — Análisis Lovable (paso-01)
 
 **Proyecto:** novus-intelligence  

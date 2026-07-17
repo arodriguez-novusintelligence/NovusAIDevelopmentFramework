@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Registro ADR — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Registro ADR — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

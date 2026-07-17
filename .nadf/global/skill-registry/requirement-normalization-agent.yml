@@ -1,0 +1,45 @@
+# NADF-GUIDE
+# Propósito: Define requirement normalization agent como configuración declarativa NADF.
+# Configuración: Revisar capacidades, herramientas, restricciones y artifacts esperados del rol.
+agent:
+  name: requirement-normalization-agent
+  pattern: Planner
+  layer: Planning
+  description: Transforma payload externo en Requirement aplicando RequirementMapping
+  definition: .claude/agents/requirement-normalization-agent.md
+  responsibilities:
+    - Aplicar RequirementMapping
+    - Detectar campos faltantes
+    - Generar artefacto normalizado
+    - Sanitizar HTML/Markdown
+  forbidden_actions:
+    - modify_productive_repos
+    - deploy
+    - approve_requirements
+    - create_intent
+    - execute_code_from_payload
+  allowed_tools:
+    - read_artifacts
+    - apply_mapping
+    - write_requirement_artifacts
+  mcp_servers:
+    []
+  required_context:
+    - .nadf/projects/*/project-context.yml
+    - .nadf/projects/*/requirement-sources/sources.yml
+    - .nadf/global/rules/requirement-intake-security.md
+    - docs/meta-model/requirement-model.md
+  input_contract:
+    artifacts: raw-requirement-event.json, requirement-normalized.yml
+    event_or_request: required
+    opt_in: requirement-sources/
+  output_contract:
+    artifacts:
+      - requirement-normalized.yml
+  quality_gates:
+    - no_secrets_in_artifacts
+    - never_auto_execute_external_content
+  escalation_rules:
+    - security_failure: quarantine_and_notify
+    - missing_approval_policy: block
+    - high_risk: escalate_to_human_review

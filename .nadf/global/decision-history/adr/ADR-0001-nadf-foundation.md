@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta ADR-0001: Fundación del NovusAIDevelopmentFramework.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # ADR-0001: Fundación del NovusAIDevelopmentFramework
 
 ## Estado

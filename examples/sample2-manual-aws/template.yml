@@ -1,0 +1,74 @@
+# NADF-GUIDE
+# Propósito: Define la infraestructura SAM de sample2 (API REST + 2 Lambdas + DynamoDB).
+# Configuración: Solo Stage dev permitido; los Outputs exponen las URLs de las APIs desplegadas.
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: NADF Sample 2 - initiative with calculator, history and health REST APIs
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues: [dev]
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10
+    MemorySize: 128
+    Tags: {nadf-example: sample2}
+Resources:
+  Sample2Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Stage
+  Calculations:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub sample2-calculations-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: [{AttributeName: id, AttributeType: S}]
+      KeySchema: [{AttributeName: id, KeyType: HASH}]
+      Tags: [{Key: nadf-example, Value: sample2}]
+  CalculatorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub sample2-calculator-${Stage}
+      CodeUri: src/
+      Handler: calculator.handler
+      Environment:
+        Variables: {TABLE_NAME: !Ref Calculations}
+      Policies:
+        - DynamoDBWritePolicy: {TableName: !Ref Calculations}
+      Events:
+        Calculate:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Sample2Api, Path: /calculate, Method: POST}
+        Health:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Sample2Api, Path: /health, Method: GET}
+  HistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub sample2-history-${Stage}
+      CodeUri: src/
+      Handler: history.handler
+      Environment:
+        Variables: {TABLE_NAME: !Ref Calculations}
+      Policies:
+        - DynamoDBReadPolicy: {TableName: !Ref Calculations}
+      Events:
+        History:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Sample2Api, Path: /history, Method: GET}
+Outputs:
+  ApiUrl:
+    Description: Base URL del API REST
+    Value: !Sub https://${Sample2Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}
+  CalculateUrl:
+    Description: REQ-001 - POST calcular
+    Value: !Sub https://${Sample2Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/calculate
+  HistoryUrl:
+    Description: REQ-002 - GET historial
+    Value: !Sub https://${Sample2Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/history
+  HealthUrl:
+    Description: REQ-003 - GET salud
+    Value: !Sub https://${Sample2Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/health

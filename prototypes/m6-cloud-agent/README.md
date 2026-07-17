@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Prototipo M6 — Cursor Cloud Agent × NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Prototipo M6 — Cursor Cloud Agent × NADF
 
 Invoca el **paso 1** del workflow `lovable-to-web` (`lovable-analyzer-agent`) usando Cursor Cloud Agent a través del contrato `AgentRuntime`.

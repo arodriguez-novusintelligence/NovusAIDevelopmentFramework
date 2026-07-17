@@ -1,0 +1,32 @@
+{
+  "id": "01-manual-valid",
+  "scenario": {
+    "source": {
+      "definition": "manual",
+      "credential_reference": null,
+      "mapping": "mappings/manual.yml",
+      "policy": {
+        "requires_human_approval": true
+      }
+    },
+    "event": {
+      "correlation_id": "corr-01",
+      "idempotency_key": "manual|man-1|manual_submitted|abc",
+      "signature_valid": true
+    },
+    "requirement": {
+      "title": "Añadir FAQ",
+      "description": "Sección FAQ en landing",
+      "source_type": "manual",
+      "external_reference": "man-1",
+      "source_event_id": "raw-01",
+      "status": "RECEIVED",
+      "acceptance_criteria": [
+        "FAQ visible in desktop and mobile"
+      ]
+    }
+  },
+  "expected": {
+    "pass": true
+  }
+}

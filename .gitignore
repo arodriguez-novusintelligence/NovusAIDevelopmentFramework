@@ -1,10 +1,43 @@
-﻿.env
-.env.*
-!.env.example
-!**/.env.example
-*.pem
-credentials.json
-secrets/
+﻿# NADF-GUIDE
+# Propósito: Excluye secretos, dependencias, outputs generados y estado local del control de versiones.
+# Configuración: Añadir patrones de estado local; mantener visibles templates y archivos .env.example.
+# NADF
+.git/
 node_modules/
+dist/
+build/
+coverage/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.log
 .DS_Store
 Thumbs.db
+
+# Secrets / local env
+.env
+.env.*
+.env.nadf
+!.env.example
+!**/.env.example
+
+# Local IDE / OS
+.idea/
+.vscode/
+*.swp
+
+# Packaging
+*.tgz
+*.zip
+!.github/**
+
+# Prototype local state
+prototypes/**/node_modules/
+prototypes/**/dist/
+prototypes/**/.env
+
+# Generated NADF execution evidence
+.nadf/projects/*/output/**
+!.nadf/projects/*/output/README.md
+examples/*/last-run.json

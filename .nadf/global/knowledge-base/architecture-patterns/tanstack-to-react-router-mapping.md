@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón: Traducción TanStack Router → React Router v6.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón: Traducción TanStack Router → React Router v6
 
 ## Contexto

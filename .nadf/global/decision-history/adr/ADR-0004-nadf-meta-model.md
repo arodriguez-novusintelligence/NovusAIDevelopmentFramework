@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta ADR-0004: NADF adopta oficialmente el Meta Model como especificación central del framework.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # ADR-0004: NADF adopta oficialmente el Meta Model como especificación central del framework
 
 ## Estado

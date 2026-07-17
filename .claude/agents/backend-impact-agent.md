@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Backend Impact Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Backend Impact Agent
 
 ## Identidad

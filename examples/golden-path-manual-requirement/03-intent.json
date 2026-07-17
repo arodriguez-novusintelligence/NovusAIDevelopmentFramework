@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.1.0-rc.1",
+  "id": "INT-2026-000001",
+  "requirement_id": "REQ-2026-000001",
+  "title": "Agregar campo teléfono al formulario Mi Perfil",
+  "description": "Intent derivado del Requirement aprobado REQ-2026-000001",
+  "status": "ACCEPTED",
+  "correlation_id": "corr-golden-001",
+  "created_at": "2026-07-15T12:11:00Z"
+}

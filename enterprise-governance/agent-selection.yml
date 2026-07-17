@@ -1,0 +1,30 @@
+# NADF-GUIDE
+# Propósito: Define agent selection como configuración declarativa NADF.
+# Configuración: Copiar al proyecto y ajustar responsables, límites y excepciones con evidencia auditable.
+version: "1.0"
+preset: cost-optimized
+presets:
+  full-quality:
+    enabled: [planner, architect, frontend, backend, database, cloud, devops, qa, security, reviewer, documentation, metrics, reflection, knowledge-base, adr]
+  cost-optimized:
+    enabled: [planner, architect, backend, cloud, qa, security, reviewer, metrics]
+  smoke:
+    enabled: [planner, qa]
+agents:
+  planner: {effect_if_disabled: BLOCKING}
+  architect: {effect_if_disabled: HIGH}
+  frontend: {effect_if_disabled: HIGH}
+  backend: {effect_if_disabled: HIGH}
+  database: {effect_if_disabled: HIGH}
+  cloud: {effect_if_disabled: HIGH}
+  devops: {effect_if_disabled: HIGH}
+  qa: {effect_if_disabled: BLOCKING}
+  security: {effect_if_disabled: BLOCKING}
+  reviewer: {effect_if_disabled: MEDIUM}
+  documentation: {effect_if_disabled: LOW}
+  metrics: {effect_if_disabled: MEDIUM}
+  reflection: {effect_if_disabled: LOW}
+  knowledge-base: {effect_if_disabled: LOW}
+  adr: {effect_if_disabled: HIGH}
+runtime:
+  require_risk_acknowledgement_for: [HIGH, BLOCKING]

@@ -1,0 +1,20 @@
+# NADF-GUIDE
+# Propósito: Define gitlab-issue-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
+id: gitlab-issue-default-mapping
+source_definition_id: gitlab-issue
+version: "1.0.0"
+field_mappings:
+  repository: project.path_with_namespace
+  external_reference: object_attributes.iid
+  title: object_attributes.title
+  description: object_attributes.description
+  labels: labels
+  assignee: assignees
+  milestone: object_attributes.milestone_id
+transformations: []
+defaults:
+  source_type: gitlab-issue
+validation_rules:
+  - title_required
+  - description_required

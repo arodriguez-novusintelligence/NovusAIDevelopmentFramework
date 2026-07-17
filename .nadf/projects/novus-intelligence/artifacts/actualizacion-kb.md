@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Actualización Knowledge Base — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Actualización Knowledge Base — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

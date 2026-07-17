@@ -1,20 +1,27 @@
-# NADF Meta Model v1.0 — Visión General
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.1 — Visión General.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# NADF Meta Model v1.1 — Visión General
 
-**Versión:** 1.0 (especificación oficial)  
+**Versión:** 1.1 (especificación oficial; compatible con v1.0)  
 **Estado:** Aceptado  
-**Fecha:** 2026-07-04  
+**Fecha:** 2026-07-04 (v1.0) · 2026-07-14 (v1.1 Intake)  
 **Ámbito:** NovusAIDevelopmentFramework (NADF)  
-**Independencia de proveedor:** Claude, Cursor, OpenAI, Gemini, AWS, Azure, GCP, Lovable
+**Independencia de proveedor:** Claude, Cursor, OpenAI, Gemini, AWS, Azure, GCP, Lovable  
+**ADR extensión:** ADR-0007
 
 ---
 
 ## Resumen ejecutivo
 
-El **Meta Model v1.0** de NADF es la especificación conceptual canónica que unifica todas las entidades, relaciones, eventos, ciclos de vida y flujos semánticos del framework multiagente. Define **qué existe** en el dominio NADF y **cómo se relaciona**, sin prescribir implementación técnica, código ni lógica de runtime.
+El **Meta Model v1.1** de NADF es la especificación conceptual canónica que unifica todas las entidades, relaciones, eventos, ciclos de vida y flujos semánticos del framework multiagente. Define **qué existe** en el dominio NADF y **cómo se relaciona**, sin prescribir implementación técnica, código ni lógica de runtime.
+
+La v1.1 añade de forma **opt-in** la **Requirement Intake Layer**: entidades `Requirement*`, conectores multi-fuente y trazabilidad `RawRequirementEvent → Requirement → Intent`, sin romper proyectos ni workflows v1.0.
 
 Este meta model es la **referencia obligatoria** para todos los agentes, workflows, ADRs y evoluciones futuras del framework. Cualquier extensión (nuevo agente, workflow, integración MCP o despliegue cloud) debe ser coherente con las entidades y relaciones aquí definidas.
 
-NADF opera sobre **7 capas arquitectónicas**, **7 patrones** (Planner, Executor, Validator, Mediator, Blackboard, Event Driven, Reflection), **19 agentes** especializados y un workflow canónico de **18 pasos / 9 fases**. El meta model abstrae estos elementos en un dominio unificado independiente del motor de IA o proveedor cloud subyacente.
+NADF opera sobre **7 capas arquitectónicas**, **7 patrones** (Planner, Executor, Validator, Mediator, Blackboard, Event Driven, Reflection), **27 agentes** especializados (20 core + 7 Requirement Intake opt-in, ADR-0007) y workflows canónicos de **9 fases** (p. ej. `lovable-to-web` 18 pasos; `requirement-intake` multi-fuente). El meta model abstrae estos elementos en un dominio unificado independiente del motor de IA o proveedor cloud subyacente.
 
 ---
 
@@ -168,7 +175,8 @@ El ciclo de vida NADF atraviesa múltiples entidades. Esta sección define el **
 
 | Fase | Entidades activas | Transición |
 |------|-------------------|------------|
-| **Captura** | Intent, Context | Fuentes externas → Intent formalizado |
+| **Ingesta (opt-in v1.1)** | RawRequirementEvent, Requirement | Fuente externa → Requirement aprobado |
+| **Captura** | Intent, Context | Fuentes / Requirement → Intent formalizado |
 | **Planificación** | Plan, Workflow, Task | Intent → Plan aprobado |
 | **Orquestación** | Workflow, Task, Agent | Plan → instancia de ejecución |
 | **Ejecución** | Execution, Tool, MCP Server | Task → Artifact |
@@ -182,7 +190,9 @@ El ciclo de vida NADF atraviesa múltiples entidades. Esta sección define el **
 
 ```mermaid
 stateDiagram-v2
-    [*] --> IntentCaptured: Evento / Fuente de diseño
+    [*] --> RequirementIntake: requirement.*.received (opt-in)
+    RequirementIntake --> IntentCaptured: RequirementConvertedToIntent
+    [*] --> IntentCaptured: Evento / Fuente de diseño (v1.0)
     IntentCaptured --> Planning: IntentCreated
     Planning --> PlanReview: PlanGenerated
     PlanReview --> Execution: PlanApproved
@@ -198,7 +208,6 @@ stateDiagram-v2
     KnowledgeConsolidated --> [*]: KnowledgeUpdated
     Blocked --> [*]
 ```
-
 ### Ciclo de vida por entidad
 
 Los ciclos de vida detallados de cada una de las **24 entidades del Core Domain** se documentan en [entity-model.md](entity-model.md). Este overview establece el macro-ciclo transversal; la entidad-model profundiza en estados, transiciones y precondiciones por entidad.
@@ -296,7 +305,7 @@ Términos ordenados alfabéticamente. Definiciones vinculadas al meta model v1.0
 |---------------|------------|---------------------|
 | 7 capas | [architecture.md](../architecture.md) | Context, Agent, Execution, Validation, Knowledge, Tool, Deployment |
 | 7 patrones | [agent-patterns.md](../agent-patterns.md) | Agent (patrón), Workflow (Event Driven), Knowledge (Blackboard) |
-| 19 agentes | [agent-model.md](../agent-model.md) | Agent, Skill, Capability |
+| 27 agentes | [agent-model.md](../agent-model.md) | Agent, Skill, Capability (+ Intake) |
 | 18 pasos / 9 fases | [workflow-model.md](../workflow-model.md) | Workflow, Task, Execution |
 | 10 quality gates | `project-context.yml` | Quality Gate, Validation, Policy |
 | Blackboard | [blackboard-pattern.md](../blackboard-pattern.md) | Artifact, Knowledge, Memory, Decision, Metric |

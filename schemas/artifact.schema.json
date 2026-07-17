@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/artifact.schema.json",
+  "title": "Artifact",
+  "description": "Blackboard artifact envelope",
+  "schemaVersion": "1.1.0-rc.1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "name",
+    "producerAgent",
+    "correlationId",
+    "createdAt",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0-rc.1",
+      "description": "Schema package version"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[A-Z]{2,6}-[0-9]{4}-[0-9]{6}$|^[a-z0-9][a-z0-9_.:-]{2,}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "producerAgent": {
+      "type": "string"
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 8
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string"
+    },
+    "integrity": {
+      "type": "object"
+    }
+  }
+}

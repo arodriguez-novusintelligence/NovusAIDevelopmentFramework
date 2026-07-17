@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.1.0-rc.1",
+  "id": "REQ-2026-000001",
+  "source_event_id": "EVT-2026-000001",
+  "source_type": "manual",
+  "external_reference": null,
+  "title": "Agregar campo teléfono al formulario Mi Perfil",
+  "description": "Como usuario autenticado quiero registrar mi teléfono en Mi Perfil para contacto comercial.",
+  "requester": "product-owner@example.com",
+  "priority": "medium",
+  "labels": ["profile", "form"],
+  "acceptance_criteria": [
+    "Campo teléfono visible en Mi Perfil",
+    "Validación E.164 básica",
+    "Persistencia vía API sin mocks"
+  ],
+  "status": "APPROVED",
+  "created_at": "2026-07-15T12:01:00Z",
+  "updated_at": "2026-07-15T12:10:00Z",
+  "correlation_id": "corr-golden-001"
+}

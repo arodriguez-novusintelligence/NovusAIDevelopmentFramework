@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Revisión arquitectónica — NovusAIDevelopmentFramework (NADF).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Revisión arquitectónica — NovusAIDevelopmentFramework (NADF)
 
 **Repositorio:** `c:\NovusIntelligence\FrameworkMultiagenticoIA\Workspace\NovusAIDevelopmentFramework`  

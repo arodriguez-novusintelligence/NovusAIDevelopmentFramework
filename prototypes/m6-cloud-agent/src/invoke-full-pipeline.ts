@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura invoke full pipeline dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Orquestador MVP: lovable.commit → pipeline completo → visual parity → post DEV.
  *

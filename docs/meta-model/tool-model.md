@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.0 — Modelo de Herramientas (Tool).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Meta Model v1.0 — Modelo de Herramientas (Tool)
 
 **Versión:** 1.0  

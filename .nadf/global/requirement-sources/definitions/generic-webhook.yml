@@ -1,0 +1,52 @@
+# NADF-GUIDE
+# Propósito: Define Requirement source definition for Generic Webhook (see ADR-0007) como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
+id: generic-webhook
+name: Generic Webhook
+type: webhook
+provider: any
+version: "1.0.0"
+status: active
+description: Requirement source definition for Generic Webhook (see ADR-0007)
+supported_events:
+  - webhook_received
+ingestion_modes:
+  - WEBHOOK
+authentication_modes:
+  - hmac_signature_reference
+  - bearer_reference
+capabilities:
+  - schema_validation
+  - idempotency_key
+  - correlation_id
+  - rate_limit
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  title: payload.title
+  description: payload.description
+  external_reference: payload.id
+  priority: payload.priority
+  idempotency_key: headers.Idempotency-Key
+  correlation_id: headers.X-Correlation-Id
+limitations:
+  - "Caller must version payload"
+risks:
+  - "Unsigned payloads"
+mcp_server_recommended: generic-webhook
+fallback_api: "HTTP listener"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

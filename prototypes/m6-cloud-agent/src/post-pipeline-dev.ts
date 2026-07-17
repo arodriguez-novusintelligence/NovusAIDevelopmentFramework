@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura post pipeline dev dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Post-pipeline DEV automation (M6 companion).
  *
@@ -42,6 +46,20 @@ function flag(name: string, defaultValue = false): boolean {
   const v = process.env[name]?.trim().toLowerCase();
   if (v === undefined || v === "") return defaultValue;
   return v === "1" || v === "true" || v === "yes";
+}
+
+function visualFast(): boolean {
+  return process.env.NADF_EXECUTION_PROFILE?.trim() === "visual-fast";
+}
+
+function productRepos(): string[] {
+  if (visualFast() || process.env.NADF_DEPLOY_TARGETS?.trim() === "web") {
+    return ["arodriguez-novusintelligence/NovusIntelligenceWEB"];
+  }
+  return [
+    "arodriguez-novusintelligence/NovusIntelligenceWEB",
+    "arodriguez-novusintelligence/NovusIntelligenceBack",
+  ];
 }
 
 function gh(args: string[]): string {
@@ -319,7 +337,9 @@ function validationPassed(): {
   console.log(JSON.stringify({ event: "gate_sources", sources }));
 
   const qaOk = isPass(qaHit.data);
-  const secOk = isPass(secHit.data);
+  // El perfil visual-fast no toca backend, APIs, dependencias ni infraestructura;
+  // QA lite valida diff + secretos. Security full queda reservado al profile full.
+  const secOk = visualFast() || isPass(secHit.data);
   const visualOk = !requireVisual || isPass(visualHit.data);
 
   if (requireVisual && !visualHit.data) {
@@ -339,7 +359,7 @@ function validationPassed(): {
     };
   }
 
-  if (!qaHit.data || !secHit.data) {
+  if (!qaHit.data || (!visualFast() && !secHit.data)) {
     console.log(
       JSON.stringify({
         event: "post_pipeline_blocked",
@@ -398,8 +418,16 @@ function listProductCursorPrs(repo: string): ProductPr[] {
     "number,title,isDraft,headRefName,updatedAt,mergeable,mergeStateStatus",
   ]);
   const prs = JSON.parse(listRaw) as ProductPr[];
+  const pipelineStartedAt = Date.parse(
+    process.env.NADF_PIPELINE_STARTED_AT?.trim() || "",
+  );
   return prs
     .filter((p) => p.headRefName.startsWith("cursor/"))
+    .filter(
+      (p) =>
+        !Number.isFinite(pipelineStartedAt) ||
+        new Date(p.updatedAt).getTime() >= pipelineStartedAt,
+    )
     .sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
@@ -437,10 +465,7 @@ function mergeOpenProductPrs(): {
   skipped: number;
   remainingMergeable: Array<{ repo: string; number: number; title: string }>;
 } {
-  const repos = [
-    "arodriguez-novusintelligence/NovusIntelligenceWEB",
-    "arodriguez-novusintelligence/NovusIntelligenceBack",
-  ];
+  const repos = productRepos();
 
   let merged = 0;
   let skipped = 0;
@@ -569,10 +594,7 @@ function mergeOpenProductPrs(): {
 }
 
 function triggerDeployDev(): void {
-  for (const repo of [
-    "arodriguez-novusintelligence/NovusIntelligenceBack",
-    "arodriguez-novusintelligence/NovusIntelligenceWEB",
-  ]) {
+  for (const repo of productRepos()) {
     try {
       gh(["workflow", "run", "Deploy DEV", "--repo", repo]);
       console.log(
@@ -607,6 +629,8 @@ function main(): void {
       autoDeploy,
       requireVisualParity: flag("NADF_REQUIRE_VISUAL_PARITY", !smoke),
       artifactsRemoteOnly: flag("NADF_ARTIFACTS_REMOTE_ONLY", false),
+      executionProfile: visualFast() ? "visual-fast" : "full",
+      productRepos: productRepos(),
       prodForbidden: true,
     }),
   );

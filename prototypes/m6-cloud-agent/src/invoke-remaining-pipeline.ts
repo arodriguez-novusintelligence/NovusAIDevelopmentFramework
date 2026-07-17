@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura invoke remaining pipeline dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Ejecuta el resto del workflow lovable-to-web (post Plan Review approved)
  * en secuencia vía Cursor Cloud Agent.
@@ -43,6 +47,7 @@ function requireEnv(name: string): string {
 const PROJECT = "novus-intelligence";
 const ART = `.nadf/projects/${PROJECT}/artifacts`;
 const WF = "novus-intelligence-lovable-to-web";
+const VISUAL_FAST = process.env.NADF_EXECUTION_PROFILE === "visual-fast";
 
 type Step = {
   agentId: string;
@@ -184,24 +189,43 @@ async function runStep(
   step: Step,
   frameworkRef: string,
 ): Promise<{ result: AgentResult; frameworkRef: string }> {
+  const visualFastInputs = [
+    `${ART}/cambios-lovable.json`,
+    `${ART}/frontend-impact.md`,
+    `${ART}/riesgos.md`,
+  ];
+  const visualFast = VISUAL_FAST;
+  const stepRepos =
+    visualFast && step.agentId === "qa-agent"
+      ? step.repos.filter((repo) => repo !== "backend")
+      : step.repos;
   const invocation: AgentInvocation = {
     agentId: step.agentId,
     projectId: PROJECT,
     workflowId: WF,
     stepId: step.stepId,
     pattern: step.pattern,
-    repos: buildRepos(step.repos, frameworkRef),
-    inputs: [
-      `${ART}/plan-implementacion.md`,
-      `${ART}/impacto-arquitectonico.md`,
-      `${ART}/tareas-ejecutor.json`,
-    ],
+    repos: buildRepos(stepRepos, frameworkRef),
+    inputs: visualFast
+      ? visualFastInputs
+      : [
+          `${ART}/plan-implementacion.md`,
+          `${ART}/impacto-arquitectonico.md`,
+          `${ART}/tareas-ejecutor.json`,
+        ],
     expectedOutputs: step.expectedOutputs,
     constraints: [
       "NO_DEPLOY",
       "NO_SECRETS_IN_REPO",
       "NO_LOVABLE_CODE_COPY",
-      "PLAN_MUST_BE_APPROVED",
+      ...(visualFast
+        ? [
+            "VISUAL_CONTENT_ONLY",
+            "NO_BACKEND_CHANGES",
+            "FAST_PATH_AUTO_APPROVED",
+            step.agentId === "qa-agent" ? "QA_LITE_BUILD_LINT" : "",
+          ].filter(Boolean)
+        : ["PLAN_MUST_BE_APPROVED"]),
       "TARGET_DEV_REGION_SA_EAST_1",
       step.pattern === "executor" ? "ALLOW_PRODUCTIVE_CODE" : "NO_PRODUCTIVE_CODE",
     ],
@@ -277,7 +301,24 @@ async function main(): Promise<void> {
   const results: { step: string; status: string; summary: string; agentRuntimeId?: string; runId?: string }[] =
     [];
 
-  for (const step of STEPS) {
+  const activeSteps = VISUAL_FAST
+    ? STEPS.filter((step) =>
+        ["frontend-integration-agent", "qa-agent"].includes(step.agentId),
+      )
+    : STEPS;
+
+  console.log(
+    JSON.stringify({
+      event: "pipeline_profile",
+      profile: VISUAL_FAST ? "visual-fast" : "full",
+      agents: activeSteps.map((step) => step.agentId),
+      skipped: STEPS.filter((step) => !activeSteps.includes(step)).map(
+        (step) => step.agentId,
+      ),
+    }),
+  );
+
+  for (const step of activeSteps) {
     const { result } = await runStep(runtime, step, frameworkRef);
     results.push({
       step: step.stepId,

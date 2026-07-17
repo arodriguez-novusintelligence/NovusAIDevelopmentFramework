@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Metrics Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Metrics Agent
 
 ## Identidad

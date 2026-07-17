@@ -1,0 +1,58 @@
+# NADF-GUIDE
+# Propósito: Define Requirement source definition for ServiceNow (see ADR-0007) como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
+id: servicenow
+name: ServiceNow
+type: itsm
+provider: servicenow
+version: "1.0.0"
+status: active
+description: Requirement source definition for ServiceNow (see ADR-0007)
+supported_events:
+  - incident_created
+  - incident_updated
+  - story_created
+ingestion_modes:
+  - WEBHOOK
+  - POLLING
+authentication_modes:
+  - oauth2
+  - basic_ref
+capabilities:
+  - webhook
+  - polling
+  - update_external_status
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  table: sys_class_name
+  external_reference: number
+  sys_id: sys_id
+  title: short_description
+  description: description
+  priority: priority
+  status: state
+  requester: caller_id
+  assignment_group: assignment_group
+  acceptance_criteria: u_acceptance_criteria
+limitations:
+  - "Custom table schemas"
+risks:
+  - "Over-privileged integration user"
+mcp_server_recommended: servicenow
+fallback_api: "ServiceNow Table API"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

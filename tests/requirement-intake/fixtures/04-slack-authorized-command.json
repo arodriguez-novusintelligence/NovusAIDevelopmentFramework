@@ -1,0 +1,22 @@
+{
+  "id": "04-slack-authorized-command",
+  "scenario": {
+    "slack_authorized": true,
+    "event": {
+      "correlation_id": "corr-04",
+      "idempotency_key": "slack|cmd-1|slash_command|h",
+      "signature_valid": true,
+      "command": "/nadf-req"
+    },
+    "requirement": {
+      "title": "Req from Slack",
+      "description": "/nadf-req create FAQ update",
+      "source_type": "slack",
+      "external_reference": "cmd-1",
+      "source_event_id": "raw-04"
+    }
+  },
+  "expected": {
+    "pass": true
+  }
+}

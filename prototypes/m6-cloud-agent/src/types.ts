@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura types dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Tipos del contrato AgentRuntime (M6) — subset usado por el prototipo.
  * Fuente normativa: docs/runtime/agent-runtime-contract.md

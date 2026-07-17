@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Política de no-mocks en producción.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Política de no-mocks en producción
 
 ## Principio

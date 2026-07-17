@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Cloud Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Cloud Agent
 
 ## Identidad

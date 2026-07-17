@@ -1,0 +1,26 @@
+<!doctype html><!-- NADF-GUIDE
+Propósito: Presenta Costos, budget y selección de agentes en formato HTML.
+Configuración: No editar directamente; actualizar docs/md y ejecutar tools/build-enterprise-docs.py.
+--><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>Costos, budget y selección de agentes</title><style>
+:root{--bg:#07111f;--panel:#0e1d31;--text:#eaf2ff;--muted:#9fb2cb;--brand:#42d6c7;--line:#223a55}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#07111f,#0b1728);color:var(--text);font:16px/1.65 Inter,Segoe UI,sans-serif}
+header{position:sticky;top:0;padding:18px 5vw;background:#07111fee;border-bottom:1px solid var(--line)}
+header a{color:var(--brand);text-decoration:none;font-weight:700}main{max-width:980px;margin:auto;padding:48px 28px 80px}
+h1{font-size:2.5rem}h1,h2,h3{line-height:1.2}h2{margin-top:2em;color:var(--brand)}
+p,li{color:var(--muted)}code{color:#b6fff7;background:#10243a;padding:.15em .35em;border-radius:5px}
+pre{padding:18px;background:var(--panel);border:1px solid var(--line);overflow:auto}a{color:var(--brand)}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid var(--line);padding:10px;text-align:left}
+</style></head><body><header><a href='index.html'>NADF Enterprise</a></header><main><h1>Costos, budget y selección de agentes</h1>
+<p>Estimaciones internas (no SLA ni precio de venta), suponiendo referencia de</p>
+<p>USD 6 por millón de tokens:</p>
+<ul>
+<li>Full-quality: ~USD 380/mes.</li>
+<li>Balanced: ~USD 280/mes.</li>
+<li>Cost-optimized con poda: ~USD 205/mes.</li>
+<li>Smoke-heavy: ~USD 110/mes.</li>
+</ul>
+<p>El cliente debe contrastar con facturación real de Cursor/modelos. AWS de un</p>
+<p>sample serverless inactivo suele ser de bajo coste, pero se mide aparte.</p>
+<p><code>budget-policy.yml</code> bloquea nuevas invocaciones al alcanzar topes y</p>
+<p><code>agent-selection.yml</code> registra el efecto NONE/LOW/MEDIUM/HIGH/BLOCKING al</p>
+<p>desactivar agentes. Security y QA son BLOCKING en presets productivos.</p></main></body></html>

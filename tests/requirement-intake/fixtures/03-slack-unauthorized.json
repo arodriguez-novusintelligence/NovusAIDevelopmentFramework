@@ -1,0 +1,15 @@
+{
+  "id": "03-slack-unauthorized",
+  "scenario": {
+    "slack_authorized": false,
+    "event": {
+      "correlation_id": "corr-03",
+      "idempotency_key": "slack|msg-1|message|h",
+      "signature_valid": true
+    }
+  },
+  "expected": {
+    "pass": false,
+    "raw_status": "REJECTED"
+  }
+}

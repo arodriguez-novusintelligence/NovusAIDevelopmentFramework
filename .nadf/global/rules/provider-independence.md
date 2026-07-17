@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Independencia de proveedor.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Independencia de proveedor
 
 ## Principio

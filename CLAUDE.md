@@ -1,17 +1,22 @@
+<!-- NADF-GUIDE
+Propósito: Documenta CLAUDE.md — Reglas globales para agentes NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # CLAUDE.md — Reglas globales para agentes NADF
 
 Este archivo define las reglas obligatorias que **todo agente** del NovusAIDevelopmentFramework debe seguir en cada sesión de trabajo.
 
 ## NADF Meta Model
 
-El **NADF Meta Model v1.0** es el **lenguaje oficial** del framework — la especificación normativa de entidades, relaciones, eventos y flujos semánticos. Referencia: [docs/meta-model/specification.md](docs/meta-model/specification.md) y ADR-0004.
+El **NADF Meta Model v1.1** es el **lenguaje oficial** del framework — la especificación normativa de entidades, relaciones, eventos y flujos semánticos. Referencia: [docs/meta-model/specification.md](docs/meta-model/specification.md), ADR-0004 y ADR-0007 (Requirement Intake).
 
 ### Reglas del Meta Model
 
 - **Ningún agente crea entidades nuevas** sin extender el Meta Model primero (ver [governance.md](docs/meta-model/governance.md)).
-- **Todos los workflows** operan sobre entidades oficiales (Intent, Plan, Workflow, Task, Execution, Artifact, Validation, Knowledge).
+- **Todos los workflows** operan sobre entidades oficiales (Intent, Plan, Workflow, Task, Execution, Artifact, Validation, Knowledge; Requirement* solo con intake opt-in).
 - **Todos los artefactos** se mapean a entidades del Meta Model ([artifact-model.md](docs/meta-model/artifact-model.md)).
 - **Todo contexto** se transforma en **Intent** antes de planificar o ejecutar.
+- Con **Requirement Intake** habilitado: evento externo → `RawRequirementEvent` → `Requirement` (aprobado) → `Intent`. Nunca crear Plan/código desde el evento crudo.
 - **Planner** opera sobre Intent; **Execution** sobre Plan; **Validation** sobre Execution; **Reflection** genera Knowledge.
 
 ### Lectura obligatoria antes de implementar
@@ -34,7 +39,7 @@ Antes de implementar cualquier funcionalidad:
 
 ## Arquitectura multiagente
 
-NADF opera con **19 agentes especializados** organizados en 7 capas y 7 patrones arquitectónicos. Referencia: `docs/multiagent-architecture.md` y ADR-0002.
+NADF opera con **27 agentes especializados** (20 core + 7 Requirement Intake, ADR-0007) organizados en 7 capas y 7 patrones arquitectónicos. Referencia: `docs/agent-model.md`, `docs/multiagent-architecture.md` y ADR-0002.
 
 ### Separación planificación / ejecución / validación
 
@@ -61,7 +66,8 @@ NADF opera con **19 agentes especializados** organizados en 7 capas y 7 patrones
 
 ## Integración MCP
 
-- **Todo acceso externo** a GitHub, AWS, bases de datos, Terraform, Jira, Docker/Kubernetes debe realizarse **vía MCP** cuando el servidor esté disponible.
+- **Todo acceso externo** a GitHub, AWS, bases de datos, Terraform, Jira, Slack, Teams, GitLab, Bitbucket, Email, ServiceNow, webhooks y schedulers debe realizarse **vía MCP** cuando el servidor esté disponible; si no, adapter HTTP con el mismo contrato de conector.
+- Requirement Intake: ver `docs/requirement-intake-architecture.md` y `.nadf/global/rules/requirement-intake-security.md`.
 - Referencia: `docs/mcp-integration.md` y `.nadf/global/rules/provider-independence.md`.
 
 ## Reglas de implementación
@@ -128,10 +134,10 @@ Event Trigger → Planning → Plan Review → Execution → Validation
 |------|---------|
 | Framework | Framework Architect |
 | Design Source | Lovable Analyzer |
-| Planning | Planner, Architect, Workflow, Backend Impact |
+| Planning | Planner, Architect, Workflow, Backend Impact, Requirement Intake/Normalization/Classification/Deduplication/Approval |
 | Execution | Frontend Integration, Backend, Database, Cloud, DevOps |
-| Validation | QA, Security, Reviewer |
-| Knowledge | Documentation, Metrics, Knowledge Base, ADR, Reflection |
+| Validation | QA, Security, Reviewer, Requirement Validation |
+| Knowledge | Documentation, Metrics, Knowledge Base, ADR, Reflection, Requirement Traceability |
 
 Definiciones completas en `.claude/agents/` y skill registry en `.nadf/global/skill-registry/`.
 
@@ -184,3 +190,5 @@ Los agentes NADF **no deben**:
 - [ADR-0002](.nadf/global/decision-history/adr/ADR-0002-multiagent-patterns.md)
 - [ADR-0003](.nadf/global/decision-history/adr/ADR-0003-lovable-to-web-canonicalization.md)
 - [ADR-0004](.nadf/global/decision-history/adr/ADR-0004-nadf-meta-model.md)
+- [ADR-0007 — Requirement Intake](.nadf/global/decision-history/adr/ADR-0007-requirement-intake-layer.md)
+- [Requirement Intake Architecture](docs/requirement-intake-architecture.md)

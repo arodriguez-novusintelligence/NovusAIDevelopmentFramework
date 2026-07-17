@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta ADR-0003: Canonicalización del workflow lovable-to-web y orden de fases Planning/Execution.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # ADR-0003: Canonicalización del workflow lovable-to-web y orden de fases Planning/Execution
 
 ## Estado

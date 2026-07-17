@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model — Gobernanza.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # NADF Meta Model — Gobernanza
 
 **Versión del documento:** 1.0  
@@ -103,7 +107,7 @@ flowchart TD
 ### Pasos detallados
 
 1. **Propuesta** — El custodio (Framework Architect) o cualquier agente identifica necesidad de cambio. La propuesta incluye: entidad/flujo afectado, tipo de cambio (A/B/C), impacto en agentes y workflows.
-2. **Evaluación de impacto** — Revisar los 19 agentes, 8 workflows, skill registry y proyectos activos.
+2. **Evaluación de impacto** — Revisar los 27 agentes, workflows globales, skill registry y proyectos activos.
 3. **Aprobación** — Según tipo de cambio (ver tabla anterior).
 4. **Registro** — ADR si aplica; entrada en changelog de versioning.md.
 5. **Implementación documental** — Actualizar documentos de dominio afectados en `docs/meta-model/`.

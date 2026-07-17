@@ -1,0 +1,16 @@
+# NADF-GUIDE
+# Propósito: Define result como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+status: BLOCKED
+reasonCode: NADF-SEC-001
+message: Missing CredentialReference for required repository access
+requiredAction: Configure credential reference
+retryable: true
+correlation_id: corr-failure-cred-001
+plan_id: PLAN-2026-000099
+missing:
+  - credential_reference
+context: |
+  ExecutionPlan declared repository access but no CredentialReference
+  (secret://...) was configured for the workspace/project.
+nadf_behavior: MUST NOT invent credentials or continue execution

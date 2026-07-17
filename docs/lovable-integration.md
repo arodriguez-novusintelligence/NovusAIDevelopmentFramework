@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Integración con Lovable.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Integración con Lovable
 
 ## Rol de Lovable en NADF

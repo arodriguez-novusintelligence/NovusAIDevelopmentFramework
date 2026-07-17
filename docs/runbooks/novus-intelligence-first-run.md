@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Runbook — Primera ejecución novus-intelligence (Lovable → DEV).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Runbook — Primera ejecución novus-intelligence (Lovable → DEV)
 
 **Proyecto:** `novus-intelligence`  

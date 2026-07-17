@@ -1,0 +1,26 @@
+# NADF-GUIDE
+# Propósito: Define compatibility matrix como configuración declarativa NADF.
+# Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+nadf: "1.1.0-rc.1"
+metaModel: "1.1.0"
+matrix:
+  - component: core
+    status: compatible
+  - component: requirementIntake
+    status: opt-in-rc
+  - component: manualConnector
+    status: stable
+  - component: jiraConnector
+    status: experimental
+  - component: slackConnector
+    status: experimental
+  - component: githubIssueConnector
+    status: experimental
+  - component: cursorAdapter
+    status: experimental
+  - component: n8nAdapter
+    status: experimental
+  - component: interfazNadf
+    status: external
+  - component: legacyProjectsWithoutSources
+    status: supported

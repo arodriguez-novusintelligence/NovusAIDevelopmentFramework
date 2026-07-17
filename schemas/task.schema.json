@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/task.schema.json",
+  "title": "Task",
+  "description": "Unit of work under a Plan",
+  "schemaVersion": "1.1.0-rc.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "plan_id",
+    "title",
+    "status",
+    "correlation_id",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0-rc.1",
+      "description": "Schema package version"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[A-Z]{2,6}-[0-9]{4}-[0-9]{6}$|^[a-z0-9][a-z0-9_.:-]{2,}$"
+    },
+    "plan_id": {
+      "type": "string"
+    },
+    "agent_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "READY",
+        "IN_PROGRESS",
+        "DONE",
+        "BLOCKED",
+        "CANCELLED"
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 8
+    }
+  }
+}

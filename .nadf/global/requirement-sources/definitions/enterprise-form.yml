@@ -1,0 +1,50 @@
+# NADF-GUIDE
+# Propósito: Define Requirement source definition for Enterprise Form (see ADR-0007) como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
+id: enterprise-form
+name: Enterprise Form
+type: form
+provider: nadf
+version: "1.0.0"
+status: active
+description: Requirement source definition for Enterprise Form (see ADR-0007)
+supported_events:
+  - form_submitted
+ingestion_modes:
+  - API_PUSH
+  - WEBHOOK
+authentication_modes:
+  - form_signing_reference
+capabilities:
+  - configurable_schema
+  - field_validation
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: true
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  title: fields.title
+  description: fields.description
+  acceptance_criteria: fields.acceptance_criteria
+  priority: fields.priority
+  requester: fields.requester
+  labels: fields.labels
+limitations:
+  - "Schema must be pre-registered"
+risks:
+  - "Field injection"
+mcp_server_recommended: null
+fallback_api: "form webhook"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

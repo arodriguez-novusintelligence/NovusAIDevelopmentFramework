@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Incorporación de nuevos proyectos a NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Incorporación de nuevos proyectos a NADF
 
 ## Cuándo usar este proceso

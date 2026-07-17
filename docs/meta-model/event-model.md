@@ -1,7 +1,11 @@
-# NADF Meta Model v1.0 — Modelo de Eventos
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.1 — Modelo de Eventos.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# NADF Meta Model v1.1 — Modelo de Eventos
 
-**Versión:** 1.0  
-**Relacionado con:** [intent-model.md](intent-model.md), [entity-model.md](entity-model.md)
+**Versión:** 1.1  
+**Relacionado con:** [intent-model.md](intent-model.md), [requirement-model.md](requirement-model.md), [entity-model.md](entity-model.md)
 
 ---
 
@@ -134,6 +138,53 @@ event:
 | `project.onboard` | Onboarding de proyecto | Manual |
 | `workflow.completed` | Workflow finalizado (chaining) | Orquestador |
 | `intent.manual` | Intención manual | IDE / Conversación |
+| `requirement.manual.received` | Requerimiento manual (intake) | UI / agente |
+| `requirement.jira.received` | Evento Jira intake | Jira connector |
+| `requirement.slack.received` | Evento Slack intake | Slack connector |
+| `requirement.teams.received` | Evento Teams intake | Teams connector |
+| `requirement.github_issue.received` | GitHub issue intake | GitHub connector |
+| `requirement.gitlab_issue.received` | GitLab issue intake | GitLab connector |
+| `requirement.bitbucket.received` | Bitbucket intake | Bitbucket connector |
+| `requirement.email.received` | Correo inbound | Email connector |
+| `requirement.webhook.received` | Webhook genérico | Webhook connector |
+| `requirement.api.received` | API REST push | REST connector |
+| `requirement.file.received` | Archivo subido | File connector |
+| `requirement.servicenow.received` | ServiceNow | ServiceNow connector |
+| `requirement.form.received` | Formulario empresarial | Form connector |
+| `requirement.database.received` | DB/CDC | Database connector |
+| `requirement.schedule.received` | Evento programado | Scheduler |
+
+### Eventos Requirement Intake (v1.1 / ADR-0007)
+
+| Evento | Descripción | Emisor típico | Consumidor típico |
+|--------|-------------|---------------|-------------------|
+| `RequirementSourceConfigured` | Fuente configurada | Framework Architect / humano | Intake agents |
+| `RequirementSourceConnectionTested` | Test de conexión | requirement-intake-agent | Orquestador |
+| `RawRequirementReceived` | Evento crudo aceptado en recepción | Connector | requirement-intake-agent |
+| `RawRequirementRejected` | Rechazo de seguridad/schema | requirement-intake-agent | Orquestador |
+| `RequirementNormalized` | Requirement creado | requirement-normalization-agent | classification/dedup |
+| `RequirementDuplicateDetected` | Duplicado detectado | requirement-deduplication-agent | Orquestador |
+| `RequirementClassified` | Clasificación lista | requirement-classification-agent | validation |
+| `RequirementNeedsClarification` | Falta información | requirement-validation-agent | humano |
+| `RequirementAwaitingApproval` | Pendiente aprobación | requirement-approval-agent | humano |
+| `RequirementApproved` | Aprobado | requirement-approval-agent / humano | traceability |
+| `RequirementRejected` | Rechazado | requirement-approval-agent / humano | Orquestador |
+| `RequirementConvertedToIntent` | Intent creado | requirement-traceability-agent | workflow-agent |
+| `RequirementProcessingFailed` | Fallo de procesamiento | cualquier intake agent | Orquestador |
+| `RequirementQuarantined` | Dead-letter | requirement-intake-agent | humano |
+
+#### Payload mínimo común (intake)
+
+```yaml
+payload:
+  correlation_id: string
+  project_id: string
+  source_instance_id: string?
+  raw_event_id: string?
+  requirement_id: string?
+  intent_id: string?
+  status: string?
+```
 
 ---
 

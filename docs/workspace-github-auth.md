@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Autenticación GitHub — workspace NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Autenticación GitHub — workspace NADF
 
 Guía para autenticar **este repositorio** (`NovusAIDevelopmentFramework`) contra GitHub sin afectar otros proyectos Cursor.

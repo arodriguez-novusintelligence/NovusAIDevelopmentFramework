@@ -1,7 +1,11 @@
-# NADF Meta Model v1.0 — Modelo de Artefactos
+<!-- NADF-GUIDE
+Propósito: Documenta NADF Meta Model v1.1 — Modelo de Artefactos.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
+# NADF Meta Model v1.1 — Modelo de Artefactos
 
-**Versión:** 1.0  
-**Relacionado con:** [entity-model.md](entity-model.md), [blackboard-pattern.md](../blackboard-pattern.md)
+**Versión:** 1.1  
+**Relacionado con:** [entity-model.md](entity-model.md), [blackboard-pattern.md](../blackboard-pattern.md), [requirement-model.md](requirement-model.md)
 
 ---
 
@@ -91,6 +95,22 @@ El **Modelo de Artefactos** cataloga todos los artefactos oficiales de NADF — 
 | `project-context.yml` | framework-architect-agent | Proyecto | YAML | Configuración del proyecto |
 | Skill registry entries | framework-architect-agent | Global | YAML | Definiciones de agentes |
 | Workflow definitions | framework-architect-agent | Global/Proyecto | YAML | Definiciones de workflows |
+
+### Requirement Intake (v1.1 / ADR-0007)
+
+| Artefacto | Productor | Fase | Formato | Descripción |
+|-----------|-----------|------|---------|-------------|
+| `raw-requirement-event.json` | requirement-intake-agent | event_trigger | JSON | Evento crudo persistido |
+| `requirement-normalized.yml` | requirement-normalization-agent | planning | YAML | Requirement normalizado |
+| `requirement-validation.json` | requirement-validation-agent | planning/validation | JSON | Completitud / ambigüedad |
+| `requirement-classification.yml` | requirement-classification-agent | planning | YAML | Clasificación |
+| `requirement-deduplication.json` | requirement-deduplication-agent | planning | JSON | Resultado dedup |
+| `requirement-approval.yml` | requirement-approval-agent | plan_review | YAML | Aprobación |
+| `requirement-to-intent-map.yml` | requirement-traceability-agent | execution | YAML | Requirement ↔ Intent |
+| `requirement-traceability.json` | requirement-traceability-agent | execution | JSON | TraceabilityLinks |
+| `source-connection-test.json` | requirement-intake-agent | event_trigger | JSON | Health check conector |
+
+Contratos: `.nadf/global/artifact-contracts/requirement-intake/contracts.yml`
 
 ---
 

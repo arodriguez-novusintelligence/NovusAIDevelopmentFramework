@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nadf.novusintelligence.local/schemas/requirement-policy.schema.json",
+  "title": "RequirementPolicy",
+  "description": "Security and approval policy",
+  "schemaVersion": "1.1.0-rc.1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "source_type",
+    "requires_human_approval",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0-rc.1",
+      "description": "Schema package version"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "definition_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "source_definition_id": {
+      "type": "string"
+    },
+    "field_mappings": {
+      "type": "object"
+    },
+    "source_type": {
+      "type": "string"
+    },
+    "requires_human_approval": {
+      "type": "boolean"
+    },
+    "secret_manager": {
+      "type": "string"
+    },
+    "secret_path": {
+      "type": "string",
+      "pattern": "^secret://",
+      "description": "Opaque path; never the secret itself"
+    },
+    "credential_type": {
+      "type": "string"
+    }
+  }
+}

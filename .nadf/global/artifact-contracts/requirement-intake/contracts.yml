@@ -1,0 +1,154 @@
+# NADF-GUIDE
+# Propósito: Define contracts como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+# Artifact contracts — Requirement Intake Layer
+# schemaVersion: 1.1.0 — ADR-0007
+
+contracts:
+  - name: raw-requirement-event.json
+    producer: requirement-intake-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - rawEvent
+
+  - name: requirement-normalized.yml
+    producer: requirement-normalization-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - requirement
+
+  - name: requirement-validation.json
+    producer: requirement-validation-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - findings
+
+  - name: requirement-classification.yml
+    producer: requirement-classification-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - classification
+
+  - name: requirement-deduplication.json
+    producer: requirement-deduplication-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - deduplication
+
+  - name: requirement-approval.yml
+    producer: requirement-approval-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - approval
+
+  - name: requirement-to-intent-map.yml
+    producer: requirement-traceability-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - requirement_id
+      - intent_id
+
+  - name: requirement-traceability.json
+    producer: requirement-traceability-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - links
+
+  - name: source-connection-test.json
+    producer: requirement-intake-agent
+    required_fields:
+      - id
+      - schemaVersion
+      - correlationId
+      - source
+      - producerAgent
+      - createdAt
+      - status
+      - references
+      - integrity
+      - connectionTest
+
+common_envelope: &envelope
+  id: string
+  schemaVersion: "1.1.0"
+  correlationId: string
+  source:
+    definition_id: string
+    instance_id: string
+    provider: string
+  producerAgent: string
+  createdAt: datetime
+  status: string
+  references:
+    project_id: string
+    raw_event_id: string?
+    requirement_id: string?
+    intent_id: string?
+  integrity:
+    payload_hash: string
+    content_type: string
+    redaction_applied: boolean

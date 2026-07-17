@@ -1,0 +1,26 @@
+# NADF-GUIDE
+# Propósito: Define slack-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
+id: slack-default-mapping
+source_definition_id: slack
+version: "1.0.0"
+field_mappings:
+  workspace: team_id
+  channel: channel_id
+  thread: thread_ts
+  requester: user_id
+  description: text
+  title: derived_from_text_or_command
+  attachments: files
+  command: command
+  reactions: reaction
+  timestamp: ts
+transformations:
+  - derive_title_from_first_line
+defaults:
+  source_type: slack
+validation_rules:
+  - authorization_gate_required
+  - description_required
+notes:
+  - Never convert arbitrary channel messages into requirements.

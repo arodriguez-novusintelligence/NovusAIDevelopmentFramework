@@ -1,0 +1,27 @@
+# NADF-GUIDE
+# Propósito: Define budget policy como configuración declarativa NADF.
+# Configuración: Copiar al proyecto y ajustar responsables, límites y excepciones con evidencia auditable.
+version: "1.0"
+currency: USD
+mode: enforce
+limits:
+  per_run: 12
+  per_day: 40
+  per_month: 380
+  runs_per_day: 8
+  max_concurrency: 3
+actions:
+  warning_threshold_percent: 80
+  at_limit: block_new_work
+  on_breach:
+    - cancel_pending_invocations
+    - preserve_completed_artifacts
+    - write_budget_breach_report
+    - require_budget_owner_approval
+kill_switch:
+  enabled: true
+  environment_variable: NADF_KILL_SWITCH
+  blocking_value: "true"
+  allow_read_only_reporting: true
+production:
+  automated_deploy: forbidden

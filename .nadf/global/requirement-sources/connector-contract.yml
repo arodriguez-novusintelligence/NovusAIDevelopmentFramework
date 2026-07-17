@@ -1,0 +1,170 @@
+# NADF-GUIDE
+# Propósito: Define connector contract como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
+# RequirementSourceConnector — Contrato normativo
+
+**Versión:** 1.0.0  
+**Autoridad:** ADR-0007  
+**Representaciones:** YAML (normativa) + interfaz conceptual TypeScript (ilustrativa)
+
+---
+
+## YAML normativo
+
+```yaml
+contract:
+  id: RequirementSourceConnector
+  version: "1.0.0"
+  description: >
+    Contrato abstracto para todas las fuentes de requerimientos.
+    Independent del proveedor y del runtime (MCP o HTTP adapter).
+
+  operations:
+    - name: validateConfiguration
+      required: true
+      input: SourceInstanceConfiguration
+      output: ConnectorValidationResult
+      description: Valida schema de configuración y presencia de credential_reference cuando aplica.
+
+    - name: testConnection
+      required: true
+      input: SourceInstanceConfiguration
+      output: ConnectionTestResult
+      side_effects: none_productive
+      artifact: artifacts/source-connection-test.json
+
+    - name: receiveEvent
+      required: true
+      input: ExternalEventInput
+      output: RawRequirementEvent
+      guarantees:
+        - idempotent
+        - never_executes_code
+        - never_creates_plan_or_intent
+
+    - name: poll
+      required: false
+      input: { cursor: string? }
+      output: PollResult
+
+    - name: fetchDetails
+      required: false
+      input: { externalId: string }
+      output: ExternalRequirementDetails
+
+    - name: fetchAttachments
+      required: false
+      input: { externalId: string }
+      output: RequirementAttachment[]
+
+    - name: acknowledge
+      required: false
+      input: { externalId: string }
+      output: void
+
+    - name: updateExternalStatus
+      required: false
+      input: { externalId: string, status: string }
+      output: void
+      requires_policy: true
+
+    - name: addExternalComment
+      required: false
+      input: { externalId: string, comment: string }
+      output: void
+      requires_policy: true
+
+  ingestion_modes:
+    - WEBHOOK
+    - POLLING
+    - MANUAL
+    - SCHEDULED
+    - API_PUSH
+    - DATABASE_CDC
+    - FILE_UPLOAD
+    - EMAIL_INBOUND
+
+  security_invariants:
+    - validate_signature_when_supported
+    - replay_protection
+    - idempotency_by_provider_external_id_event_type_payload_hash
+    - secrets_only_via_CredentialReference
+    - agent_must_not_see_raw_credentials
+    - sanitize_html_markdown
+    - quarantine_untrusted_attachments
+    - never_auto_execute_from_content
+    - rate_limit_enforced
+    - dead_letter_on_poison_payload
+
+  error_model:
+    retry: exponential_backoff
+    quarantine_status: QUARANTINED
+    reject_status: REJECTED
+```
+
+---
+
+## Interfaz conceptual (TypeScript ilustrativo)
+
+```typescript
+interface RequirementSourceConnector {
+  validateConfiguration(): Promise<ConnectorValidationResult>;
+  testConnection(): Promise<ConnectionTestResult>;
+  receiveEvent(input: ExternalEventInput): Promise<RawRequirementEvent>;
+  poll?(cursor?: string): Promise<PollResult>;
+  fetchDetails?(externalId: string): Promise<ExternalRequirementDetails>;
+  fetchAttachments?(externalId: string): Promise<RequirementAttachment[]>;
+  acknowledge?(externalId: string): Promise<void>;
+  updateExternalStatus?(externalId: string, status: string): Promise<void>;
+  addExternalComment?(externalId: string, comment: string): Promise<void>;
+}
+```
+
+> Esta interfaz **no** es acoplamiento de runtime. La representación normativa es el bloque YAML superior.
+
+---
+
+## Tipos conceptuales de E/S
+
+```yaml
+ExternalEventInput:
+  source_instance_id: string
+  headers: map
+  body_reference: string   # referencia a payload, no dump en logs
+  received_at: datetime
+  signature: string?
+  idempotency_key: string
+  correlation_id: string
+
+ConnectorValidationResult:
+  valid: boolean
+  errors: list
+  warnings: list
+
+ConnectionTestResult:
+  success: boolean
+  latency_ms: integer?
+  health_status: enum  # healthy|degraded|failed
+  checked_at: datetime
+  details_redacted: map
+
+PollResult:
+  events: RawRequirementEvent[]
+  next_cursor: string?
+  exhausted: boolean
+```
+
+---
+
+## Deducción de idempotencia
+
+```text
+deduplication_key = provider + "|" + external_id + "|" + event_type + "|" + payload_hash
+```
+
+---
+
+## Referencias
+
+- Definiciones: `.nadf/global/requirement-sources/definitions/`
+- Docs: [requirement-source-connectors.md](../../docs/requirement-source-connectors.md)

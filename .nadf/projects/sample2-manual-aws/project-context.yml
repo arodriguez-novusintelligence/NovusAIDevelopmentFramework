@@ -1,0 +1,31 @@
+# NADF-GUIDE
+# Propósito: Define project context como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
+project:
+  id: sample2-manual-aws
+  name: NADF Sample 2
+  kind: demonstration
+  application_path: examples/sample2-manual-aws
+source:
+  adapter: manual
+  intake: examples/sample2-manual-aws/initiative.yml
+  mode: initiative-batch
+  target_repo: https://github.com/arodriguez-novusintelligence/sample2.git
+  approval_mode: automatic
+runtime:
+  cycle: light-auto
+  entrypoint: tools/nadf-fast-cycle/run_auto.py
+  agents: [backend-cloud]
+  human_approvals: disabled
+scope:
+  allowed_paths: [examples/sample2-manual-aws, .nadf/projects/sample2-manual-aws]
+  forbidden_repositories: [NovusIntelligenceWEB, NovusIntelligenceBack, novus-nexus]
+environment:
+  allowed: [dev]
+  aws_region: sa-east-1
+  stack_prefix: sample2-
+governance:
+  human_approval_model: enterprise-governance/human-approval-model.yml
+  budget_policy: budget-policy.yml
+  agent_selection: agent-selection.yml
+  production_deploy: forbidden

@@ -1,0 +1,27 @@
+<!doctype html><!-- NADF-GUIDE
+Propósito: Presenta Ejemplos ejecutables en formato HTML.
+Configuración: No editar directamente; actualizar docs/md y ejecutar tools/build-enterprise-docs.py.
+--><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>Ejemplos ejecutables</title><style>
+:root{--bg:#07111f;--panel:#0e1d31;--text:#eaf2ff;--muted:#9fb2cb;--brand:#42d6c7;--line:#223a55}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#07111f,#0b1728);color:var(--text);font:16px/1.65 Inter,Segoe UI,sans-serif}
+header{position:sticky;top:0;padding:18px 5vw;background:#07111fee;border-bottom:1px solid var(--line)}
+header a{color:var(--brand);text-decoration:none;font-weight:700}main{max-width:980px;margin:auto;padding:48px 28px 80px}
+h1{font-size:2.5rem}h1,h2,h3{line-height:1.2}h2{margin-top:2em;color:var(--brand)}
+p,li{color:var(--muted)}code{color:#b6fff7;background:#10243a;padding:.15em .35em;border-radius:5px}
+pre{padding:18px;background:var(--panel);border:1px solid var(--line);overflow:auto}a{color:var(--brand)}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid var(--line);padding:10px;text-align:left}
+</style></head><body><header><a href='index.html'>NADF Enterprise</a></header><main><h1>Ejemplos ejecutables</h1>
+<h2>Sample 1</h2>
+<p>GitHub Issue con label <code>sample1</code> → Requirement → aprobación → cambio limitado</p>
+<p>a <code>examples/sample1-app/</code> → pruebas → AWS DEV <code>sample1-*</code>.</p>
+<p>Nunca escribe en repositorios del producto Novus.</p>
+<h2>Sample 2</h2>
+<p>Entrada <code>initiative.yml</code> (iniciativa con varios requerimientos en</p>
+<p><code>requests/REQ-*.yml</code>) → intake y gate de aprobación por requerimiento →</p>
+<p>pruebas por requerimiento → API REST (2 Lambdas + DynamoDB) → AWS DEV</p>
+<p><code>sample2-*</code>. El runner <code>run_nadf.py</code> genera la evidencia y reporta las URLs</p>
+<p>de los endpoints desplegados.</p>
+<h2>Uso</h2>
+<p>Los samples sirven para demostración y capacitación. Una Customer Distribution</p>
+<p>puede copiarlos como plantilla, pero no comparte sus stacks con Novus ni con</p>
+<p>otro cliente. Ambos prohíben PROD y esperan deploy CI/OIDC.</p></main></body></html>

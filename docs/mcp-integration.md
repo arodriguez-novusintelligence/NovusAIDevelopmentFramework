@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Integración MCP en NADF.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Integración MCP en NADF
 
 ## Propósito
@@ -15,12 +19,30 @@
 
 | Servidor MCP | Capacidades | Agentes típicos |
 |--------------|-------------|-----------------|
-| GitHub | Repos, PRs, issues, diffs | Lovable Analyzer, DevOps, Reviewer |
+| GitHub | Repos, PRs, issues, diffs | Lovable Analyzer, DevOps, Reviewer, requirement-intake |
 | AWS | Lambda, S3, DynamoDB, SES, CloudFront | Cloud, Backend, DevOps |
 | Database | Consultas schema, migraciones propuestas | Database, Backend |
 | Terraform | Planes IaC, validación | Cloud, DevOps |
-| Jira | Tickets, estados, vinculación | Workflow, Planner |
+| Jira | Tickets, estados, vinculación | Workflow, Planner, requirement-* |
 | Docker/Kubernetes | Imágenes, manifiestos | DevOps, Cloud |
+| Slack | Eventos, comandos, reacciones (intake) | requirement-intake, requirement-approval |
+| Microsoft Teams | Adaptive cards, canales (intake) | requirement-intake, requirement-approval |
+| GitLab | Issues/MRs | requirement-intake |
+| Bitbucket | Issues | requirement-intake |
+| Email | Inbound mail | requirement-intake |
+| ServiceNow | Incidents/stories | requirement-intake |
+| Generic Webhook | Listener firmado | requirement-intake |
+| Database Events | CDC / vistas autorizadas | requirement-intake |
+| Scheduler | Cron / schedules | requirement-intake |
+
+### Regla MCP + Requirement Intake (ADR-0007)
+
+- Preferir MCP cuando exista y sea confiable.
+- Permitir adapter HTTP/event broker cuando no exista MCP.
+- Mantener el mismo contrato `RequirementSourceConnector`.
+- El agente **no** debe conocer detalles de autenticación (solo `CredentialReference`).
+
+Ver [requirement-source-connectors.md](requirement-source-connectors.md).
 
 ## Flujo de uso
 

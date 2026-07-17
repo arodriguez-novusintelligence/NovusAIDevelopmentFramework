@@ -1,0 +1,28 @@
+{
+  "id": "10-servicenow-valid",
+  "scenario": {
+    "source": {
+      "definition": "servicenow",
+      "credential_reference": "secret://nadf/dev/snow",
+      "mapping": "mappings/servicenow.yml",
+      "policy": {
+        "requires_human_approval": true
+      }
+    },
+    "event": {
+      "correlation_id": "corr-10",
+      "deduplication_key": "servicenow|INC001|incident_created|h",
+      "signature_valid": true
+    },
+    "requirement": {
+      "title": "Incident portal timeout",
+      "description": "Timeouts on contact form",
+      "source_type": "servicenow",
+      "external_reference": "INC001",
+      "source_event_id": "raw-10"
+    }
+  },
+  "expected": {
+    "pass": true
+  }
+}

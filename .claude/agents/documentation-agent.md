@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Documentation Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Documentation Agent
 
 ## Identidad

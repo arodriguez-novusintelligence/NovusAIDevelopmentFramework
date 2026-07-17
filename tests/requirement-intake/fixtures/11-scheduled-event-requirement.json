@@ -1,0 +1,22 @@
+{
+  "id": "11-scheduled-event-requirement",
+  "scenario": {
+    "event": {
+      "correlation_id": "corr-11",
+      "idempotency_key": "scheduled|run-1|schedule_fired|h",
+      "signature_valid": true
+    },
+    "requirement": {
+      "title": "Weekly dependency audit",
+      "description": "Template-based scheduled requirement",
+      "source_type": "scheduled-event",
+      "external_reference": "run-1",
+      "source_event_id": "raw-11",
+      "status": "RECEIVED"
+    }
+  },
+  "expected": {
+    "pass": true,
+    "creates_execution_directly": false
+  }
+}

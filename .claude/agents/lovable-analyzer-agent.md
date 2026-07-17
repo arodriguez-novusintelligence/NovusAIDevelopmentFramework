@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Lovable Analyzer Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Lovable Analyzer Agent
 
 ## Identidad

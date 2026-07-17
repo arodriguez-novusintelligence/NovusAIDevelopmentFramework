@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Artefactos — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Artefactos — Novus Intelligence Solutions
 
 ## Propósito

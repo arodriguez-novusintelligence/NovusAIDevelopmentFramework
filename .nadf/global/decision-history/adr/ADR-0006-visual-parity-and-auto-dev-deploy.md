@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta ADR-0006 — Paridad visual exacta + deploy automático solo a DEV.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # ADR-0006 — Paridad visual exacta + deploy automático solo a DEV
 
 **Estado:** Accepted  

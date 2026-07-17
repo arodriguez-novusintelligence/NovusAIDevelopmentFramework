@@ -1,0 +1,46 @@
+# NADF-GUIDE
+# Propósito: Define human approval model como configuración declarativa NADF.
+# Configuración: Copiar al proyecto y ajustar responsables, límites y excepciones con evidencia auditable.
+version: "1.0"
+policy: deny_by_default
+approval_mechanisms:
+  primary:
+    provider: github
+    label: "nadf:approved"
+    comment_pattern: "^/nadf approve (?<gate>[a-z-]+)$"
+  evidence:
+    format: yaml
+    path: ".nadf/projects/{project}/artifacts/approvals/{gate}.yml"
+gates:
+  - id: requirement
+    required: true
+    owner: product_owner
+  - id: scope
+    required: true
+    owner: product_owner
+  - id: architecture
+    required_when: architectural_change
+    owner: solution_architect
+  - id: plan
+    required: true
+    owner: technical_lead
+  - id: security
+    required_when: sensitive_or_external_access
+    owner: security_owner
+  - id: budget
+    required_when: estimated_cost_exceeds_run_limit
+    owner: budget_owner
+  - id: merge
+    required: true
+    owner: code_owner
+  - id: deploy-dev
+    required_when: project_policy_requires
+    owner: environment_owner
+  - id: deploy-prod
+    required: true
+    owner: change_authority
+invariants:
+  - agents_never_self_approve
+  - approvals_are_project_scoped
+  - production_deploy_is_never_automatic
+  - failed_gate_blocks_downstream_mutation

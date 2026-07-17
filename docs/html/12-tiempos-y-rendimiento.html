@@ -1,0 +1,28 @@
+<!doctype html><!-- NADF-GUIDE
+Propósito: Presenta Tiempos y rendimiento en formato HTML.
+Configuración: No editar directamente; actualizar docs/md y ejecutar tools/build-enterprise-docs.py.
+--><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>Tiempos y rendimiento</title><style>
+:root{--bg:#07111f;--panel:#0e1d31;--text:#eaf2ff;--muted:#9fb2cb;--brand:#42d6c7;--line:#223a55}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#07111f,#0b1728);color:var(--text);font:16px/1.65 Inter,Segoe UI,sans-serif}
+header{position:sticky;top:0;padding:18px 5vw;background:#07111fee;border-bottom:1px solid var(--line)}
+header a{color:var(--brand);text-decoration:none;font-weight:700}main{max-width:980px;margin:auto;padding:48px 28px 80px}
+h1{font-size:2.5rem}h1,h2,h3{line-height:1.2}h2{margin-top:2em;color:var(--brand)}
+p,li{color:var(--muted)}code{color:#b6fff7;background:#10243a;padding:.15em .35em;border-radius:5px}
+pre{padding:18px;background:var(--panel);border:1px solid var(--line);overflow:auto}a{color:var(--brand)}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid var(--line);padding:10px;text-align:left}
+</style></head><body><header><a href='index.html'>NADF Enterprise</a></header><main><h1>Tiempos y rendimiento</h1>
+<p>Una corrida completa secuencial observada puede durar <strong>45–60 minutos</strong>. No es</p>
+<p>un SLA: depende del modelo, repositorios, Human Gates y herramientas.</p>
+<p>Objetivo con clasificación, poda y fan-out/fan-in: <strong>15–30 minutos</strong> de IA,</p>
+<p>separando siempre <code>humanWaitMs</code>.</p>
+<p>Palancas:</p>
+<ul>
+<li>clasificar dominio antes de invocar;</li>
+<li>usar <code>agent-selection.yml</code>;</li>
+<li>paralelizar validadores independientes (máximo 3 por defecto);</li>
+<li>smoke antes de full;</li>
+<li>reutilizar artifacts frescos;</li>
+<li>no ejecutar visual parity en APIs sin UI.</li>
+</ul>
+<p>El reloj de negocio es <code>tiempo IA + espera humana</code>; ambos deben reportarse por</p>
+<p>separado.</p></main></body></html>

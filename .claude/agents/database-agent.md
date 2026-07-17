@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Database Agent.
+Configuración: Revisar identidad, responsabilidades, permisos, entradas, salidas y límites del agente.
+-->
 # Database Agent
 
 ## Identidad

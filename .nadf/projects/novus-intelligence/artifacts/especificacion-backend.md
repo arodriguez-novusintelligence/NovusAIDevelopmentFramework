@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Especificación Backend — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Especificación Backend — Novus Intelligence Solutions
 
 **Proyecto:** novus-intelligence  

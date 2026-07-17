@@ -1,0 +1,39 @@
+# NADF-GUIDE
+# Propósito: Define template como configuración declarativa NADF.
+# Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: NADF Sample 1 - issue-driven demo API
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues: [dev]
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10
+    MemorySize: 128
+    Tags:
+      nadf-example: sample1
+Resources:
+  Sample1Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Stage
+  Sample1Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub sample1-api-${Stage}
+      CodeUri: src/
+      Handler: app.handler
+      Events:
+        Root:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Sample1Api, Path: /, Method: GET}
+        Health:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Sample1Api, Path: /health, Method: GET}
+Outputs:
+  ApiUrl:
+    Value: !Sub https://${Sample1Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}

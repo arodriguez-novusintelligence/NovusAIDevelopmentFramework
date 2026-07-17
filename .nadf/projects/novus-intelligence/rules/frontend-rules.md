@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Reglas frontend — Novus Intelligence Solutions.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Reglas frontend — Novus Intelligence Solutions
 
 Reglas específicas para implementación en `NovusIntelligenceWEB`.

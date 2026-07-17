@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón: Validación responsive/SEO por análisis estático (Cloud Agent).
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón: Validación responsive/SEO por análisis estático (Cloud Agent)
 
 ## Contexto

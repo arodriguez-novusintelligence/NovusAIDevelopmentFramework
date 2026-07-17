@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define Revisión de seguridad independiente sobre cambios o PRs como configuración declarativa NADF.
+# Configuración: Ajustar triggers, pasos, dependencias, gates y outputs usando referencias del proyecto.
 id: security-review
 name: Security Review
 version: "1.0.0"

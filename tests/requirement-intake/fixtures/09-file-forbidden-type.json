@@ -1,0 +1,25 @@
+{
+  "id": "09-file-forbidden-type",
+  "scenario": {
+    "attachment": {
+      "name": "payload.exe",
+      "mime_type": "application/octet-stream"
+    },
+    "allowed_file_types": [
+      "md",
+      "txt",
+      "json",
+      "yaml",
+      "csv",
+      "pdf"
+    ],
+    "event": {
+      "correlation_id": "corr-09",
+      "idempotency_key": "file|f1|file_uploaded|h"
+    }
+  },
+  "expected": {
+    "pass": false,
+    "attachment_status": "rejected"
+  }
+}

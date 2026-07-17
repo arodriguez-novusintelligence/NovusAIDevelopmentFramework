@@ -1,0 +1,18 @@
+# NADF-GUIDE
+# Propósito: Define scheduled-event-default-mapping como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
+id: scheduled-event-default-mapping
+source_definition_id: scheduled-event
+version: "1.0.0"
+field_mappings:
+  title: template.title
+  description: template.description
+  acceptance_criteria: template.acceptance_criteria
+  priority: template.priority
+  external_reference: schedule_run_id
+transformations: []
+defaults:
+  source_type: scheduled-event
+validation_rules:
+  - title_required
+  - description_required

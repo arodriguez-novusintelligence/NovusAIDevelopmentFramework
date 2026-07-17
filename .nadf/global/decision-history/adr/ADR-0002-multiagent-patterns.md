@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta ADR-0002: NADF adopta arquitectura multiagente basada en Planner, Executor, Validator, Mediator, Blackboard, Event Driven y Reflection Patterns.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # ADR-0002: NADF adopta arquitectura multiagente basada en Planner, Executor, Validator, Mediator, Blackboard, Event Driven y Reflection Patterns
 
 ## Estado

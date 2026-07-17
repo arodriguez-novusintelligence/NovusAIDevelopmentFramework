@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura visual parity check dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 /**
  * Checker de paridad visual exacta (MVP).
  * Captura screenshots de referencia Lovable vs candidato productivo y compara píxeles.

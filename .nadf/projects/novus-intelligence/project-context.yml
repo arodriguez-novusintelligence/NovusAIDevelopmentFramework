@@ -1,3 +1,6 @@
+# NADF-GUIDE
+# Propósito: Define project context como configuración declarativa NADF.
+# Configuración: Configurar ID, scope, adapters, entornos, budget y gates propios del proyecto.
 application:
   name: Novus Intelligence Solutions
   type: corporate_website
@@ -97,6 +100,25 @@ multiagent:
     auto_merge_dev: true
     auto_deploy_dev: true
     auto_deploy_prod: false
+    default_profile: visual-fast
+    routing:
+      visual_fast_when:
+        allowed_change_types: [visual, content]
+        backend_required: false
+        examples: [colors, typography, title, copy, spacing, styles]
+      fallback: full
+    profiles:
+      visual-fast:
+        agents:
+          - lovable-analyzer-agent
+          - frontend-integration-agent
+          - qa-agent
+        skipped_domains: [backend, database, cloud, infrastructure]
+        deploy_targets: [NovusIntelligenceWEB]
+        expected_duration: short
+      full:
+        agents: all_applicable
+        deploy_targets: [NovusIntelligenceWEB, NovusIntelligenceBack]
   agents_enabled:
     - framework-architect-agent
     - lovable-analyzer-agent
@@ -118,9 +140,27 @@ multiagent:
     - reflection-agent
     - knowledge-base-agent
     - adr-agent
+    # Requirement Intake (ADR-0007) — opt-in; used by workflow requirement-intake
+    - requirement-intake-agent
+    - requirement-normalization-agent
+    - requirement-classification-agent
+    - requirement-deduplication-agent
+    - requirement-validation-agent
+    - requirement-approval-agent
+    - requirement-traceability-agent
   mcp_servers:
     - github
     - aws
+
+requirement_intake:
+  enabled: opt-in
+  adr: ADR-0007-requirement-intake-layer
+  path: .nadf/projects/novus-intelligence/requirement-sources/
+  workflow: .nadf/global/workflow-library/requirement-intake.yml
+  notes:
+    - Remote sources (Jira/Slack/GitHub) ship disabled; enable after connection test
+    - Never auto-executes code from external payloads
+    - lovable-to-web keeps working without activating intake sources
 
 initial_scope:
   - landing_page
@@ -163,9 +203,13 @@ visual_parity:
 
 metadata:
   created: "2026-07-04"
-  updated: "2026-07-14"
+  updated: "2026-07-15"
   updated_by: framework-architect-agent
-  nadf_version: "2.1.0"
+  nadf_version: "1.1.0-rc.1"
+  framework_line: "2.x-product"
+  metaModel:
+    version: "1.1.0"
+  requirement_intake_adr: ADR-0007-requirement-intake-layer
   primary_workflow: lovable-to-web
   canonical_workflow: .nadf/global/workflow-library/lovable-to-web.yml
   primary_command: novus-lovable-sync

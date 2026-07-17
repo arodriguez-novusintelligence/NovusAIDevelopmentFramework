@@ -1,0 +1,47 @@
+# NADF-GUIDE
+# Propósito: Define Requirement source definition for Scheduled Event (see ADR-0007) como configuración declarativa NADF.
+# Configuración: Configurar provider, mapping, seguridad y referencias de credenciales; nunca valores.
+id: scheduled-event
+name: Scheduled Event
+type: scheduler
+provider: nadf
+version: "1.0.0"
+status: active
+description: Requirement source definition for Scheduled Event (see ADR-0007)
+supported_events:
+  - schedule_fired
+ingestion_modes:
+  - SCHEDULED
+authentication_modes:
+  - none
+capabilities:
+  - template_based_requirement
+configuration_schema:
+  required:
+    - definition_id
+    - project_id
+    - enabled
+    - ingestion_mode
+  credential_required: false
+payload_schema:
+  versioned: true
+  must_include:
+    - external_id_or_generated
+    - event_type
+initial_mapping:
+  title: template.title
+  description: template.description
+  acceptance_criteria: template.acceptance_criteria
+  priority: template.priority
+  external_reference: schedule_run_id
+limitations:
+  - "Produces Requirement from template, never direct Execution"
+risks:
+  - "Misconfigured cron flooding"
+mcp_server_recommended: scheduler
+fallback_api: "cron runner"
+security:
+  signature_validation: required_when_supported
+  idempotent: true
+  never_auto_execute: true
+  secrets: credential_reference_only

@@ -1,0 +1,13 @@
+{
+  "$schemaRef": "requirement.schema.json",
+  "instance": {
+    "schemaVersion": "1.1.0-rc.1",
+    "id": "REQ-2026-000011",
+    "source_event_id": "EVT-2026-000011",
+    "source_type": "manual",
+    "title": "X",
+    "description": "Y",
+    "status": "NOT_A_REAL_STATUS",
+    "correlation_id": "corr-schema-invalid-001"
+  }
+}

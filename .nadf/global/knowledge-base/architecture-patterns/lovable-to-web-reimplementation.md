@@ -1,3 +1,7 @@
+<!-- NADF-GUIDE
+Propósito: Documenta Patrón: Reimplementación Lovable → Web sin copia directa.
+Configuración: Actualizar contenido, enlaces y ejemplos cuando cambien los contratos relacionados.
+-->
 # Patrón: Reimplementación Lovable → Web sin copia directa
 
 ## Contexto

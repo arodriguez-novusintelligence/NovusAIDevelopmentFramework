@@ -1,3 +1,7 @@
+/* NADF-GUIDE
+ * Propósito: Implementa o configura invoke lovable analyzer dentro de NADF.
+ * Configuración: Revisar valores por entorno y mantener secretos fuera del repositorio.
+ */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { NadfAgentRuntime } from "./AgentRuntime.js";

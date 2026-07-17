@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {"machine": "requirement.yml", "from": "AWAITING_APPROVAL", "to": "APPROVED", "expect": "allow"},
+    {"machine": "requirement.yml", "from": "RECEIVED", "to": "APPROVED", "expect": "deny"},
+    {"machine": "requirement.yml", "from": "APPROVED", "to": "CONVERTED_TO_INTENT", "expect": "allow"},
+    {"machine": "execution.yml", "from": "RUNNING", "to": "COMPLETED", "expect": "allow"},
+    {"machine": "execution.yml", "from": "COMPLETED", "to": "RUNNING", "expect": "deny"},
+    {"machine": "intent.yml", "from": "DRAFT", "to": "ACCEPTED", "expect": "allow"},
+    {"machine": "intent.yml", "from": "ACCEPTED", "to": "DRAFT", "expect": "deny"},
+    {"machine": "raw-requirement-event.yml", "from": "RECEIVED", "to": "AUTHENTICATING", "expect": "allow"},
+    {"machine": "mission.yml", "from": "DRAFT", "to": "PENDING_REVIEW", "expect": "allow"},
+    {"machine": "mission.yml", "from": "DRAFT", "to": "APPROVED", "expect": "deny"},
+    {"machine": "execution-plan.yml", "from": "APPROVED", "to": "SUPERSEDED", "expect": "allow"}
+  ]
+}
