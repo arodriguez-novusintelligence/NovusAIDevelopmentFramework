@@ -4,38 +4,64 @@
   "step": "paso-09-validar-qa",
   "agent": "qa-agent",
   "agentName": "qa-agent",
-  "timestamp": "2026-07-15T18:45:00Z",
+  "timestamp": "2026-07-17T16:20:00Z",
   "runtime": "Cursor Cloud Agent (M6)",
   "targetEnvironment": {
     "name": "dev",
     "provider": "aws",
     "region": "sa-east-1"
   },
-  "planId": "PLAN-NOVUS-LOVABLE-2026-07-14",
-  "planStatus": "approved",
+  "profile": "visual-fast",
+  "qaMode": "QA_LITE",
+  "planId": "fast-path-auto-approved",
+  "planStatus": "auto_approved",
   "status": "pass",
   "qualityScore": 100,
-  "summary": "Build y lint exitosos en WEB y Back (main). Gates bloqueantes QA pasan: sin mocks prod, sin secrets, sin copia Lovable, responsive/SEO documentados. E2E contacto y paridad visual pendientes de otros agentes.",
+  "summary": "QA LITE PASS: PR cursor/hero-badge-es-5736 modifica solo copy del badge Hero (ES). Build y lint exitosos; sin secrets, mocks ni copia Lovable; diff alineado a CHG-DELTA-001.",
+  "pullRequest": {
+    "repository": "NovusIntelligenceWEB",
+    "branch": "cursor/hero-badge-es-5736",
+    "baseBranch": "main",
+    "commit": "2606051",
+    "commitMessage": "style(hero): localizar badge a español corporativo",
+    "filesChanged": 1,
+    "linesChanged": {
+      "insertions": 1,
+      "deletions": 1
+    }
+  },
   "repositories": {
-    "framework": {
-      "name": "NovusAIDevelopmentFramework",
-      "branch": "cursor/qa-validation-47b5",
-      "evaluated": true
-    },
     "frontend": {
       "name": "NovusIntelligenceWEB",
-      "branch": "main",
-      "mainBranchStatus": "implementation_merged",
+      "branch": "cursor/hero-badge-es-5736",
       "evaluated": true
     },
     "backend": {
       "name": "NovusIntelligenceBack",
-      "branch": "main",
-      "mainBranchStatus": "implementation_merged",
-      "evaluated": true
+      "evaluated": false,
+      "reason": "visual-fast profile — skipped"
+    },
+    "framework": {
+      "name": "NovusAIDevelopmentFramework",
+      "evaluated": false,
+      "reason": "artifacts only"
     }
   },
   "testsRun": [
+    {
+      "id": "npm-ci-web",
+      "repo": "NovusIntelligenceWEB",
+      "command": "npm ci",
+      "status": "pass"
+    },
+    {
+      "id": "lint-web",
+      "repo": "NovusIntelligenceWEB",
+      "command": "npm run lint --if-present",
+      "status": "pass",
+      "errors": 0,
+      "warnings": 1
+    },
     {
       "id": "build-web",
       "repo": "NovusIntelligenceWEB",
@@ -43,133 +69,98 @@
       "status": "pass"
     },
     {
-      "id": "lint-web",
-      "repo": "NovusIntelligenceWEB",
-      "command": "npm run lint",
-      "status": "pass",
-      "errors": 0,
-      "warnings": 1
-    },
-    {
-      "id": "build-back",
-      "repo": "NovusIntelligenceBack",
-      "command": "npm run build",
-      "status": "pass"
-    },
-    {
-      "id": "lint-back",
-      "repo": "NovusIntelligenceBack",
-      "command": "npm run lint",
-      "status": "pass"
-    },
-    {
-      "id": "audit-web-high",
-      "repo": "NovusIntelligenceWEB",
-      "command": "npm audit --audit-level=high",
-      "status": "pass"
-    },
-    {
       "id": "secrets-scan",
-      "repo": "all",
-      "command": "regex_scan",
+      "repo": "NovusIntelligenceWEB",
+      "command": "regex_scan_on_diff",
       "status": "pass"
     },
     {
-      "id": "mock-scan",
+      "id": "scope-scan",
       "repo": "NovusIntelligenceWEB",
-      "command": "static_pattern_scan",
-      "status": "pass"
+      "command": "diff_scope_check",
+      "status": "pass",
+      "forbiddenAreasUntouched": [
+        "backend",
+        "api",
+        "routes",
+        "package_dependencies",
+        "infrastructure"
+      ]
+    },
+    {
+      "id": "delta-alignment",
+      "repo": "NovusIntelligenceWEB",
+      "command": "compare_cambios_lovable",
+      "status": "pass",
+      "changeId": "CHG-DELTA-001"
     }
   ],
   "qualityGates": [
     {
-      "id": "plan_approved",
-      "blocking": true,
-      "status": "pass",
-      "evidence": "plan-implementacion.md status approved"
-    },
-    {
       "id": "no_lovable_code_copy",
       "blocking": true,
       "status": "pass",
-      "evidence": "Sin imports novus-nexus; reimplementación propia en WEB"
+      "evidence": "Solo cambio de string en Hero.tsx; sin imports novus-nexus"
     },
     {
       "id": "no_mock_data_in_production",
       "blocking": true,
       "status": "pass",
-      "evidence": "contact.ts bloquea VITE_DEMO_MODE y retorna error sin VITE_NOVUS_API_URL"
+      "evidence": "Sin patrones mock/fake/dummy en archivo modificado"
     },
     {
       "id": "no_secrets_in_repo",
       "blocking": true,
       "status": "pass",
-      "evidence": "Escaneo sin credenciales en WEB, Back y artifacts"
+      "evidence": "Escaneo regex sin credenciales en diff"
     },
     {
       "id": "build_success",
       "blocking": true,
       "status": "pass",
-      "evidence": "Build y lint exitosos en WEB y Back"
+      "evidence": "npm ci, npm run build y npm run lint exitosos"
     },
     {
-      "id": "responsive_validation",
+      "id": "visual_content_delta_alignment",
       "blocking": true,
       "status": "pass",
-      "evidence": "Breakpoints sm/md/lg y menú móvil presentes en 18 archivos",
-      "method": "static_code_review"
+      "evidence": "Badge ES coincide con cambios-lovable.json CHG-DELTA-001"
     },
     {
-      "id": "seo_basic_validation",
-      "blocking": false,
+      "id": "no_backend_changes",
+      "blocking": true,
       "status": "pass",
-      "evidence": "PageMetaTags en 10 rutas + 404; title/description/og configurados; h1 único por página",
-      "method": "static_code_review"
+      "evidence": "Diff exclusivo en src/components/sections/Hero.tsx"
     },
     {
       "id": "deploy_human_approval",
       "blocking": true,
       "status": "pass",
-      "evidence": "NO_DEPLOY respetado; sin despliegue ejecutado"
+      "evidence": "NO_DEPLOY respetado"
     }
   ],
-  "planAlignment": {
-    "status": "partial",
-    "completedPhases": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5
-    ],
-    "pendingPhases": [
-      6,
-      7
-    ],
-    "gaps": [
-      "E2E contact API test blocked by NO_DEPLOY",
-      "pipeline-config.md missing (TASK-DEVOPS-001)",
-      "visual_exact_parity gate pending (visual-parity-agent)",
-      "security-result.json outdated — revalidation required on main"
-    ]
-  },
   "lintWarnings": [
     {
       "file": "src/router.tsx",
       "line": 35,
       "rule": "react-refresh/only-export-components",
-      "repo": "NovusIntelligenceWEB"
+      "repo": "NovusIntelligenceWEB",
+      "introducedByPr": false
     }
   ],
+  "deltaVerified": {
+    "changeId": "CHG-DELTA-001",
+    "type": "content",
+    "component": "Hero",
+    "before": "Building Autonomous Intelligence",
+    "after": "Inteligencia Autónoma para Empresas",
+    "matched": true
+  },
   "blockers": [],
   "followUp": [
-    "Re-ejecutar security-agent sobre main (SEC-REVAL)",
-    "E2E contacto tras deploy aprobado (QA-002)",
-    "Validación paridad visual formal (VP-001)",
-    "Documentar pipeline CI (DEVOPS-001)"
+    "Opcional: sincronizar meta tags EN residual en iteración futura (frontend-impact.md)"
   ],
-  "nextAgentSuggested": "security-agent",
+  "nextAgentSuggested": "none",
   "artifactsProduced": [
     "artifacts/informe-qa.md",
     "artifacts/qa-result.json"
