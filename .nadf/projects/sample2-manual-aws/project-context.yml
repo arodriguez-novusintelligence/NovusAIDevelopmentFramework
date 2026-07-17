@@ -10,6 +10,13 @@ source:
   adapter: manual
   intake: examples/sample2-manual-aws/initiative.yml
   mode: initiative-batch
+  target_repo: https://github.com/arodriguez-novusintelligence/sample2.git
+  approval_mode: automatic
+runtime:
+  cycle: light-auto
+  entrypoint: tools/nadf-fast-cycle/run_auto.py
+  agents: [backend-cloud]
+  human_approvals: disabled
 scope:
   allowed_paths: [examples/sample2-manual-aws, .nadf/projects/sample2-manual-aws]
   forbidden_repositories: [NovusIntelligenceWEB, NovusIntelligenceBack, novus-nexus]

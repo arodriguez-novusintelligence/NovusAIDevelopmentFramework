@@ -51,8 +51,11 @@ def build_report(data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
         "source": data.get("source", {}),
         "environment": data.get("environment", "dev"),
         "approvals": data.get("approvals", []),
+        "agent": data.get("agent", {}),
         "steps": steps,
         "endpoints": data.get("endpoints", []),
+        "smokeTests": data.get("smokeTests", []),
+        "usageExamples": data.get("usageExamples", {}),
         "artifacts": data.get("artifacts", []),
         "nextAction": "correct-and-rerun" if failures else "review-evidence",
     }
