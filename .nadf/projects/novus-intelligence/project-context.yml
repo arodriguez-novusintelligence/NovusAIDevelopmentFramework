@@ -100,6 +100,25 @@ multiagent:
     auto_merge_dev: true
     auto_deploy_dev: true
     auto_deploy_prod: false
+    default_profile: visual-fast
+    routing:
+      visual_fast_when:
+        allowed_change_types: [visual, content]
+        backend_required: false
+        examples: [colors, typography, title, copy, spacing, styles]
+      fallback: full
+    profiles:
+      visual-fast:
+        agents:
+          - lovable-analyzer-agent
+          - frontend-integration-agent
+          - qa-agent
+        skipped_domains: [backend, database, cloud, infrastructure]
+        deploy_targets: [NovusIntelligenceWEB]
+        expected_duration: short
+      full:
+        agents: all_applicable
+        deploy_targets: [NovusIntelligenceWEB, NovusIntelligenceBack]
   agents_enabled:
     - framework-architect-agent
     - lovable-analyzer-agent

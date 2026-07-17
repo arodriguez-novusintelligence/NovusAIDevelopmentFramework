@@ -5,6 +5,7 @@
 #
 # Modes:
 #   smoke  = prueba de cableado (agentes mínimos + post smoke). NO merge/deploy. Arquetipo intacto.
+#   visual-fast = analyzer + frontend + QA lite + deploy WEB; fallback automático a full.
 #   full   = pipeline completo + gates desde artifacts frescos (PRs Cloud). Protect archetype by default.
 #   deploy-only / parity-only = utilidades
 #
@@ -17,11 +18,11 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "smoke = cableado; full = pipeline+gates; deploy-only; parity-only"
+        description: "visual-fast = cambios diseño/copy; full = pipeline completo; smoke/utilidades"
         required: true
         default: full
         type: choice
-        options: [smoke, full, deploy-only, parity-only]
+        options: [visual-fast, smoke, full, deploy-only, parity-only]
       auto_merge:
         description: "Merge PRs productivos a main tras gates PASS (DEV)"
         required: true
@@ -32,6 +33,14 @@ on:
         required: true
         default: true
         type: boolean
+      source_sha:
+        description: "Commit Lovable que originó la ejecución"
+        required: false
+        type: string
+      source_ref:
+        description: "Ref Lovable que originó la ejecución"
+        required: false
+        type: string
 
 concurrency:
   group: lovable-sync-dev
@@ -39,7 +48,7 @@ concurrency:
 
 jobs:
   pipeline:
-    if: ${{ github.event_name == 'repository_dispatch' || inputs.mode == 'full' || inputs.mode == 'smoke' }}
+    if: ${{ github.event_name == 'repository_dispatch' || inputs.mode == 'visual-fast' || inputs.mode == 'full' || inputs.mode == 'smoke' }}
     runs-on: ubuntu-latest
     environment: dev
     timeout-minutes: 360
@@ -92,6 +101,69 @@ jobs:
         run: |
           npm run invoke:lovable-analyzer
           npm run post-pipeline-dev
+      - name: Visual fast — classify → WEB only → QA lite → DEV
+        if: ${{ steps.mode.outputs.mode == 'visual-fast' }}
+        working-directory: prototypes/m6-cloud-agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          NADF_SMOKE_TEST: "false"
+          NADF_PROTECT_ARCHETYPE: "false"
+          NADF_AUTO_MERGE_DEV: "true"
+          NADF_AUTO_DEPLOY_DEV: "true"
+          NADF_REQUIRE_VISUAL_PARITY: "false"
+          NADF_ARTIFACTS_REMOTE_ONLY: "true"
+          NADF_AUTO_CREATE_PR: "true"
+          NADF_EXECUTION_PROFILE: "visual-fast"
+          NADF_DEPLOY_TARGETS: "web"
+          NADF_PROJECT_ID: novus-intelligence
+          NADF_MODEL: ${{ vars.NADF_MODEL || 'composer-2.5' }}
+          NADF_REPO_FRAMEWORK: ${{ vars.NADF_REPO_FRAMEWORK || 'https://github.com/arodriguez-novusintelligence/NovusAIDevelopmentFramework.git' }}
+          NADF_REPO_LOVABLE: ${{ vars.NADF_REPO_LOVABLE || 'https://github.com/arodriguez-novusintelligence/novus-nexus.git' }}
+          NADF_REPO_FRONTEND: ${{ vars.NADF_REPO_FRONTEND || 'https://github.com/arodriguez-novusintelligence/NovusIntelligenceWEB.git' }}
+          NADF_REF_FRAMEWORK: feature/novus-intelligence
+          NADF_REF_LOVABLE: ${{ vars.NADF_REF_LOVABLE || 'main' }}
+          NADF_TARGET_ENV: dev
+          NADF_TARGET_REGION: sa-east-1
+          NADF_DEV_FRONTEND_URL: ${{ vars.NADF_DEV_FRONTEND_URL || 'https://d1bfu6klutpp8m.cloudfront.net' }}
+        shell: bash
+        run: |
+          export NADF_PIPELINE_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "NADF_PIPELINE_STARTED_AT=$NADF_PIPELINE_STARTED_AT" >> "$GITHUB_ENV"
+
+          npm run invoke:lovable-analyzer
+          npm run route:lovable-change
+          ROUTE="$(jq -r '.route' route-decision.json)"
+          ANALYZER_REF="$(jq -r '.ref // empty' route-decision.json)"
+          echo "route=$ROUTE" >> "$GITHUB_OUTPUT"
+
+          if [ "$ROUTE" != "visual-fast" ]; then
+            echo "Cambio funcional/estructural: re-dispatch al pipeline full"
+            gh workflow run "Lovable sync DEV" \
+              --repo arodriguez-novusintelligence/NovusAIDevelopmentFramework \
+              --ref feature/novus-intelligence \
+              -f mode=full -f auto_merge=true -f auto_deploy_dev=true
+            exit 0
+          fi
+
+          if [ -z "$ANALYZER_REF" ]; then
+            echo "No se pudo resolver el PR fresco del analyzer" >&2
+            exit 4
+          fi
+          export NADF_REF_FRAMEWORK="$ANALYZER_REF"
+          npm run invoke:remaining-pipeline
+          npm run post-pipeline-dev
+
+          {
+            echo "# NADF Lovable visual-fast"
+            echo
+            echo "- Ruta: **visual-fast**"
+            echo "- Agentes: analyzer, frontend-integration, qa-lite"
+            echo "- Omitidos: planner, architect, backend, database, cloud, security-full, knowledge"
+            echo "- Deploy target: **NovusIntelligenceWEB / DEV**"
+            echo "- Backend deploy: **omitido**"
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Full lovable-to-web pipeline
         if: ${{ steps.mode.outputs.mode == 'full' }}
         working-directory: prototypes/m6-cloud-agent
@@ -132,6 +204,16 @@ jobs:
             echo "WARN: sin NADF_LOVABLE_REFERENCE_URL — checker de píxeles omitido"
           fi
           npm run post-pipeline-dev
+      - name: Upload NADF execution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nadf-lovable-${{ github.run_id }}
+          path: |
+            prototypes/m6-cloud-agent/route-decision.json
+            prototypes/m6-cloud-agent/pipeline-results.json
+            .nadf/projects/novus-intelligence/artifacts/
+          if-no-files-found: warn
 
   parity_only:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'parity-only' }}

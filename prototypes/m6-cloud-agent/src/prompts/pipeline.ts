@@ -11,6 +11,7 @@ const ART = (p: string) => `.nadf/projects/${p}/artifacts`;
 
 export function buildPipelinePrompt(inv: AgentInvocation): string {
   const a = ART(inv.projectId);
+  const visualFast = inv.constraints.includes("VISUAL_CONTENT_ONLY");
   const common = `
 Eres el agente NADF: ${inv.agentId}.
 ANTES DE ACTUAR LEE: CLAUDE.md → docs/meta-model/meta-model-overview.md →
@@ -21,7 +22,12 @@ WORKFLOW: ${inv.workflowId}
 PASO: ${inv.stepId}
 RUNTIME: Cursor Cloud Agent (M6)
 TARGET_ENV: DEV AWS sa-east-1
-PLAN: ${a}/plan-implementacion.md (debe estar approved)
+PROFILE: ${visualFast ? "visual-fast (cambio visual/content simple, sin backend)" : "full"}
+PLAN: ${
+    visualFast
+      ? "fast path auto-aprobado; usar cambios-lovable.json + frontend-impact.md"
+      : `${a}/plan-implementacion.md (debe estar approved)`
+  }
 CONSTRAINTS:
 ${inv.constraints.map((c) => `- ${c}`).join("\n")}
 EXPECTED OUTPUTS:
@@ -42,6 +48,22 @@ nextAgentSuggested: <id o none>
 
   switch (inv.agentId) {
     case "frontend-integration-agent":
+      if (visualFast) {
+        return `${common}
+DEBES aplicar ÚNICAMENTE el delta visual/content del último commit de novus-nexus
+en NovusIntelligenceWEB: colores, tipografía, texto/título, spacing o estilos.
+Lee ${a}/cambios-lovable.json y ${a}/frontend-impact.md desde el PR fresco del analyzer.
+
+REGLAS ESTRICTAS:
+- Reimplementa la intención; NO copies código Lovable.
+- No cambies rutas, APIs, formularios, estado, dependencias, backend ni infraestructura.
+- Si detectas cambio functional/structural o backend, BLOQUEA y recomienda profile full.
+- Stack productivo: React + TypeScript + Tailwind + Vite.
+- Ejecuta build/lint si están disponibles.
+- Crea PR SOLO en NovusIntelligenceWEB y ${a}/resumen-frontend.md en Framework.
+- NO desplegar; el post-pipeline hará merge y Deploy DEV.
+${footer}`;
+      }
       return `${common}
 DEBES implementar el sitio productivo en NovusIntelligenceWEB según plan aprobado y
 ${a}/frontend-impact.md, ${a}/cambios-lovable.json, ${a}/impacto-arquitectonico.md.
@@ -96,6 +118,17 @@ NO desplegar. Solo propuesta IaC / checklist de deploy humano.
 ${footer}`;
 
     case "qa-agent":
+      if (visualFast) {
+        return `${common}
+QA LITE para cambio visual/content:
+- Revisa SOLO el PR fresco de NovusIntelligenceWEB.
+- Verifica que el diff no toca backend, APIs, rutas, package dependencies ni infraestructura.
+- Ejecuta npm ci, npm run lint --if-present y npm run build.
+- Verifica ausencia de secretos y que el cambio corresponde al delta visual/content.
+- Genera ${a}/informe-qa.md y ${a}/qa-result.json con status PASS|FAIL.
+- NO modifiques lógica productiva ni NovusIntelligenceBack.
+${footer}`;
+      }
       return `${common}
 Valida calidad del trabajo en repos productivos + artifacts.
 Criterios: build/lint si posible, no mocks prod, no secrets, responsive/SEO básico documentado,

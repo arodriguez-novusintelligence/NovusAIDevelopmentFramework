@@ -37,6 +37,12 @@ ${invocation.inputs.map((i) => `- ${i}`).join("\n")}
 DEBES:
 - Analizar cambios en el repositorio Lovable (novus-nexus) respecto a la intención visual/funcional.
 - Clasificar cambios (visual | functional | content | structural).
+- Analizar PRIMERO el delta del último commit Lovable, no volver a clasificar todo el sitio.
+- En cambios-lovable.json incluir summary.latestDelta.changeTypes (lista),
+  summary.latestDelta.backendRequired (boolean) y summary.route.
+- summary.route debe ser "visual-fast" SOLO cuando TODOS los cambios del último
+  commit sean visual/content (colores, fuentes, textos, títulos, spacing o estilos),
+  sin cambio functional/structural y sin backend. En cualquier otro caso usar "full".
 - Generar SOLO los artifacts listados abajo bajo ${artifactRoot}/
 - Cumplir prohibiciones del agente (no implementar, no copiar Lovable, no mocks productivos).
 - Si novus-nexus no está accesible o no hay diffs, documentar blocker en riesgos.md y status blocked.
