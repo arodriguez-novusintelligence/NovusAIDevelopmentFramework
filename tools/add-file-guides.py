@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MARKER = "NADF-GUIDE"
 EXTENSIONS = {".md", ".yml", ".yaml", ".py", ".html", ".htm", ".css", ".js", ".ts", ".sh", ".ps1", ".txt"}
+SPECIAL_NAMES = {".gitignore", ".env.example"}
 
 
 def tracked_files() -> list[Path]:
@@ -63,6 +64,8 @@ def purpose(path: Path, text: str) -> str:
         return f"Presenta {title.group(1).strip() if title else fallback} en formato HTML."
     if rel == ".gitignore":
         return "Excluye secretos, dependencias, outputs generados y estado local del control de versiones."
+    if path.name == ".env.example":
+        return "Plantilla de variables de entorno para ejecución local o CI."
     if path.name == "requirements.txt":
         return "Declara dependencias Python necesarias para validar y operar herramientas NADF."
     return f"Implementa o configura {fallback} dentro de NADF."
@@ -100,6 +103,8 @@ def configuration(path: Path, text: str) -> str:
         return "No requiere configuración directa; conservar rutas relativas y ejecución determinista."
     if rel == ".gitignore":
         return "Añadir patrones de estado local; mantener visibles templates y archivos .env.example."
+    if path.name == ".env.example":
+        return "Copiar a .env (ignorado) y completar valores; nunca versionar secretos reales."
     if path.name == "requirements.txt":
         return "Fijar rangos compatibles y validar instalación en el runtime Python soportado."
     return "Revisar valores por entorno y mantener secretos fuera del repositorio."
@@ -111,7 +116,7 @@ def guide(path: Path, text: str) -> str:
     suffix = path.suffix.lower()
     if suffix == ".md":
         return f"<!-- {MARKER}\nPropósito: {p}\nConfiguración: {c}\n-->\n"
-    if suffix in {".yml", ".yaml", ".py", ".sh", ".ps1", ".txt"} or path.name == ".gitignore":
+    if suffix in {".yml", ".yaml", ".py", ".sh", ".ps1", ".txt"} or path.name in SPECIAL_NAMES:
         return f"# {MARKER}\n# Propósito: {p}\n# Configuración: {c}\n"
     if suffix in {".js", ".ts", ".css"}:
         return f"/* {MARKER}\n * Propósito: {p}\n * Configuración: {c}\n */\n"
@@ -144,7 +149,7 @@ def write_preserving_format(path: Path, text: str, had_bom: bool, newline: str) 
 def process(path: Path) -> bool:
     if not path.is_file():
         return False
-    if path.suffix.lower() not in EXTENSIONS and path.name != ".gitignore":
+    if path.suffix.lower() not in EXTENSIONS and path.name not in SPECIAL_NAMES:
         return False
     raw = path.read_bytes()
     had_bom = raw.startswith(b"\xef\xbb\xbf")
