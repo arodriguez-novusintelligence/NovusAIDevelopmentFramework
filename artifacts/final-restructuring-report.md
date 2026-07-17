@@ -10,6 +10,10 @@ Fecha: 2026-07-17
 
 - Ola 1 (fundación): PASS.
 - Ola 2 (demos locales, reporter y paralelo): PASS.
+- Rama `main`: Customer Distribution limpia, sin proyecto ni runtime
+  `novus-intelligence`.
+- Rama `feature/novus-intelligence`: conserva el proyecto vivo, workflow
+  Lovable, runtime M6 y artifacts operativos.
 - Deploy AWS DEV: SKIPPED por diseño seguro. La sesión tiene credenciales de
   usuario IAM, no el rol OIDC requerido, y SAM CLI no está instalado.
 - Deploy PROD: FORBIDDEN.
