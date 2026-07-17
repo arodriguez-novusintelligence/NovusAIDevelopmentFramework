@@ -16,8 +16,11 @@ table{border-collapse:collapse;width:100%}td,th{border:1px solid var(--line);pad
 <p>a <code>examples/sample1-app/</code> → pruebas → AWS DEV <code>sample1-*</code>.</p>
 <p>Nunca escribe en repositorios del producto Novus.</p>
 <h2>Sample 2</h2>
-<p>Entrada <code>manual-request.yml</code> → plan greenfield → Lambda + DynamoDB + Function</p>
-<p>URL → pruebas → AWS DEV <code>sample2-*</code>.</p>
+<p>Entrada <code>initiative.yml</code> (iniciativa con varios requerimientos en</p>
+<p><code>requests/REQ-*.yml</code>) → intake y gate de aprobación por requerimiento →</p>
+<p>pruebas por requerimiento → API REST (2 Lambdas + DynamoDB) → AWS DEV</p>
+<p><code>sample2-*</code>. El runner <code>run_nadf.py</code> genera la evidencia y reporta las URLs</p>
+<p>de los endpoints desplegados.</p>
 <h2>Uso</h2>
 <p>Los samples sirven para demostración y capacitación. Una Customer Distribution</p>
 <p>puede copiarlos como plantilla, pero no comparte sus stacks con Novus ni con</p>

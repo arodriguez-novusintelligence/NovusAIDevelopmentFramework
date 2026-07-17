@@ -1,0 +1,17 @@
+# NADF-GUIDE
+# Propósito: Requerimiento manual REQ-001 — API REST de cálculo.
+# Configuración: Ajustar criterios y approver; approval.status debe ser granted para ejecutar.
+id: REQ-001-calculadora
+title: API REST de cálculo
+description: Exponer POST /calculate para sumar, restar, multiplicar y dividir; registrar el resultado.
+endpoint: POST /calculate
+lambda: sample2-calculator-dev
+acceptance_criteria:
+  - Operaciones válidas responden 200 con result
+  - División por cero responde 400
+  - El resultado se persiste en DynamoDB
+approval:
+  status: granted
+  approver: product-owner
+tests:
+  - examples/sample2-manual-aws/tests/test_calculator.py

@@ -1,0 +1,18 @@
+# NADF-GUIDE
+# Propósito: Define la iniciativa sample2 con varios requerimientos manuales de una misma release.
+# Configuración: Añadir/quitar archivos en requirements[]; mantener environment dev y PROD prohibido.
+initiative:
+  id: sample2-calculator-release-1
+  title: Calculadora serverless auditable (release 1)
+  source: manual
+  environment: dev
+  production_deploy: forbidden
+  execution: sequential
+  max_concurrency: 3
+  stack_name: sample2-calculator-dev
+  aws_region: sa-east-1
+
+requirements:
+  - file: requests/REQ-001-calculadora.yml
+  - file: requests/REQ-002-historial.yml
+  - file: requests/REQ-003-health.yml

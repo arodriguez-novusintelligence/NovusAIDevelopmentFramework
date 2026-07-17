@@ -39,3 +39,4 @@ prototypes/**/.env
 # Generated NADF execution evidence
 .nadf/projects/*/output/**
 !.nadf/projects/*/output/README.md
+examples/*/last-run.json

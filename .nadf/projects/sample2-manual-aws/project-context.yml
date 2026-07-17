@@ -8,6 +8,8 @@ project:
   application_path: examples/sample2-manual-aws
 source:
   adapter: manual
+  intake: examples/sample2-manual-aws/initiative.yml
+  mode: initiative-batch
 scope:
   allowed_paths: [examples/sample2-manual-aws, .nadf/projects/sample2-manual-aws]
   forbidden_repositories: [NovusIntelligenceWEB, NovusIntelligenceBack, novus-nexus]

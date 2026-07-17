@@ -2,17 +2,27 @@
   "schemaVersion": "1.0",
   "projectId": "sample2-manual-aws",
   "runId": "sample2-dry-run-001",
-  "source": {"adapter": "manual", "reference": "manual-request.yml"},
+  "source": {"adapter": "manual", "reference": "initiative.yml", "initiative": "sample2-calculator-release-1"},
   "environment": "dev",
   "humanWaitMs": 0,
   "estimatedTokens": 0,
   "skippedAgents": ["frontend", "visual-parity"],
-  "approvals": [{"gate": "requirement", "status": "SIMULATED"}],
+  "approvals": [
+    {"gate": "requirement:REQ-001-calculadora", "status": "GRANTED", "approver": "product-owner"},
+    {"gate": "requirement:REQ-002-historial", "status": "GRANTED", "approver": "product-owner"},
+    {"gate": "requirement:REQ-003-health", "status": "GRANTED", "approver": "product-owner"}
+  ],
   "steps": [
     {"id": "intake", "status": "PASS", "durationMs": 4, "estimatedCostUsd": 0},
-    {"id": "unit-tests", "status": "PASS", "durationMs": 100, "estimatedCostUsd": 0},
-    {"id": "sam-template", "status": "PASS", "durationMs": 10, "estimatedCostUsd": 0},
+    {"id": "tests-REQ-001-calculadora", "status": "PASS", "durationMs": 100, "estimatedCostUsd": 0},
+    {"id": "tests-REQ-002-historial", "status": "PASS", "durationMs": 90, "estimatedCostUsd": 0},
+    {"id": "tests-REQ-003-health", "status": "PASS", "durationMs": 95, "estimatedCostUsd": 0},
     {"id": "deploy-dev", "status": "SKIPPED", "durationMs": 0, "estimatedCostUsd": 0}
   ],
-  "artifacts": ["examples/sample2-manual-aws/template.yml"]
+  "endpoints": [
+    {"requirement": "REQ-001-calculadora", "api": "POST /calculate", "url": "PENDIENTE-DEPLOY"},
+    {"requirement": "REQ-002-historial", "api": "GET /history", "url": "PENDIENTE-DEPLOY"},
+    {"requirement": "REQ-003-health", "api": "GET /health", "url": "PENDIENTE-DEPLOY"}
+  ],
+  "artifacts": ["examples/sample2-manual-aws/template.yml", "examples/sample2-manual-aws/initiative.yml"]
 }

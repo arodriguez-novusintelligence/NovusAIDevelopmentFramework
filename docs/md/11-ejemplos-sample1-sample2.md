@@ -13,8 +13,11 @@ Nunca escribe en repositorios del producto Novus.
 
 ## Sample 2
 
-Entrada `manual-request.yml` → plan greenfield → Lambda + DynamoDB + Function
-URL → pruebas → AWS DEV `sample2-*`.
+Entrada `initiative.yml` (iniciativa con varios requerimientos en
+`requests/REQ-*.yml`) → intake y gate de aprobación por requerimiento →
+pruebas por requerimiento → API REST (2 Lambdas + DynamoDB) → AWS DEV
+`sample2-*`. El runner `run_nadf.py` genera la evidencia y reporta las URLs
+de los endpoints desplegados.
 
 ## Uso
 
