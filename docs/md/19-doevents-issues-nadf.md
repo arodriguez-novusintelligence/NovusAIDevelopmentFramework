@@ -12,8 +12,19 @@ Con label `nadf`, NADF:
 1. Clasifica complejidad (Complexity Routing).
 2. Elige WEB, Back o ambos.
 3. Invoca Cloud Agent **solo** para ese issue (aislamiento).
-4. Versiona en `feature/NovusAIDevelopmentFramework`.
-5. Valida build y despliega WEB DEV cuando AWS OIDC está configurado.
+4. Abre PR(s) y **auto-merge** a `feature/NovusAIDevelopmentFramework` (DEV).
+5. Valida build y **despliega WEB DEV** cuando AWS OIDC está configurado.
+
+## Auto-merge / Deploy DEV
+
+| Var (repo DoEventsWEB) | Default | Efecto |
+|------------------------|---------|--------|
+| `NADF_AUTO_MERGE_DEV` | `true` | Mergea PRs del issue hacia la rama NADF |
+| `NADF_AUTO_DEPLOY_DEV` | `true` | Despliega a `dev.doeventsapp.com` tras build |
+| `AWS_ROLE_ARN` | (requerida) | OIDC para assume-role DEV |
+| `skip_merge` / `skip_deploy` | false | Inputs de `workflow_dispatch` |
+
+**PROD:** forbidden. No hay auto-merge ni auto-deploy productivo.
 
 ## Secrets / vars (DoEventsWEB)
 
