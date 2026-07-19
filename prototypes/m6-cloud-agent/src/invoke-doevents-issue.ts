@@ -17,9 +17,12 @@ async function main(): Promise<void> {
     (process.env.NADF_AUTO_CREATE_PR || "true").toLowerCase() !== "false";
 
   if (!apiKey || !promptFile || !reposCsv) {
-    throw new Error(
-      "Faltan CURSOR_API_KEY, NADF_PROMPT_FILE o NADF_TARGET_REPOS",
-    );
+    const missing = [
+      !apiKey ? "CURSOR_API_KEY" : null,
+      !promptFile ? "NADF_PROMPT_FILE" : null,
+      !reposCsv ? "NADF_TARGET_REPOS" : null,
+    ].filter(Boolean);
+    throw new Error(`Faltan variables: ${missing.join(", ")}`);
   }
 
   const repos = reposCsv
