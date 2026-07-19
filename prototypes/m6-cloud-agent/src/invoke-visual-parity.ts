@@ -8,7 +8,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { NadfAgentRuntime } from "./AgentRuntime.js";
-import { CursorCloudAdapter } from "./adapters/CursorCloudAdapter.js";
+import { createAdapter } from "./ai-runtime/index.js";
 import { buildPipelinePrompt } from "./prompts/pipeline.js";
 import { assertPatternGuards } from "./guards.js";
 import type { AgentInvocation, RepoRef } from "./types.js";
@@ -106,7 +106,7 @@ async function main(): Promise<void> {
   }
 
   console.log("[nadf:m6] Invocando visual-parity-agent…");
-  const adapter = new CursorCloudAdapter(apiKey, model);
+  const adapter = createAdapter({ apiKey, modelId: model });
   const prompt = buildPipelinePrompt(invocation);
   const result = await adapter.execute(invocation, prompt);
   console.log(JSON.stringify(result, null, 2));

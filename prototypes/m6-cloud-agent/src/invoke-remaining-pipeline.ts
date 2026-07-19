@@ -9,7 +9,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { NadfAgentRuntime } from "./AgentRuntime.js";
-import { CursorCloudAdapter } from "./adapters/CursorCloudAdapter.js";
+import { createAdapter } from "./ai-runtime/index.js";
 import { buildPipelinePrompt } from "./prompts/pipeline.js";
 import { buildAgentPrompt } from "./prompts/lovable-analyzer.js";
 import type {
@@ -283,7 +283,7 @@ async function runStep(
     ? originalBuild(invocation)
     : buildPipelinePrompt(invocation);
 
-  const adapter = (runtime as any).adapter as CursorCloudAdapter;
+  const adapter = runtime.adapter;
   const result = await adapter.execute(invocation, prompt);
 
   // Prefer continuing framework from latest agent branch if git info present
@@ -294,13 +294,12 @@ async function runStep(
 
 async function main(): Promise<void> {
   loadDotEnv();
-  const apiKey = requireEnv("CURSOR_API_KEY");
   const model = process.env.NADF_MODEL?.trim() || "composer-2.5";
   let frameworkRef =
     process.env.NADF_REF_FRAMEWORK?.trim() ||
     "cursor/validar-arquitectura-paso03-5e70";
 
-  const adapter = new CursorCloudAdapter(apiKey, model);
+  const adapter = createAdapter({ modelId: model });
   const runtime = new NadfAgentRuntime(adapter);
 
   const results: { step: string; status: string; summary: string; agentRuntimeId?: string; runId?: string }[] =

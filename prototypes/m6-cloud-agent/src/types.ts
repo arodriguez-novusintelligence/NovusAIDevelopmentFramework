@@ -45,7 +45,13 @@ export interface AgentInvocation {
 
 export interface AgentResult {
   status: "finished" | "error" | "cancelled" | "blocked";
-  runtime: "cursor-cloud" | "cursor-local" | "claude-code" | "other";
+  runtime:
+    | "cursor-cloud"
+    | "cursor-local"
+    | "claude-code"
+    | "anthropic"
+    | "noop"
+    | "other";
   agentRuntimeId?: string;
   runId?: string;
   filesChanged: string[];
@@ -62,6 +68,8 @@ export interface AgentResult {
 
 export interface AgentRuntime {
   invoke(invocation: AgentInvocation): Promise<AgentResult>;
+  /** Expuesto para pipelines que necesitan el adapter sin cast a Cursor. */
+  readonly adapter: RuntimeAdapter;
 }
 
 export interface RuntimeAdapter {

@@ -1,0 +1,49 @@
+# NADF-GUIDE
+# Propósito: Catálogo de providers de IA (Inference + Coding Runtime) — independencia de vendor.
+# Configuración: Seleccionar vía NADF_CODING_RUNTIME / enterprise-governance/ai-runtime.yml.
+version: "1.0"
+principle: provider_independence
+
+# Claude.ai (chat) NO es un provider de este catálogo.
+# Anthropic API ≠ Coding Runtime con repo_write/pr (v1 solo inferencia).
+
+coding_runtimes:
+  cursor-cloud:
+    kind: coding_runtime
+    description: Cursor Cloud Agent — repos remotos, tools, PR, stream durable.
+    capabilities: [invoke, stream, pr, resume, repo_write]
+    required_secrets: [CURSOR_API_KEY]
+    model_env: NADF_MODEL
+    default_model: composer-2.5
+    adapter: CursorCloudAdapter
+
+  anthropic:
+    kind: coding_runtime
+    description: >
+      Anthropic Messages API (inferencia). NO soporta pr/repo_write en v1.
+      Usar solo para pasos de texto/estructurados (dryRun o sin autoCreatePR).
+    capabilities: [invoke]
+    required_secrets: [ANTHROPIC_API_KEY]
+    model_env: NADF_MODEL
+    default_model: claude-sonnet-4-20250514
+    adapter: AnthropicInferenceAdapter
+    notes:
+      - Claude.ai subscription no autentica este adaptador.
+      - Pasos con autoCreatePR o repos productivos → blocked.
+
+  noop:
+    kind: coding_runtime
+    description: Dry-run / CI sin llamar vendors.
+    capabilities: [invoke]
+    required_secrets: []
+    adapter: NoopAdapter
+
+inference_providers:
+  cursor-hosted:
+    description: Inferencia embebida en cursor-cloud.
+    used_by: [cursor-cloud]
+  anthropic:
+    description: Anthropic Messages API.
+    used_by: [anthropic]
+    auth: ANTHROPIC_API_KEY
+    not: claude_ai_web_login

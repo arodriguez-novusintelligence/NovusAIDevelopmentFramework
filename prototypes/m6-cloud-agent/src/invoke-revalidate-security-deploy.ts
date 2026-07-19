@@ -8,7 +8,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { CursorCloudAdapter } from "./adapters/CursorCloudAdapter.js";
+import { createAdapter } from "./ai-runtime/index.js";
 import { assertPatternGuards } from "./guards.js";
 import type { AgentInvocation, RepoRef } from "./types.js";
 
@@ -49,7 +49,7 @@ async function main(): Promise<void> {
 
   const apiKey = requireEnv("CURSOR_API_KEY");
   const model = process.env.NADF_MODEL?.trim() || "composer-2.5";
-  const adapter = new CursorCloudAdapter(apiKey, model);
+  const adapter = createAdapter({ apiKey, modelId: model });
   const projectId = process.env.NADF_PROJECT_ID?.trim() || "novus-intelligence";
   const a = `.nadf/projects/${projectId}/artifacts`;
 

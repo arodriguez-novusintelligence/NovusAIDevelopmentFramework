@@ -17,6 +17,7 @@
     "build:doevents-prompt": "tsx src/build-doevents-prompt.ts",
     "invoke:doevents-issue": "tsx src/invoke-doevents-issue.ts",
     "test:complexity-routing": "tsx tests/complexity-routing/run-corpus.ts",
+    "test:ai-runtime": "tsx tests/ai-runtime/factory-corpus.ts",
     "invoke:visual-parity": "tsx src/invoke-visual-parity.ts",
     "invoke:full-pipeline": "tsx src/invoke-full-pipeline.ts",
     "invoke:remediate-cors": "tsx src/invoke-remediate-cors.ts",

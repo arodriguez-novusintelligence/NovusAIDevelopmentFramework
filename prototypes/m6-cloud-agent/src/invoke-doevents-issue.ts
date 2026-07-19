@@ -1,24 +1,21 @@
 /* NADF-GUIDE
- * Propósito: Invoca Cloud Agent(s) DoEvents en feature/NovusAIDevelopmentFramework.
- * Configuración: CURSOR_API_KEY, NADF_PROMPT_FILE, NADF_TARGET_REPOS (CSV), NADF_STARTING_REF.
+ * Propósito: Invoca coding runtime(s) DoEvents vía factory (default Cursor Cloud).
+ * Configuración: NADF_CODING_RUNTIME, NADF_PROMPT_FILE, NADF_TARGET_REPOS, NADF_STARTING_REF.
  */
 import { readFile } from "node:fs/promises";
-import { Agent, CursorAgentError } from "@cursor/sdk";
+import { executeCodingPrompt } from "./execute-coding-prompt.js";
 
 async function main(): Promise<void> {
-  const apiKey = process.env.CURSOR_API_KEY?.trim();
   const promptFile = process.env.NADF_PROMPT_FILE?.trim();
   const reposCsv = process.env.NADF_TARGET_REPOS?.trim();
   const startingRef =
     process.env.NADF_STARTING_REF?.trim() ||
     "feature/NovusAIDevelopmentFramework";
-  const model = process.env.NADF_MODEL?.trim() || "composer-2.5";
   const autoCreatePR =
     (process.env.NADF_AUTO_CREATE_PR || "true").toLowerCase() !== "false";
 
-  if (!apiKey || !promptFile || !reposCsv) {
+  if (!promptFile || !reposCsv) {
     const missing = [
-      !apiKey ? "CURSOR_API_KEY" : null,
       !promptFile ? "NADF_PROMPT_FILE" : null,
       !reposCsv ? "NADF_TARGET_REPOS" : null,
     ].filter(Boolean);
@@ -34,61 +31,33 @@ async function main(): Promise<void> {
   const results: Array<Record<string, unknown>> = [];
 
   for (const repo of repos) {
-    let agentId: string | undefined;
-    let runId: string | undefined;
     const repoStarted = Date.now();
-    try {
-      await using agent = await Agent.create({
-        apiKey,
-        model: { id: model },
-        cloud: {
-          repos: [{ url: repo, startingRef }],
-          autoCreatePR,
-          skipReviewerRequest: true,
-        },
-      });
-      agentId = agent.agentId;
-      console.log(`[nadf:doevents] repo=${repo} agentId=${agentId} ref=${startingRef}`);
-
-      const run = await agent.send(prompt);
-      runId = run.id;
-      for await (const event of run.stream()) {
-        if (event.type !== "assistant") continue;
-        for (const block of event.message.content) {
-          if (block.type === "text") process.stdout.write(block.text);
-        }
-      }
-      const result = await run.wait();
-      const status = result.status === "error" ? "FAILED" : "PASS";
-      results.push({
-        repo,
-        status,
-        agentId,
-        runId,
-        durationMs: Date.now() - repoStarted,
-        summary:
-          typeof result.result === "string"
-            ? result.result.slice(0, 800)
-            : `Cloud Agent ${result.status}`,
-      });
-      if (status !== "PASS") process.exitCode = 2;
-    } catch (error) {
-      const summary =
-        error instanceof CursorAgentError
-          ? `CursorAgentError: ${error.message}`
-          : error instanceof Error
-            ? error.message
-            : String(error);
-      results.push({
-        repo,
-        status: "FAILED",
-        agentId,
-        runId,
-        durationMs: Date.now() - repoStarted,
-        summary,
-      });
-      process.exitCode = 1;
-    }
+    console.log(`[nadf:doevents] repo=${repo} ref=${startingRef}`);
+    const result = await executeCodingPrompt({
+      prompt,
+      agentId: "doevents-issue-agent",
+      projectId: "doevents",
+      stepId: `doevents-${repo.split("/").pop()?.replace(/\.git$/, "")}`,
+      autoCreatePR,
+      repos: [{ role: "other", url: repo, ref: startingRef }],
+    });
+    const status =
+      result.status === "finished"
+        ? "PASS"
+        : result.status === "blocked"
+          ? "BLOCKED"
+          : "FAILED";
+    results.push({
+      repo,
+      status,
+      agentId: result.agentRuntimeId,
+      runId: result.runId,
+      runtime: result.runtime,
+      durationMs: Date.now() - repoStarted,
+      summary: (result.summary || "").slice(0, 800),
+      blockers: result.blockers,
+    });
+    if (status !== "PASS") process.exitCode = status === "BLOCKED" ? 3 : 2;
   }
 
   console.log(

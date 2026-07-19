@@ -26,6 +26,9 @@ El NovusAIDevelopmentFramework debe diseñarse para operar con **cualquier prove
 
 - El framework no debe depender de un único modelo o proveedor de IA.
 - Los agentes se definen por **rol y capacidad**, no por modelo específico.
+- **Coding Runtime** (quién escribe código / PR) se selecciona vía `NADF_CODING_RUNTIME` / `enterprise-governance/ai-runtime.yml` — ver [20-ai-runtime-providers.md](../../../docs/md/20-ai-runtime-providers.md) y ADR-0008.
+- Default operativo: `cursor-cloud`. Alternativas v1: `anthropic` (solo inferencia), `noop` (dry-run).
+- Claude.ai (chat web) **no** autentica NADF; se requieren API keys del vendor (`CURSOR_API_KEY` / `ANTHROPIC_API_KEY`).
 - La integración con servicios externos (GitHub, AWS, DB, Terraform, Jira) se realiza vía **MCP (Model Context Protocol)**.
 - Cada agente declara `mcp_servers` permitidos en su skill registry.
 - Referencia: `docs/mcp-integration.md`.

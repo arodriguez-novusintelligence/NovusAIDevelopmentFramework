@@ -9,9 +9,9 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { CursorCloudAdapter } from "./adapters/CursorCloudAdapter.js";
+import { createAdapter } from "./ai-runtime/index.js";
 import { assertPatternGuards } from "./guards.js";
-import type { AgentInvocation, RepoRef } from "./types.js";
+import type { AgentInvocation, RepoRef, RuntimeAdapter } from "./types.js";
 
 function loadDotEnv(path = ".env"): void {
   const full = resolve(process.cwd(), path);
@@ -129,7 +129,7 @@ nextAgentSuggested: none
 }
 
 async function invokeAgent(
-  adapter: CursorCloudAdapter,
+  adapter: RuntimeAdapter,
   agentId: string,
   stepId: string,
   prompt: string,
@@ -172,7 +172,7 @@ async function main(): Promise<void> {
   loadDotEnv();
   const apiKey = requireEnv("CURSOR_API_KEY");
   const model = process.env.NADF_MODEL?.trim() || "composer-2.5";
-  const adapter = new CursorCloudAdapter(apiKey, model);
+  const adapter = createAdapter({ apiKey, modelId: model });
 
   const framework: RepoRef = {
     role: "framework",

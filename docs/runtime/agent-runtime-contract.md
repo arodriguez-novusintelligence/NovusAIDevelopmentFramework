@@ -93,11 +93,25 @@ interface AgentRuntime {
 
 ```ts
 interface RuntimeAdapter {
-  readonly name: string; // ej. "cursor-cloud"
+  readonly name: string; // ej. "cursor-cloud" | "anthropic" | "noop"
   supports(capability: "invoke" | "resume" | "stream" | "pr"): boolean;
   execute(invocation: AgentInvocation, prompt: string): Promise<AgentResult>;
 }
 ```
+
+### Factory (provider-agnostic)
+
+Los callers **no** deben instanciar `CursorCloudAdapter` directamente. Usar:
+
+```ts
+import { createAdapter } from "./ai-runtime/index.js";
+const runtime = new NadfAgentRuntime(createAdapter());
+```
+
+Selección: `NADF_CODING_RUNTIME` (`cursor-cloud` default | `anthropic` | `noop`).  
+Catálogo: `.nadf/global/ai-runtime/providers.yml` · ADR: ADR-0008.
+
+Si `autoCreatePR` / executor y el adapter no `supports("pr")` → `blocked`.
 
 ---
 

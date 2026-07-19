@@ -1,0 +1,19 @@
+# NADF-GUIDE
+# Propósito: Política enterprise del runtime de IA (default Cursor Cloud).
+# Configuración: Override por env NADF_CODING_RUNTIME; no bajar capacidades de PR sin evidencia.
+version: "1.0"
+aiRuntime:
+  # Default operativo: mismo comportamiento histórico (Cursor Cloud Agent).
+  coding_runtime: cursor-cloud
+  inference_provider: cursor-hosted
+  catalog: .nadf/global/ai-runtime/providers.yml
+  rules:
+    - Si el paso requiere pr o repo_write, el coding_runtime debe declarar esas capacidades.
+    - Claude.ai login no autentica ningún adaptador.
+    - Anthropic en v1 solo para inferencia (sin autoCreatePR / sin mutación de repos).
+  env:
+    NADF_CODING_RUNTIME: "cursor-cloud | anthropic | noop"
+    NADF_INFERENCE_PROVIDER: "optional"
+    CURSOR_API_KEY: "required when coding_runtime=cursor-cloud"
+    ANTHROPIC_API_KEY: "required when coding_runtime=anthropic"
+    NADF_MODEL: "model id for the selected provider"

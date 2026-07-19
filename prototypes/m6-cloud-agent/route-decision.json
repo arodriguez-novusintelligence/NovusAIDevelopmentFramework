@@ -1,0 +1,51 @@
+{
+  "profile": "TRIVIAL_VISUAL",
+  "route": "visual-fast",
+  "lightweight": true,
+  "level": "TRIVIAL",
+  "mode": "DIRECT",
+  "selectedAgents": [
+    "frontend-integration-agent",
+    "qa-agent"
+  ],
+  "excludedDomains": [
+    "architecture",
+    "backend",
+    "database",
+    "api",
+    "cloud",
+    "security_full"
+  ],
+  "deployTargets": [
+    "frontend"
+  ],
+  "requiresHumanApproval": false,
+  "escalationOn": [
+    "BACKEND_FILES_TOUCHED",
+    "CONTRACT_CHANGE",
+    "AUTH_TOUCHED",
+    "BUILD_FAILURE",
+    "BUSINESS_LOGIC_DETECTED"
+  ],
+  "criticalityOverride": false,
+  "confidence": 0.92,
+  "changeTypes": [
+    "visual",
+    "content"
+  ],
+  "rationale": [
+    "Solo tipos triviales (visual/content) y backendRequired=false.",
+    "Minimum Sufficient Execution: sin arquitectura ni agentes de dominio."
+  ],
+  "target": "web",
+  "issue": {
+    "number": 1,
+    "title": "Cambiar color del banner",
+    "url": null
+  },
+  "workBranch": "feature/NovusAIDevelopmentFramework",
+  "targetRepos": [
+    "https://github.com/arodriguez-novusintelligence/DoEventsWEB.git"
+  ],
+  "isolation": "Solo implementar el alcance de este issue; no eliminar ni alterar otras funcionalidades."
+}

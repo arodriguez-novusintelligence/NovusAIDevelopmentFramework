@@ -5,7 +5,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { NadfAgentRuntime } from "./AgentRuntime.js";
-import { CursorCloudAdapter } from "./adapters/CursorCloudAdapter.js";
+import { createAdapter } from "./ai-runtime/index.js";
 import type { AgentInvocation, RepoRef } from "./types.js";
 
 function loadDotEnv(path = ".env"): void {
@@ -115,9 +115,7 @@ async function main(): Promise<void> {
     ),
   );
 
-  const runtime = new NadfAgentRuntime(
-    new CursorCloudAdapter(apiKey, modelId),
-  );
+  const runtime = new NadfAgentRuntime(createAdapter({ apiKey, modelId }));
   const result = await runtime.invoke(invocation);
 
   console.log("\n[nadf:m6] AgentResult:");
