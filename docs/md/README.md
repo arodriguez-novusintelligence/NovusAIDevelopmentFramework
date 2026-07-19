@@ -20,7 +20,8 @@ IA bajo control humano.
 8. [Costos y selección de agentes](15-costos-y-tokens.md)
 9. [Orquestación paralela](16-orquestacion-paralela.md)
 10. [Complexity Routing](17-complexity-routing.md)
-11. [Visión del control plane](18-control-plane-console.md)
+11. [DoEvents Issues → DEV](19-doevents-issues-nadf.md)
+12. [Visión del control plane](18-control-plane-console.md)
 
 Lovable, GitHub Issues y Manual son **adapters de entrada reemplazables**.
 `novus-intelligence` es un proyecto vivo, no el núcleo ni la distribución para

@@ -1,0 +1,11 @@
+# NADF-GUIDE
+# Propósito: Budget DoEvents DEV (Issues → NADF).
+# Configuración: Ajustar límites con evidencia; PROD prohibido.
+version: "1.0"
+extends: ../../../enterprise-governance/budget-policy.yml
+project: doevents
+environment: [dev]
+kill_switch: false
+block_new_work_above_usd: 50
+notes:
+  - Perfiles TRIVIAL/LIGHTWEIGHT deben consumir mucho menos que FULL.

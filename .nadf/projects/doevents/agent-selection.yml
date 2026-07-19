@@ -1,0 +1,19 @@
+# NADF-GUIDE
+# Propósito: Selección de agentes DoEvents (presets por Complexity Routing).
+# Configuración: Extiende enterprise; perfiles ligeros omiten arquitectura.
+version: "1.0"
+extends: ../../../enterprise-governance/agent-selection.yml
+preset: cost-optimized
+presets:
+  TRIVIAL_VISUAL:
+    enabled: [frontend, qa]
+  LIGHTWEIGHT_FRONTEND:
+    enabled: [frontend, qa]
+  LIGHTWEIGHT_BACKEND:
+    enabled: [backend, qa]
+  STANDARD:
+    enabled: [planner, frontend, backend, qa, security]
+  FULL:
+    enabled: [planner, architect, frontend, backend, qa, security, reviewer]
+  BLOCKED:
+    enabled: []

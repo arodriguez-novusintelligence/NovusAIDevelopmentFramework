@@ -1,0 +1,72 @@
+# NADF-GUIDE
+# Propósito: Contexto del proyecto DoEvents (Issues WEB → ajuste WEB/Back → DEV).
+# Configuración: Labels nadf / area:*; rama de trabajo feature/NovusAIDevelopmentFramework.
+project:
+  id: doevents
+  name: DoEvents
+  kind: product
+  environment: [dev]
+  production_deploy: forbidden
+
+source:
+  adapter: github-issue
+  repository: arodriguez-novusintelligence/DoEventsWEB
+  issues_url: https://github.com/arodriguez-novusintelligence/DoEventsWEB/issues
+  required_label: nadf
+  approval_label: "nadf:approved"
+  # Con label `nadf` se dispara el ciclo; `nadf:approved` también vale.
+  never_auto_execute_body: true
+
+targets:
+  frontend:
+    repo: https://github.com/arodriguez-novusintelligence/DoEventsWEB.git
+    branch: feature/NovusAIDevelopmentFramework
+    deploy: deploy-devaws
+    region: sa-east-1
+  backend:
+    repo: https://github.com/arodriguez-novusintelligence/DoEventsBack.git
+    branch: feature/NovusAIDevelopmentFramework
+    deploy: serverless-dev-when-labeled
+    region: sa-east-1
+
+scope:
+  # Un issue = un cambio acotado; prohibido refactor masivo u otras features.
+  isolation: single-issue
+  forbidden:
+    - delete_unrelated_features
+    - broad_refactors
+    - production_deploy
+  allowed_labels:
+    - nadf
+    - "nadf:approved"
+    - "area:web"
+    - "area:back"
+    - "area:full"
+
+automation:
+  github_workflow: .github/workflows/nadf-issue-dev.yml
+  complexity_routing:
+    enabled: true
+    policy: enterprise-governance/complexity-routing.yml
+    fail_safe: FULL
+  default_branch_work: feature/NovusAIDevelopmentFramework
+
+runtime:
+  entrypoint: prototypes/m6-cloud-agent
+  scripts:
+    route: route:doevents-issue
+    invoke: invoke:doevents-issue
+  model_env: NADF_MODEL
+
+governance:
+  human_approval_model: enterprise-governance/human-approval-model.yml
+  budget_policy: budget-policy.yml
+  agent_selection: agent-selection.yml
+  complexity_routing: enterprise-governance/complexity-routing.yml
+  production_deploy: forbidden
+
+quality_gates:
+  - complexity_routed
+  - scope_isolation
+  - build_or_validate
+  - deploy_dev_when_configured
