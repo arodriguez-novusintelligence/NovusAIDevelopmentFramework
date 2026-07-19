@@ -5,7 +5,8 @@
 #
 # Modes:
 #   smoke  = prueba de cableado (agentes mínimos + post smoke). NO merge/deploy. Arquetipo intacto.
-#   visual-fast = analyzer + frontend + QA lite + deploy WEB; fallback automático a full.
+#   visual-fast / TRIVIAL_VISUAL = Complexity Routing ligero (FE + QA + deploy WEB);
+#   sin arquitectura/backend. Fallback automático a full si el cambio no es trivial.
 #   full   = pipeline completo + gates desde artifacts frescos (PRs Cloud). Protect archetype by default.
 #   deploy-only / parity-only = utilidades
 #
@@ -135,11 +136,19 @@ jobs:
           npm run invoke:lovable-analyzer
           npm run route:lovable-change
           ROUTE="$(jq -r '.route' route-decision.json)"
+          PROFILE="$(jq -r '.profile // empty' route-decision.json)"
+          LIGHTWEIGHT="$(jq -r '.lightweight // false' route-decision.json)"
           ANALYZER_REF="$(jq -r '.ref // empty' route-decision.json)"
           echo "route=$ROUTE" >> "$GITHUB_OUTPUT"
+          echo "profile=$PROFILE" >> "$GITHUB_OUTPUT"
 
-          if [ "$ROUTE" != "visual-fast" ]; then
-            echo "Cambio funcional/estructural: re-dispatch al pipeline full"
+          if [ "$ROUTE" = "blocked" ]; then
+            echo "Requerimiento BLOCKED por Complexity Routing (profile=$PROFILE)" >&2
+            exit 5
+          fi
+
+          if [ "$LIGHTWEIGHT" != "true" ]; then
+            echo "Complexity Routing → $PROFILE (route=$ROUTE): re-dispatch al pipeline full"
             gh workflow run "Lovable sync DEV" \
               --repo arodriguez-novusintelligence/NovusAIDevelopmentFramework \
               --ref feature/novus-intelligence \
@@ -152,13 +161,15 @@ jobs:
             exit 4
           fi
           export NADF_REF_FRAMEWORK="$ANALYZER_REF"
+          export NADF_EXECUTION_PROFILE="${PROFILE:-visual-fast}"
           npm run invoke:remaining-pipeline
           npm run post-pipeline-dev
 
           {
-            echo "# NADF Lovable visual-fast"
+            echo "# NADF Complexity Routing — perfil ligero"
             echo
-            echo "- Ruta: **visual-fast**"
+            echo "- Profile: **${PROFILE:-TRIVIAL_VISUAL}** (legacy route: **$ROUTE**)"
+            echo "- Flujo: desarrollo → pruebas → deploy (sin arquitectura)"
             echo "- Agentes: analyzer, frontend-integration, qa-lite"
             echo "- Omitidos: planner, architect, backend, database, cloud, security-full, knowledge"
             echo "- Deploy target: **NovusIntelligenceWEB / DEV**"

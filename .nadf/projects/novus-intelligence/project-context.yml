@@ -100,15 +100,61 @@ multiagent:
     auto_merge_dev: true
     auto_deploy_dev: true
     auto_deploy_prod: false
-    default_profile: visual-fast
+    default_profile: TRIVIAL_VISUAL
+    complexity_routing:
+      enabled: true
+      policy: enterprise-governance/complexity-routing.yml
+      catalogs:
+        profiles: .nadf/global/complexity-routing/execution-profiles.yml
+        rules: .nadf/global/complexity-routing/routing-rules.yml
+      # Alias legacy: visual-fast ≡ TRIVIAL_VISUAL
+      legacy_alias: visual-fast
     routing:
       visual_fast_when:
-        allowed_change_types: [visual, content]
+        allowed_change_types: [visual, content, color, copy, typography, spacing, style, image, asset, banner]
         backend_required: false
         examples: [colors, typography, title, copy, spacing, styles]
-      fallback: full
+      fallback: FULL
     profiles:
+      TRIVIAL_VISUAL:
+        legacy_aliases: [visual-fast]
+        agents:
+          - lovable-analyzer-agent
+          - frontend-integration-agent
+          - qa-agent
+        skipped_domains: [architecture, backend, database, cloud, infrastructure, security_full]
+        deploy_targets: [NovusIntelligenceWEB]
+        expected_duration: short
+        flow: [develop, test, deploy]
+      LIGHTWEIGHT_FRONTEND:
+        agents:
+          - frontend-integration-agent
+          - qa-agent
+        skipped_domains: [architecture, backend, database, cloud]
+        deploy_targets: [NovusIntelligenceWEB]
+        expected_duration: short
+        flow: [develop, test, deploy]
+      LIGHTWEIGHT_BACKEND:
+        agents:
+          - backend-agent
+          - qa-agent
+        skipped_domains: [architecture, frontend_design, cloud_full]
+        deploy_targets: [NovusIntelligenceBack]
+        flow: [develop, test, deploy]
+      STANDARD:
+        agents:
+          - planner-agent
+          - frontend-integration-agent
+          - backend-agent
+          - qa-agent
+          - security-agent
+        deploy_targets: [NovusIntelligenceWEB, NovusIntelligenceBack]
+      FULL:
+        agents: all_applicable
+        deploy_targets: [NovusIntelligenceWEB, NovusIntelligenceBack]
+      # Compatibilidad Actions / env NADF_EXECUTION_PROFILE=visual-fast
       visual-fast:
+        aliases: [TRIVIAL_VISUAL]
         agents:
           - lovable-analyzer-agent
           - frontend-integration-agent
@@ -117,6 +163,7 @@ multiagent:
         deploy_targets: [NovusIntelligenceWEB]
         expected_duration: short
       full:
+        aliases: [FULL]
         agents: all_applicable
         deploy_targets: [NovusIntelligenceWEB, NovusIntelligenceBack]
   agents_enabled:

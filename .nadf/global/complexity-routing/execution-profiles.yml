@@ -1,0 +1,106 @@
+# NADF-GUIDE
+# Propósito: Catálogo de perfiles de ejecución por complejidad (Minimum Sufficient Execution).
+# Configuración: Añadir perfiles con cuidado; visual-fast es alias legacy de TRIVIAL_VISUAL.
+version: "1.0"
+principle: minimum_sufficient_execution
+fail_safe: FULL
+
+profiles:
+  TRIVIAL_VISUAL:
+    legacy_aliases: [visual-fast]
+    description: Cambio cosmético o editorial (color, texto, banner, tipografía, imagen).
+    level: TRIVIAL
+    mode: DIRECT
+    selected_agents:
+      - frontend-integration-agent
+      - qa-agent
+    excluded_domains: [architecture, backend, database, api, cloud, security_full]
+    validations: [build, smoke_frontend]
+    requires_human_approval: false
+    max_agents_after_routing: 3
+    deploy_targets: [frontend]
+    escalation_on:
+      - BACKEND_FILES_TOUCHED
+      - CONTRACT_CHANGE
+      - AUTH_TOUCHED
+      - BUILD_FAILURE
+      - BUSINESS_LOGIC_DETECTED
+
+  LIGHTWEIGHT_FRONTEND:
+    description: Cambio FE acotado (página estática, navegación, componente visual) sin BE.
+    level: LOW
+    mode: SELECTIVE
+    selected_agents:
+      - frontend-integration-agent
+      - qa-agent
+    excluded_domains: [architecture, backend, database, api, cloud]
+    validations: [build, navigation, smoke_frontend]
+    requires_human_approval: false
+    max_agents_after_routing: 4
+    deploy_targets: [frontend]
+    escalation_on:
+      - BACKEND_REQUIRED
+      - API_CONTRACT_CHANGE
+      - BUILD_FAILURE
+
+  LIGHTWEIGHT_BACKEND:
+    description: Cambio BE/query acotado sin UI nueva.
+    level: LOW
+    mode: SELECTIVE
+    selected_agents:
+      - backend-agent
+      - qa-agent
+    excluded_domains: [architecture, frontend_design, cloud_full]
+    validations: [unit_tests, smoke_api]
+    requires_human_approval: false
+    max_agents_after_routing: 4
+    deploy_targets: [backend]
+    escalation_on:
+      - SCHEMA_CHANGE
+      - MIGRATION_REQUIRED
+      - SECURITY_SENSITIVE
+
+  STANDARD:
+    description: Cambio funcional moderado (1–2 capas, contratos no disruptivos).
+    level: MODERATE
+    mode: STANDARD
+    selected_agents:
+      - planner-agent
+      - frontend-integration-agent
+      - backend-agent
+      - qa-agent
+      - security-agent
+    excluded_domains: []
+    validations: [build, unit_tests, contract_check, smoke]
+    requires_human_approval: false
+    max_agents_after_routing: 6
+    deploy_targets: [frontend, backend]
+    escalation_on:
+      - AUTH_TOUCHED
+      - DATA_MIGRATION
+      - CROSS_LAYER_EXPANSION
+
+  FULL:
+    description: Flujo multiagente completo (cross-layer, alto impacto o duda).
+    level: HIGH
+    mode: FULL
+    selected_agents: all_applicable
+    excluded_domains: []
+    validations: [architecture, security, qa, parity_if_ui, smoke, deploy_gates]
+    requires_human_approval: false
+    max_agents_after_routing: 20
+    deploy_targets: [frontend, backend]
+    escalation_on:
+      - CRITICAL_OVERRIDE
+
+  BLOCKED:
+    description: No ejecutar — información insuficiente o riesgo no evaluable.
+    level: BLOCKED
+    mode: BLOCKED
+    selected_agents: []
+    excluded_domains: [all]
+    validations: []
+    requires_human_approval: true
+    max_agents_after_routing: 0
+    deploy_targets: []
+    escalation_on: []

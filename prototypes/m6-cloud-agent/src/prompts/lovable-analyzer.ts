@@ -40,9 +40,11 @@ DEBES:
 - Analizar PRIMERO el delta del último commit Lovable, no volver a clasificar todo el sitio.
 - En cambios-lovable.json incluir summary.latestDelta.changeTypes (lista),
   summary.latestDelta.backendRequired (boolean) y summary.route.
-- summary.route debe ser "visual-fast" SOLO cuando TODOS los cambios del último
-  commit sean visual/content (colores, fuentes, textos, títulos, spacing o estilos),
-  sin cambio functional/structural y sin backend. En cualquier otro caso usar "full".
+- summary.route debe ser "visual-fast" (perfil TRIVIAL_VISUAL) SOLO cuando TODOS
+  los cambios del último commit sean visual/content (colores, fuentes, textos,
+  títulos, spacing, estilos o assets), sin functional/structural y sin backend.
+  En cualquier otro caso usar "full". El Complexity Routing del framework usará
+  estas señales para ejecutar solo develop→test→deploy cuando sea trivial.
 - Generar SOLO los artifacts listados abajo bajo ${artifactRoot}/
 - Cumplir prohibiciones del agente (no implementar, no copiar Lovable, no mocks productivos).
 - Si novus-nexus no está accesible o no hay diffs, documentar blocker en riesgos.md y status blocked.

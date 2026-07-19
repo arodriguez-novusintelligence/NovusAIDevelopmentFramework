@@ -1,0 +1,73 @@
+# NADF-GUIDE
+# Propósito: Reglas deterministas de routing por complejidad (fail-safe = FULL).
+# Configuración: Ante duda subir de perfil; nunca bajar silenciosamente el riesgo.
+version: "1.0"
+
+# Tipos permitidos para el perfil más ligero (alias visual-fast).
+trivial_change_types:
+  - visual
+  - content
+  - cosmetic
+  - copy
+  - typography
+  - color
+  - asset
+  - image
+  - banner
+  - spacing
+  - style
+
+lightweight_frontend_types:
+  - static_page
+  - navigation
+  - component
+  - frontend_validation
+  - accessibility
+
+lightweight_backend_types:
+  - query
+  - read_endpoint
+  - backend_config
+
+# Palabras que fuerzan FULL o CRITICAL (override), aunque el cambio “parezca” pequeño.
+criticality_keywords:
+  - authentication
+  - autenticación
+  - auth
+  - oauth
+  - jwt
+  - payment
+  - pago
+  - billing
+  - migration
+  - migración
+  - schema
+  - pii
+  - gdpr
+  - production
+  - producción
+  - secrets
+  - secretos
+  - iam
+  - rbac
+  - encryption
+  - cifrado
+
+blocked_signals:
+  - ambiguous
+  - ambiguo
+  - incomplete
+  - incompleto
+  - unknown_dependency
+  - missing_acceptance
+  - contradictorio
+
+confidence:
+  execute_as_selected: 0.85
+  execute_with_extra_validation: 0.65
+  discovery_or_review: 0.40
+  # < 0.40 → BLOCKED
+
+legacy:
+  # Compatibilidad con Actions y env actuales
+  emit_route_visual_fast_for: [TRIVIAL_VISUAL, LIGHTWEIGHT_FRONTEND]

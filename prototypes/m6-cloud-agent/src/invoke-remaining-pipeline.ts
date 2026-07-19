@@ -18,6 +18,10 @@ import type {
   AgentResult,
   RepoRef,
 } from "./types.js";
+import {
+  isFrontendOnlyProfile,
+  isLightweightProfile,
+} from "./complexity-routing/index.js";
 
 function loadDotEnv(path = ".env"): void {
   const full = resolve(process.cwd(), path);
@@ -47,7 +51,9 @@ function requireEnv(name: string): string {
 const PROJECT = "novus-intelligence";
 const ART = `.nadf/projects/${PROJECT}/artifacts`;
 const WF = "novus-intelligence-lovable-to-web";
-const VISUAL_FAST = process.env.NADF_EXECUTION_PROFILE === "visual-fast";
+/** Perfiles ligeros: desarrollo + pruebas + deploy; sin arquitectura. */
+const LIGHTWEIGHT = isLightweightProfile();
+const FRONTEND_ONLY = isFrontendOnlyProfile();
 
 type Step = {
   agentId: string;
@@ -189,14 +195,13 @@ async function runStep(
   step: Step,
   frameworkRef: string,
 ): Promise<{ result: AgentResult; frameworkRef: string }> {
-  const visualFastInputs = [
+  const lightweightInputs = [
     `${ART}/cambios-lovable.json`,
     `${ART}/frontend-impact.md`,
     `${ART}/riesgos.md`,
   ];
-  const visualFast = VISUAL_FAST;
   const stepRepos =
-    visualFast && step.agentId === "qa-agent"
+    FRONTEND_ONLY && step.agentId === "qa-agent"
       ? step.repos.filter((repo) => repo !== "backend")
       : step.repos;
   const invocation: AgentInvocation = {
@@ -206,8 +211,8 @@ async function runStep(
     stepId: step.stepId,
     pattern: step.pattern,
     repos: buildRepos(stepRepos, frameworkRef),
-    inputs: visualFast
-      ? visualFastInputs
+    inputs: LIGHTWEIGHT
+      ? lightweightInputs
       : [
           `${ART}/plan-implementacion.md`,
           `${ART}/impacto-arquitectonico.md`,
@@ -218,10 +223,10 @@ async function runStep(
       "NO_DEPLOY",
       "NO_SECRETS_IN_REPO",
       "NO_LOVABLE_CODE_COPY",
-      ...(visualFast
+      ...(LIGHTWEIGHT
         ? [
-            "VISUAL_CONTENT_ONLY",
-            "NO_BACKEND_CHANGES",
+            FRONTEND_ONLY ? "VISUAL_CONTENT_ONLY" : "LIGHTWEIGHT_EXECUTION",
+            FRONTEND_ONLY ? "NO_BACKEND_CHANGES" : "SCOPE_LIMITED",
             "FAST_PATH_AUTO_APPROVED",
             step.agentId === "qa-agent" ? "QA_LITE_BUILD_LINT" : "",
           ].filter(Boolean)
@@ -301,16 +306,36 @@ async function main(): Promise<void> {
   const results: { step: string; status: string; summary: string; agentRuntimeId?: string; runId?: string }[] =
     [];
 
-  const activeSteps = VISUAL_FAST
-    ? STEPS.filter((step) =>
-        ["frontend-integration-agent", "qa-agent"].includes(step.agentId),
-      )
+  const activeSteps = LIGHTWEIGHT
+    ? STEPS.filter((step) => {
+        if (FRONTEND_ONLY) {
+          return ["frontend-integration-agent", "qa-agent"].includes(
+            step.agentId,
+          );
+        }
+        // LIGHTWEIGHT_BACKEND
+        return ["backend-agent", "qa-agent"].includes(step.agentId);
+      })
     : STEPS;
+
+  console.log(
+    JSON.stringify(
+      {
+        profile: process.env.NADF_EXECUTION_PROFILE || "full",
+        lightweight: LIGHTWEIGHT,
+        frontendOnly: FRONTEND_ONLY,
+        steps: activeSteps.map((s) => s.agentId),
+      },
+      null,
+      2,
+    ),
+  );
 
   console.log(
     JSON.stringify({
       event: "pipeline_profile",
-      profile: VISUAL_FAST ? "visual-fast" : "full",
+      profile: process.env.NADF_EXECUTION_PROFILE || "full",
+      lightweight: LIGHTWEIGHT,
       agents: activeSteps.map((step) => step.agentId),
       skipped: STEPS.filter((step) => !activeSteps.includes(step)).map(
         (step) => step.agentId,

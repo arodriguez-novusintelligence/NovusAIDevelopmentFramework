@@ -1,0 +1,118 @@
+[
+  {
+    "id": "color-change",
+    "signals": {
+      "source": "example",
+      "description": "Cambiar el color primario de azul a verde",
+      "changeTypes": ["visual", "color"],
+      "backendRequired": false
+    },
+    "expectProfile": "TRIVIAL_VISUAL",
+    "expectLightweight": true
+  },
+  {
+    "id": "banner-text",
+    "signals": {
+      "changeTypes": ["visual", "content"],
+      "backendRequired": false
+    },
+    "expectProfile": "TRIVIAL_VISUAL",
+    "expectLightweight": true
+  },
+  {
+    "id": "typo-fix",
+    "signals": {
+      "changeTypes": ["content", "copy"],
+      "backendRequired": false
+    },
+    "expectProfile": "TRIVIAL_VISUAL",
+    "expectLightweight": true
+  },
+  {
+    "id": "static-page",
+    "signals": {
+      "changeTypes": ["static_page", "navigation"],
+      "backendRequired": false
+    },
+    "expectProfile": "LIGHTWEIGHT_FRONTEND",
+    "expectLightweight": true
+  },
+  {
+    "id": "db-query",
+    "signals": {
+      "changeTypes": ["query"],
+      "backendRequired": true,
+      "frontendRequired": false
+    },
+    "expectProfile": "LIGHTWEIGHT_BACKEND",
+    "expectLightweight": true
+  },
+  {
+    "id": "read-endpoint-with-ui",
+    "signals": {
+      "changeTypes": ["visual", "read_endpoint"],
+      "backendRequired": true
+    },
+    "expectProfile": "STANDARD",
+    "expectLightweight": false
+  },
+  {
+    "id": "auth-one-liner",
+    "signals": {
+      "description": "Ajustar un flag de authentication en el login",
+      "changeTypes": ["content"],
+      "backendRequired": false
+    },
+    "expectProfile": "FULL",
+    "expectLightweight": false,
+    "expectCriticalityOverride": true
+  },
+  {
+    "id": "ambiguous",
+    "signals": {
+      "description": "Hacer lo del ticket incomplete",
+      "changeTypes": [],
+      "ambiguous": true
+    },
+    "expectProfile": "BLOCKED",
+    "expectLightweight": false
+  },
+  {
+    "id": "unknown-types",
+    "signals": {
+      "changeTypes": [],
+      "backendRequired": true
+    },
+    "expectProfile": "FULL",
+    "expectLightweight": false
+  },
+  {
+    "id": "explicit-visual-fast",
+    "signals": {
+      "changeTypes": ["visual"],
+      "backendRequired": false,
+      "explicitRoute": "visual-fast"
+    },
+    "expectProfile": "TRIVIAL_VISUAL",
+    "expectRoute": "visual-fast"
+  },
+  {
+    "id": "payment-change",
+    "signals": {
+      "description": "Cambiar texto del botón de payment",
+      "changeTypes": ["content"],
+      "backendRequired": false
+    },
+    "expectProfile": "FULL",
+    "expectCriticalityOverride": true
+  },
+  {
+    "id": "image-only",
+    "signals": {
+      "changeTypes": ["image", "asset"],
+      "backendRequired": false
+    },
+    "expectProfile": "TRIVIAL_VISUAL",
+    "expectLightweight": true
+  }
+]

@@ -1,9 +1,14 @@
 /* NADF-GUIDE
- * Propósito: Decide visual-fast|full desde el artifact fresco del analyzer.
- * Configuración: GH_TOKEN y opcional NADF_FRAMEWORK_REPO.
+ * Propósito: Router Lovable → Complexity Routing (perfil mínimo suficiente).
+ * Configuración: GH_TOKEN; emite route-decision.json compatible con Actions.
  */
 import { execFileSync } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  decideComplexity,
+  type ComplexitySignals,
+  type RoutingDecision,
+} from "./complexity-routing/index.js";
 
 type Change = {
   type?: string;
@@ -40,92 +45,99 @@ function latestAnalyzerArtifact(): {
   ref: string | null;
 } {
   const repo = frameworkRepo();
-  const raw = gh([
-    "pr",
-    "list",
-    "--repo",
-    repo,
-    "--state",
-    "open",
-    "--limit",
-    "20",
-    "--json",
-    "headRefName,updatedAt",
-  ]);
-  const prs = (
-    JSON.parse(raw) as Array<{ headRefName: string; updatedAt: string }>
-  )
-    .filter((pr) => pr.headRefName.startsWith("cursor/"))
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
-
   const path =
     ".nadf/projects/novus-intelligence/artifacts/cambios-lovable.json";
-  for (const pr of prs) {
-    try {
-      const encoded = gh([
-        "api",
-        `repos/${repo}/contents/${path}?ref=${encodeURIComponent(pr.headRefName)}`,
-        "--jq",
-        ".content",
-      ]);
-      const decoded = Buffer.from(
-        encoded.replace(/\n/g, ""),
-        "base64",
-      ).toString("utf8");
-      return {
-        artifact: JSON.parse(decoded) as ChangesArtifact,
-        source: `${repo}@${pr.headRefName}:${path}`,
-        ref: pr.headRefName,
-      };
-    } catch {
-      // Try the next fresh agent PR.
+
+  const local = process.env.NADF_CHANGES_ARTIFACT?.trim();
+  if (local && existsSync(local)) {
+    return {
+      artifact: JSON.parse(readFileSync(local, "utf8")) as ChangesArtifact,
+      source: local,
+      ref: process.env.NADF_REF_FRAMEWORK?.trim() || null,
+    };
+  }
+
+  try {
+    const raw = gh([
+      "pr",
+      "list",
+      "--repo",
+      repo,
+      "--state",
+      "open",
+      "--limit",
+      "20",
+      "--json",
+      "headRefName,updatedAt",
+    ]);
+    const prs = (
+      JSON.parse(raw) as Array<{ headRefName: string; updatedAt: string }>
+    )
+      .filter((pr) => pr.headRefName.startsWith("cursor/"))
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      );
+
+    for (const pr of prs) {
+      try {
+        const encoded = gh([
+          "api",
+          `repos/${repo}/contents/${path}?ref=${encodeURIComponent(pr.headRefName)}`,
+          "--jq",
+          ".content",
+        ]);
+        const decoded = Buffer.from(
+          encoded.replace(/\n/g, ""),
+          "base64",
+        ).toString("utf8");
+        return {
+          artifact: JSON.parse(decoded) as ChangesArtifact,
+          source: `${repo}@${pr.headRefName}:${path}`,
+          ref: pr.headRefName,
+        };
+      } catch {
+        // next PR
+      }
     }
+  } catch {
+    // gh unavailable
   }
   return { artifact: null, source: "missing", ref: null };
 }
 
-function decide(artifact: ChangesArtifact | null): {
-  route: "visual-fast" | "full";
-  reason: string;
-  types: string[];
-} {
+function signalsFromArtifact(
+  artifact: ChangesArtifact | null,
+): ComplexitySignals {
   if (!artifact) {
-    return { route: "full", reason: "analyzer_artifact_missing", types: [] };
+    return { source: "lovable", changeTypes: [], backendRequired: true };
   }
-
-  const explicit = artifact.summary?.route;
   const latest = artifact.summary?.latestDelta;
   const types =
-    latest?.changeTypes?.map((type) => type.toLowerCase()) ??
-    artifact.changes?.map((change) => String(change.type).toLowerCase()) ??
+    latest?.changeTypes?.map((t) => String(t).toLowerCase()) ??
+    artifact.changes?.map((c) => String(c.type).toLowerCase()) ??
     [];
   const backend =
     latest?.backendRequired ??
     artifact.summary?.backendRequired ??
-    artifact.changes?.some((change) => change.requiresBackend === true) ??
+    artifact.changes?.some((c) => c.requiresBackend === true) ??
     true;
-  const allowed = new Set(["visual", "content"]);
-  const visualOnly =
-    types.length > 0 && types.every((type) => allowed.has(type)) && !backend;
-
-  if (explicit === "visual-fast" && visualOnly) {
-    return { route: "visual-fast", reason: "explicit_visual_only", types };
-  }
-  if (visualOnly) {
-    return { route: "visual-fast", reason: "visual_content_only", types };
-  }
   return {
-    route: "full",
-    reason: explicit === "full" ? "analyzer_selected_full" : "functional_or_structural",
-    types,
+    source: "lovable",
+    changeTypes: types,
+    backendRequired: backend,
+    explicitRoute: artifact.summary?.route,
+    description: types.join(" "),
   };
 }
 
 const hit = latestAnalyzerArtifact();
-const decision = { ...decide(hit.artifact), source: hit.source, ref: hit.ref };
+const decision: RoutingDecision & { source: string; ref: string | null } = {
+  ...decideComplexity(signalsFromArtifact(hit.artifact)),
+  source: hit.source,
+  ref: hit.ref,
+};
+
 writeFileSync(
   "route-decision.json",
   JSON.stringify(decision, null, 2),

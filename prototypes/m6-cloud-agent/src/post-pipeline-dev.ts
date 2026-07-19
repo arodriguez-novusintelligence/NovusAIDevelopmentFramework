@@ -25,6 +25,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { isFrontendOnlyProfile, isLightweightProfile } from "./complexity-routing/index.js";
 
 type GateJson = {
   status?: string;
@@ -49,12 +50,23 @@ function flag(name: string, defaultValue = false): boolean {
 }
 
 function visualFast(): boolean {
-  return process.env.NADF_EXECUTION_PROFILE?.trim() === "visual-fast";
+  // Alias legacy + perfiles FE ligeros del Complexity Routing.
+  return isFrontendOnlyProfile();
+}
+
+function lightweightExecution(): boolean {
+  return isLightweightProfile();
 }
 
 function productRepos(): string[] {
   if (visualFast() || process.env.NADF_DEPLOY_TARGETS?.trim() === "web") {
     return ["arodriguez-novusintelligence/NovusIntelligenceWEB"];
+  }
+  if (
+    lightweightExecution() &&
+    process.env.NADF_EXECUTION_PROFILE?.includes("BACKEND")
+  ) {
+    return ["arodriguez-novusintelligence/NovusIntelligenceBack"];
   }
   return [
     "arodriguez-novusintelligence/NovusIntelligenceWEB",
@@ -629,7 +641,13 @@ function main(): void {
       autoDeploy,
       requireVisualParity: flag("NADF_REQUIRE_VISUAL_PARITY", !smoke),
       artifactsRemoteOnly: flag("NADF_ARTIFACTS_REMOTE_ONLY", false),
-      executionProfile: visualFast() ? "visual-fast" : "full",
+      executionProfile:
+        process.env.NADF_EXECUTION_PROFILE?.trim() ||
+        (visualFast() ? "TRIVIAL_VISUAL" : "FULL"),
+      complexityRouting: {
+        lightweight: lightweightExecution(),
+        frontendOnly: visualFast(),
+      },
       productRepos: productRepos(),
       prodForbidden: true,
     }),

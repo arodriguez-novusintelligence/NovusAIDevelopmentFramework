@@ -1,0 +1,34 @@
+# NADF-GUIDE
+# Propósito: Política enterprise de routing por complejidad (Minimum Sufficient Execution).
+# Configuración: Copiar/ajustar por proyecto; no bajar umbrales de riesgo sin evidencia.
+version: "1.0"
+complexityRouting:
+  enabled: true
+  defaultMode: SELECTIVE
+  failSafeProfile: FULL
+  confidenceThreshold: 0.85
+  # Alias legacy: visual-fast ≡ TRIVIAL_VISUAL / LIGHTWEIGHT_FRONTEND (solo FE).
+  allowDirectExecution:
+    - TEXT_CHANGE
+    - COLOR_CHANGE
+    - IMAGE_REPLACEMENT
+    - BANNER_CHANGE
+    - TYPOGRAPHY_CHANGE
+    - SPACING_CHANGE
+  requireApprovalFor:
+    - DATABASE_SCHEMA_CHANGE
+    - SECURITY_CHANGE
+    - AUTH_CHANGE
+    - PRODUCTION_INFRASTRUCTURE
+    - DATA_MIGRATION
+    - PAYMENT_FLOW
+  maxAgentsByLevel:
+    TRIVIAL: 3
+    LOW: 4
+    MODERATE: 6
+    HIGH: 12
+    CRITICAL: 20
+    BLOCKED: 0
+  catalogs:
+    profiles: .nadf/global/complexity-routing/execution-profiles.yml
+    rules: .nadf/global/complexity-routing/routing-rules.yml

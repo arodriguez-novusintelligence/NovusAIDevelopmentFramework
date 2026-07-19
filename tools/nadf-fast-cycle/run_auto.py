@@ -54,6 +54,50 @@ def step(steps: list[dict], step_id: str, status: str, start: float, detail: str
     print(f"[{status}] {step_id}: {detail}")
 
 
+def complexity_routing_for_sample2(requirements: list[dict]) -> dict:
+    """Minimum Sufficient Execution: sample2 light = develop → test → deploy (sin arquitectura)."""
+    blob = " ".join(
+        f"{r.get('title', '')} {r.get('description', '')}" for r in requirements
+    ).lower()
+    critical = any(
+        k in blob
+        for k in ("auth", "payment", "migración", "migration", "producción", "production", "pii")
+    )
+    if critical:
+        profile = "FULL"
+        lightweight = False
+        rationale = ["Criticality override detectado en requerimientos; no usar light cycle ciego."]
+    else:
+        profile = "LIGHTWEIGHT_BACKEND"
+        lightweight = True
+        rationale = [
+            "Ciclo sample2 light: un Cloud Agent + unit tests + SAM deploy + smoke REST.",
+            "Omitidos: architecture, frontend design, knowledge-base, reflection.",
+        ]
+    decision = {
+        "profile": profile,
+        "route": "full" if not lightweight else "selective",
+        "lightweight": lightweight,
+        "level": "HIGH" if critical else "LOW",
+        "mode": "FULL" if critical else "SELECTIVE",
+        "selectedAgents": ["cloud-agent"] if lightweight else ["all_applicable"],
+        "excludedDomains": (
+            ["architecture", "frontend_design", "knowledge", "reflection"]
+            if lightweight
+            else []
+        ),
+        "deployTargets": ["sample2-aws-dev"],
+        "requiresHumanApproval": critical,
+        "confidence": 0.9 if lightweight else 0.95,
+        "rationale": rationale,
+        "changeTypes": [r.get("id", "") for r in requirements],
+        "criticalityOverride": critical,
+        "source": "sample2-fast-cycle",
+    }
+    write_json(OUTPUT_DIR / "routing-decision.json", decision)
+    return decision
+
+
 def build_agent_prompt(initiative: dict, requirements: list[dict]) -> str:
     req_block = "\n".join(
         f"- {r['id']}: {r['endpoint']} — {r['title']}\n"
@@ -486,6 +530,21 @@ def main() -> int:
                 return 1
         requirements.append(req)
     step(steps, "intake", "PASS", start, f"{len(requirements)} requerimientos; approval_mode=automatic")
+
+    # 1b. Complexity Routing — perfil mínimo (sample2 = light por defecto)
+    start = time.monotonic()
+    routing = complexity_routing_for_sample2(requirements)
+    if not routing.get("lightweight"):
+        print("BLOCKED: Complexity Routing exige FULL/aprobación; no continuar light ciego")
+        step(steps, "complexity-routing", "BLOCKED", start, routing.get("profile", "FULL"))
+        return 1
+    step(
+        steps,
+        "complexity-routing",
+        "PASS",
+        start,
+        f"profile={routing['profile']}; agents=develop+test+deploy",
+    )
 
     # 2. Approvals — automatic (no human wait)
     approvals = [

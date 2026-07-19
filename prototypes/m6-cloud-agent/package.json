@@ -12,6 +12,8 @@
     "invoke:architect": "tsx src/invoke-architect.ts",
     "invoke:remaining-pipeline": "tsx src/invoke-remaining-pipeline.ts",
     "route:lovable-change": "tsx src/route-lovable-change.ts",
+    "route:complexity": "tsx src/route-complexity.ts",
+    "test:complexity-routing": "tsx tests/complexity-routing/run-corpus.ts",
     "invoke:visual-parity": "tsx src/invoke-visual-parity.ts",
     "invoke:full-pipeline": "tsx src/invoke-full-pipeline.ts",
     "invoke:remediate-cors": "tsx src/invoke-remediate-cors.ts",

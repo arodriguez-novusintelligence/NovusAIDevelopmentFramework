@@ -22,10 +22,10 @@ WORKFLOW: ${inv.workflowId}
 PASO: ${inv.stepId}
 RUNTIME: Cursor Cloud Agent (M6)
 TARGET_ENV: DEV AWS sa-east-1
-PROFILE: ${visualFast ? "visual-fast (cambio visual/content simple, sin backend)" : "full"}
+PROFILE: ${visualFast ? "TRIVIAL_VISUAL / visual-fast (cambio simple: develop→test→deploy; sin arquitectura)" : "FULL"}
 PLAN: ${
     visualFast
-      ? "fast path auto-aprobado; usar cambios-lovable.json + frontend-impact.md"
+      ? "Complexity Routing: perfil ligero auto-aprobado; usar cambios-lovable.json + frontend-impact.md"
       : `${a}/plan-implementacion.md (debe estar approved)`
   }
 CONSTRAINTS:
