@@ -50,6 +50,13 @@ automation:
     policy: enterprise-governance/complexity-routing.yml
     fail_safe: FULL
   default_branch_work: feature/NovusAIDevelopmentFramework
+  auto_merge_dev: true
+  auto_deploy_dev: true
+  production_deploy: false
+  notes:
+    - Auto-merge solo a feature/NovusAIDevelopmentFramework (rama de trabajo DEV).
+    - Deploy automático solo a https://dev.doeventsapp.com (S3/CloudFront DEV).
+    - PROD permanece forbidden.
 
 runtime:
   entrypoint: prototypes/m6-cloud-agent
