@@ -32,6 +32,30 @@ targets:
 scope:
   # Un issue = un cambio acotado; prohibido refactor masivo u otras features.
   isolation: single-issue
+  domain_entities: [eventos, lugares, servicios]
+  # Si el issue menciona UNA sola entidad, las otras quedan forbidden + gate de paths.
+  path_policies:
+    eventos:
+      allow:
+        - "**/EventsPage.*"
+        - "**/discoverEvent*"
+        - "**/eventsService*"
+        - "**/eventsFeed*"
+      deny:
+        - "**/venue*"
+        - "**/Venue*"
+        - "**/useNearbyVenues*"
+        - "**/FeedVenues*"
+        - "**/service*"
+        - "**/Service*"
+        - "**/useNearbyServices*"
+        - "**/FeedServices*"
+    lugares:
+      allow: ["**/venue*", "**/Venue*", "**/useNearbyVenues*", "**/FeedVenues*"]
+      deny: ["**/discoverEvent*", "**/eventsService*", "**/useNearbyServices*"]
+    servicios:
+      allow: ["**/service*", "**/Service*", "**/useNearbyServices*", "**/FeedServices*"]
+      deny: ["**/discoverEvent*", "**/eventsService*", "**/useNearbyVenues*"]
   forbidden:
     - delete_unrelated_features
     - broad_refactors
@@ -57,6 +81,8 @@ automation:
     - Auto-merge solo a feature/NovusAIDevelopmentFramework (rama de trabajo DEV).
     - Deploy automático solo a https://dev.doeventsapp.com (S3/CloudFront DEV).
     - PROD permanece forbidden.
+    - Scope: si el issue pide solo eventos|lugares|servicios, el gate validate:doevents-scope bloquea PRs que toquen las otras.
+    - Runtime coding actual: Cursor Cloud (CURSOR_API_KEY). Anthropic/Claude Platform (ANTHROPIC_API_KEY) es solo inferencia hoy; no abre PRs.
 
 runtime:
   entrypoint: prototypes/m6-cloud-agent

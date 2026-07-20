@@ -9,6 +9,7 @@ import {
   issueToSignals,
   type DoEventsIssue,
 } from "./doevents/issue-signals.js";
+import { resolveDomainScope } from "./doevents/domain-scope.js";
 
 function loadIssue(): DoEventsIssue {
   const path = process.argv.includes("--input")
@@ -41,6 +42,7 @@ if (!hasNadfTriggerLabel(issue.labels || [])) {
 
 const { signals, target } = issueToSignals(issue);
 const decision = decideComplexity(signals);
+const domainScope = resolveDomainScope(issue.title, issue.body || "");
 
 const WEB = "https://github.com/arodriguez-novusintelligence/DoEventsWEB.git";
 const BACK = "https://github.com/arodriguez-novusintelligence/DoEventsBack.git";
@@ -60,8 +62,10 @@ const out = {
   },
   workBranch: BRANCH,
   targetRepos: repos,
+  domainScope,
   isolation:
-    "Solo implementar el alcance de este issue; no eliminar ni alterar otras funcionalidades.",
+    "Solo implementar el alcance de este issue; no eliminar ni alterar otras funcionalidades. " +
+    `ALLOWED=${domainScope.allowed.join(",")}; FORBIDDEN=${domainScope.forbidden.join(",") || "none"}.`,
 };
 
 writeFileSync("route-decision.json", JSON.stringify(out, null, 2), "utf8");

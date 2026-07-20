@@ -3,6 +3,7 @@
  * Configuración: Usado por el workflow; escribe agent-prompt.txt.
  */
 import { readFileSync, writeFileSync } from "node:fs";
+import { formatDomainScopeForPrompt, type DomainScope } from "./doevents/domain-scope.js";
 
 type Route = {
   profile?: string;
@@ -10,6 +11,7 @@ type Route = {
   workBranch?: string;
   isolation?: string;
   rationale?: string[];
+  domainScope?: DomainScope;
   issue?: { number?: number; title?: string; url?: string | null };
 };
 
@@ -23,6 +25,10 @@ const issue = JSON.parse(readFileSync(issuePath, "utf8")) as {
   title: string;
   body?: string;
 };
+
+const domainBlock = route.domainScope
+  ? `\n${formatDomainScopeForPrompt(route.domainScope)}\n`
+  : "";
 
 const prompt = `Eres un agente NADF para DoEvents (DEV only).
 
@@ -38,18 +44,18 @@ ${issue.body || "(sin cuerpo)"}
 - target: ${route.target}
 - workBranch: ${route.workBranch || "feature/NovusAIDevelopmentFramework"}
 - rationale: ${(route.rationale || []).join("; ")}
-
+${domainBlock}
 ## REGLAS OBLIGATORIAS (aislamiento)
-1. Implementa ÚNICAMENTE lo pedido en este issue.
+1. Implementa ÚNICAMENTE lo pedido en este issue (respeta DOMAIN SCOPE si existe).
 2. NO elimines, renombres masivamente ni desactives otras funcionalidades.
 3. NO hagas refactors amplios ni “limpiezas” no solicitadas.
 4. NO despliegues a producción; solo deja código listo para DEV.
 5. Trabaja sobre la rama \`${route.workBranch || "feature/NovusAIDevelopmentFramework"}\` (crea commits/PR hacia esa base).
 6. Si el target es web: cambia solo DoEventsWEB (microfrontends shell/mfe según aplique).
-7. Si el target es back: cambia solo las lambdas/servicios estrictamente necesarios en DoEventsBack.
-8. Si detectas que el cambio requiere otra capa no prevista, DOCUMÉNTALO y no inventes alcance.
+7. Si el target es back: cambia solo las lambdas/APIs backend estrictamente necesarias en DoEventsBack (no confundir con la entidad de producto «servicios»).
+8. Si detectas que el cambio requiere otra capa o entidad no prevista, DOCUMÉNTALO y no inventes alcance.
 9. Añade o actualiza tests mínimos si el repo ya tiene patrones de test para esa zona.
-10. Resume al final: archivos tocados, cómo probar en DEV, riesgos residuales.
+10. Resume al final: archivos tocados, cómo probar en DEV, riesgos residuales, y confirma que no tocaste FORBIDDEN_ENTITIES.
 
 ## Entorno
 - AWS DEV / sa-east-1 cuando aplique
