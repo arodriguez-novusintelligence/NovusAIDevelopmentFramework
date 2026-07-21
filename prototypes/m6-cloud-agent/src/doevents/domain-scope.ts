@@ -122,6 +122,17 @@ function extractOutOfScope(body: string): string[] {
     .filter((l) => l.length > 2 && !/^\[/.test(l));
 }
 
+/** True si la nota de fuera-de-alcance prohíbe realmente esa entidad. */
+function noteForbidsEntity(note: string, entity: DoEventsEntity): boolean {
+  const n = note.toLowerCase();
+  // "no relacionados con eventos..." = los eventos SÍ son el tema permitido.
+  if (new RegExp(`no\\s+relacionad[oa]s?\\s+con\\s+[\\s\\S]*\\b${entity}\\b`, "i").test(n)) {
+    return false;
+  }
+  if (ENTITY_HINTS[entity].test(note)) return true;
+  return n.includes(entity);
+}
+
 function globToRegExp(glob: string): RegExp {
   const escaped = glob
     .replace(/[.+^${}()|[\]\\]/g, "\\$&")
@@ -147,9 +158,10 @@ export function resolveDomainScope(title: string, body = ""): DomainScope {
   const mentioned = ALL.filter((e) => ENTITY_HINTS[e].test(text));
   const rationale: string[] = [];
 
-  // Fuera de alcance explícito → forzar forbidden
+  // Fuera de alcance explícito → forzar forbidden (sin falsos positivos).
+  // Evitar: "no relacionados con eventos cercanos" → NO debe prohibir eventos.
   const forcedForbidden = ALL.filter((e) =>
-    outOfScopeNotes.some((n) => ENTITY_HINTS[e].test(n) || n.toLowerCase().includes(e)),
+    outOfScopeNotes.some((n) => noteForbidsEntity(n, e)),
   );
 
   let allowed: DoEventsEntity[];
