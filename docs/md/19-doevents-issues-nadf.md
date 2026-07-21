@@ -39,3 +39,10 @@ Con label `nadf`, NADF:
 ## Proyecto framework
 
 `.nadf/projects/doevents/`
+
+## Blast radius / calidad vendible
+
+Ver [20-blast-radius-descubre-nadf.md](20-blast-radius-descubre-nadf.md).
+
+Resumen: merge+deploy no son éxito. Gates de cableado Descubre + smoke marketplace deben PASS.
+Un fix de “solo eventos” no puede romper lugares/servicios (ni dejar loading vacío).

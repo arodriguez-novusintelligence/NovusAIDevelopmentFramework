@@ -219,7 +219,11 @@ export function formatDomainScopeForPrompt(scope: DomainScope): string {
   lines.push(
     "- NO modifiques UI, adapters, hooks ni APIs de entidades FORBIDDEN.",
     "- NO “aproveches” para alinear lugares/servicios/mapa si no están en ALLOWED.",
-    "- Si el bug parece estar en código compartido, limita el diff a la rama de la entidad ALLOWED.",
+    "- Si el bug parece estar en código compartido (EventsPage, discoverCache),",
+    "  limita el diff a la rama de la entidad ALLOWED y NO rompas el cableado de las otras.",
+    "- BLAST RADIUS: un fix de 1 entidad no puede apagar fetch/paint/skip de las demás.",
+    "- Si tocas shouldSkip / caché / loading global en Descubre → FALLARÁS el gate UI",
+    "  salvo que conserves locationBoundFetched + fetchNearbyVenues + fetchNearbyServices.",
   );
   if (scope.pathDenyGlobs.length) {
     lines.push("- Paths prohibidos (globs):");

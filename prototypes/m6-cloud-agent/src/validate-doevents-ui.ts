@@ -1,6 +1,7 @@
 /* NADF-GUIDE
- * Propósito: Valida que PRs DoEvents no eliminen invariantes de UI Descubre.
+ * Propósito: Valida que PRs DoEvents no eliminen invariantes ni cableado de Descubre.
  * Uso: npm run validate:doevents-ui -- route-decision.json
+ * Exit 11 = bloqueo auto-merge.
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -8,6 +9,8 @@ import {
   DISCOVER_SECTION_TITLES,
   DISCOVER_SERVICES_ANCHORS,
   DISCOVER_UI_INVARIANT_FILES,
+  findDiscoverPageWiringViolations,
+  findMarketplaceWiringRemovedInDiff,
 } from "./doevents/ui-invariants.js";
 
 type Route = {
@@ -26,6 +29,10 @@ if (!issueNumber) {
 
 function ghJson(args: string[]): unknown {
   return JSON.parse(execFileSync("gh", args, { encoding: "utf8" }));
+}
+
+function ghText(args: string[]): string {
+  return execFileSync("gh", args, { encoding: "utf8", maxBuffer: 20 * 1024 * 1024 });
 }
 
 function listIssuePrNumbers(repo: string, issue: number): number[] {
@@ -86,10 +93,11 @@ function prTouchesInvariantFiles(repo: string, pr: number): boolean {
     "files",
   ]) as { files: Array<{ path: string }> };
   const paths = (data.files || []).map((f) => f.path.replace(/\\/g, "/"));
-  return paths.some((p) =>
-    DISCOVER_UI_INVARIANT_FILES.some(
-      (inv) => p === inv || p.endsWith(inv.replace(/^packages\//, "")),
-    ) || /EventsPage|EventsView|discoverCache|discoverEventFilters/.test(p),
+  return paths.some(
+    (p) =>
+      DISCOVER_UI_INVARIANT_FILES.some(
+        (inv) => p === inv || p.endsWith(inv.replace(/^packages\//, "")),
+      ) || /EventsPage|EventsView|discoverCache|discoverEventFilters|FeedServicesCarousel/.test(p),
   );
 }
 
@@ -125,17 +133,12 @@ for (const pr of prs) {
     if (!view.includes("FeedServicesCarousel")) {
       missing.push("EventsView debe renderizar FeedServicesCarousel");
     }
-  } else if (page) {
-    const missingProps = [
-      "favoriteEvents",
-      "publishedVenues",
-      "nearbyServiceCards",
-      "serviceProviders",
-      "recommendedEvents",
-      "otherEvents",
-      "nearbyEvents",
-    ].filter((prop) => !page.includes(prop));
-    missing.push(...missingProps.map((p) => `EventsPage prop ${p}`));
+  }
+
+  if (page) {
+    missing.push(...findDiscoverPageWiringViolations(page));
+  } else if (view) {
+    // PR tocó vista pero no page: igual exigir anclas de servicios en el blob
   }
 
   const servicesBlob = `${view || ""}\n${page || ""}\n${servicesCarousel || ""}`;
@@ -146,8 +149,16 @@ for (const pr of prs) {
     missing.push('sección "Servicios cercanos" (FeedServicesCarousel)');
   }
 
+  // Diff: detectar eliminación neta de cableado aunque el archivo “aún compile”.
+  try {
+    const diff = ghText(["pr", "diff", String(pr), "--repo", repo]);
+    missing.push(...findMarketplaceWiringRemovedInDiff(diff));
+  } catch {
+    // sin diff → no bloquear por esto
+  }
+
   if (missing.length) {
-    violations.push({ pr, missing });
+    violations.push({ pr, missing: [...new Set(missing)] });
   }
 }
 
@@ -157,7 +168,7 @@ console.log(JSON.stringify(report, null, 2));
 
 if (violations.length) {
   console.error(
-    "::error::UI invariants: el PR elimina o deja de cablear secciones de Descubre. Auto-merge bloqueado.",
+    "::error::UI invariants: el PR elimina o deja de cablear secciones/marketplace de Descubre. Auto-merge bloqueado.",
   );
   for (const v of violations) {
     console.error(`  PR #${v.pr}: ${v.missing.join(", ")}`);

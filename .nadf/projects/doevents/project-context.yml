@@ -82,7 +82,9 @@ automation:
     - Deploy automático solo a https://dev.doeventsapp.com (S3/CloudFront DEV).
     - PROD permanece forbidden.
     - Scope: si el issue pide solo eventos|lugares|servicios, el gate validate:doevents-scope bloquea PRs que toquen las otras.
-    - UI invariants Descubre: validate:doevents-ui bloquea PRs que eliminen secciones (Favoritos, Lugares, Servicios, etc.).
+    - UI invariants Descubre: validate:doevents-ui bloquea pérdida de secciones Y de cableado marketplace
+      (fetchNearbyVenues/Services, locationBoundFetched, no enrich bloqueante).
+    - Smoke post-deploy: scripts/smoke-discover-marketplace.mjs debe PASS o el job falla (no “éxito” vacío).
     - Runtime coding actual: Cursor Cloud (CURSOR_API_KEY). Anthropic/Claude Platform (ANTHROPIC_API_KEY) es solo inferencia hoy; no abre PRs.
 
 runtime:
@@ -102,5 +104,9 @@ governance:
 quality_gates:
   - complexity_routed
   - scope_isolation
+  - ui_invariants_discover
+  - discover_marketplace_smoke
   - build_or_validate
   - deploy_dev_when_configured
+  # Éxito ≠ merge. Éxito = gates PASS + smoke marketplace + build.
+  # Un issue de “solo eventos” NO puede desplegarse si rompe lugares/servicios.
