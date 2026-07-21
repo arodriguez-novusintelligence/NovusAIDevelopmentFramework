@@ -197,7 +197,7 @@ export function resolveDomainScope(title: string, body = ""): DomainScope {
 
   const forbidden = unique([
     ...ALL.filter((e) => !allowed.includes(e)),
-    ...forcedForbidden,
+    ...forcedForbidden.filter((e) => !allowed.includes(e)),
   ]);
 
   const pathAllowGlobs = unique(allowed.flatMap((e) => ENTITY_PATH_POLICY[e].allow));
