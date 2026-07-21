@@ -82,6 +82,7 @@ automation:
     - Deploy automático solo a https://dev.doeventsapp.com (S3/CloudFront DEV).
     - PROD permanece forbidden.
     - Scope: si el issue pide solo eventos|lugares|servicios, el gate validate:doevents-scope bloquea PRs que toquen las otras.
+    - UI invariants Descubre: validate:doevents-ui bloquea PRs que eliminen secciones (Favoritos, Lugares, Servicios, etc.).
     - Runtime coding actual: Cursor Cloud (CURSOR_API_KEY). Anthropic/Claude Platform (ANTHROPIC_API_KEY) es solo inferencia hoy; no abre PRs.
 
 runtime:

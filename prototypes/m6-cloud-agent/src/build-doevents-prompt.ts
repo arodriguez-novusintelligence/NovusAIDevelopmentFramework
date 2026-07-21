@@ -4,6 +4,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { formatDomainScopeForPrompt, type DomainScope } from "./doevents/domain-scope.js";
+import { formatUiInvariantsForPrompt } from "./doevents/ui-invariants.js";
 
 type Route = {
   profile?: string;
@@ -30,6 +31,8 @@ const domainBlock = route.domainScope
   ? `\n${formatDomainScopeForPrompt(route.domainScope)}\n`
   : "";
 
+const uiBlock = `\n${formatUiInvariantsForPrompt()}\n`;
+
 const prompt = `Eres un agente NADF para DoEvents (DEV only).
 
 ## Issue #${issue.number}
@@ -44,10 +47,10 @@ ${issue.body || "(sin cuerpo)"}
 - target: ${route.target}
 - workBranch: ${route.workBranch || "feature/NovusAIDevelopmentFramework"}
 - rationale: ${(route.rationale || []).join("; ")}
-${domainBlock}
+${domainBlock}${uiBlock}
 ## REGLAS OBLIGATORIAS (aislamiento)
-1. Implementa ÚNICAMENTE lo pedido en este issue (respeta DOMAIN SCOPE si existe).
-2. NO elimines, renombres masivamente ni desactives otras funcionalidades.
+1. Implementa ÚNICAMENTE lo pedido en este issue (respeta DOMAIN SCOPE y UI INVARIANTS).
+2. NO elimines, renombres masivamente ni desactives otras funcionalidades ni secciones de UI.
 3. NO hagas refactors amplios ni “limpiezas” no solicitadas.
 4. NO despliegues a producción; solo deja código listo para DEV.
 5. Trabaja sobre la rama \`${route.workBranch || "feature/NovusAIDevelopmentFramework"}\` (crea commits/PR hacia esa base).
@@ -55,7 +58,7 @@ ${domainBlock}
 7. Si el target es back: cambia solo las lambdas/APIs backend estrictamente necesarias en DoEventsBack (no confundir con la entidad de producto «servicios»).
 8. Si detectas que el cambio requiere otra capa o entidad no prevista, DOCUMÉNTALO y no inventes alcance.
 9. Añade o actualiza tests mínimos si el repo ya tiene patrones de test para esa zona.
-10. Resume al final: archivos tocados, cómo probar en DEV, riesgos residuales, y confirma que no tocaste FORBIDDEN_ENTITIES.
+10. Resume al final: archivos tocados, cómo probar en DEV, riesgos residuales, confirma FORBIDDEN_ENTITIES intactas y secciones Descubre intactas.
 
 ## Entorno
 - AWS DEV / sa-east-1 cuando aplique

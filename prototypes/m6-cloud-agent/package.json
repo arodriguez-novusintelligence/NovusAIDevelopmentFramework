@@ -16,6 +16,7 @@
     "route:doevents-issue": "tsx src/route-doevents-issue.ts",
     "build:doevents-prompt": "tsx src/build-doevents-prompt.ts",
     "validate:doevents-scope": "tsx src/validate-doevents-scope.ts",
+    "validate:doevents-ui": "tsx src/validate-doevents-ui.ts",
     "invoke:doevents-issue": "tsx src/invoke-doevents-issue.ts",
     "test:complexity-routing": "tsx tests/complexity-routing/run-corpus.ts",
     "test:domain-scope": "tsx tests/doevents/domain-scope-corpus.ts",
