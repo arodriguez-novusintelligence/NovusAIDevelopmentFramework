@@ -27,6 +27,17 @@ Issue en DoEventsWEB (label `nadf`)
 Cada issue ajusta **solo** la funcionalidad pedida. Prohibido eliminar u
 otras features, refactors masivos o deploy a producción.
 
+## Error reporting
+
+Si el run falla, el comentario final del issue y la consola de Actions muestran:
+
+- `primaryCode` (ej. `REPO_PUSH_DENIED`)
+- `why` (causa)
+- `fixHint` (cómo corregir)
+- Artifact `execution-report.json`
+
+Ver guía: `NovusAIDevelopmentFramework/docs/md/21-project-context-guide.md`.
+
 ## Disparo
 
 1. Crear issue con plantilla `issue-seed.md`.

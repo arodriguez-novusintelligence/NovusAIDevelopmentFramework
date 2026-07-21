@@ -92,6 +92,8 @@ runtime:
   scripts:
     route: route:doevents-issue
     invoke: invoke:doevents-issue
+    verify: verify:doevents-agent-prs
+    report: report:doevents-execution
   model_env: NADF_MODEL
 
 governance:
@@ -103,10 +105,33 @@ governance:
 
 quality_gates:
   - complexity_routed
+  - agent_pr_verified
   - scope_isolation
   - ui_invariants_discover
+  - build_env_assert_devaws
   - discover_marketplace_smoke
   - build_or_validate
   - deploy_dev_when_configured
-  # Éxito ≠ merge. Éxito = gates PASS + smoke marketplace + build.
+  # Éxito ≠ merge. Éxito = gates PASS + smoke + build + deploy (si auto_deploy).
   # Un issue de “solo eventos” NO puede desplegarse si rompe lugares/servicios.
+
+error_reporting:
+  taxonomy: doevents
+  issue_comment: true
+  actions_console: true
+  artifact: execution-report.json
+  codes:
+    - REPO_PUSH_DENIED
+    - PR_NOT_CREATED
+    - PR_MERGE_FAILED
+    - BUILD_ENV_MISMATCH
+    - DEPLOY_OIDC_FAILED
+    - SMOKE_FAILED
+    - GATE_WIRING_FAILED
+
+postconditions:
+  agent_pass: true
+  pr_opened_or_noop: true
+  merged_to_work_branch: true
+  deployed_dev: true
+  gates_pass: true

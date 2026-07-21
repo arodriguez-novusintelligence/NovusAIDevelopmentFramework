@@ -38,7 +38,19 @@ Con label `nadf`, NADF:
 
 ## Proyecto framework
 
-`.nadf/projects/doevents/`
+`.nadf/projects/doevents/project-context.yml` — **este es el archivo a configurar** para DoEvents.
+
+Guía multi-app: [21-project-context-guide.md](21-project-context-guide.md).
+
+## Error reporting (DoEvents)
+
+Tras cada run, el workflow publica:
+
+- Comentario en el issue con tabla de pasos + `primaryCode` / `why` / `fixHint`
+- Consola Actions: `::error::CODE` + bloque `NADF_RUN_REPORT=...`
+- Artifact: `execution-report.json`, `agent-result.json`, `agent-verify.json`
+
+Códigos frecuentes: `REPO_PUSH_DENIED`, `PR_NOT_CREATED`, `BUILD_ENV_MISMATCH`, `DEPLOY_OIDC_FAILED`, `SMOKE_FAILED`.
 
 ## Blast radius / calidad vendible
 

@@ -22,6 +22,8 @@
     "test:domain-scope": "tsx tests/doevents/domain-scope-corpus.ts",
     "test:complexity-routing": "tsx tests/complexity-routing/run-corpus.ts",
     "invoke:doevents-issue": "tsx src/invoke-doevents-issue.ts",
+    "verify:doevents-agent-prs": "tsx src/verify-doevents-agent-prs.ts",
+    "report:doevents-execution": "tsx src/report-doevents-execution.ts",
     "test:ai-runtime": "tsx tests/ai-runtime/factory-corpus.ts",
     "invoke:visual-parity": "tsx src/invoke-visual-parity.ts",
     "invoke:full-pipeline": "tsx src/invoke-full-pipeline.ts",
