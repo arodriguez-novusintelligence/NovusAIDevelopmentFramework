@@ -6,6 +6,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import {
   DISCOVER_SECTION_TITLES,
+  DISCOVER_SERVICES_ANCHORS,
   DISCOVER_UI_INVARIANT_FILES,
 } from "./doevents/ui-invariants.js";
 
@@ -109,31 +110,44 @@ for (const pr of prs) {
     pr,
     "packages/shell/src/lovable/components/feed/EventsView.tsx",
   );
-  if (view == null) {
-    // PR no tocó EventsView; revisar que EventsPage siga pasando props clave
-    const page = getFileAtPr(repo, pr, "packages/shell/src/pages/EventsPage.tsx");
-    if (page) {
-      const missingProps = [
-        "favoriteEvents",
-        "publishedVenues",
-        "nearbyServiceCards",
-        "serviceProviders",
-        "recommendedEvents",
-        "otherEvents",
-        "nearbyEvents",
-      ].filter((prop) => !page.includes(prop));
-      if (missingProps.length) {
-        violations.push({
-          pr,
-          missing: missingProps.map((p) => `EventsPage prop ${p}`),
-        });
-      }
+  const page = getFileAtPr(repo, pr, "packages/shell/src/pages/EventsPage.tsx");
+  const servicesCarousel = getFileAtPr(
+    repo,
+    pr,
+    "packages/shell/src/lovable/components/feed/FeedServicesCarousel.tsx",
+  );
+  const missing: string[] = [];
+
+  if (view) {
+    for (const title of DISCOVER_SECTION_TITLES) {
+      if (!view.includes(title)) missing.push(`section "${title}"`);
     }
-    continue;
+    if (!view.includes("FeedServicesCarousel")) {
+      missing.push("EventsView debe renderizar FeedServicesCarousel");
+    }
+  } else if (page) {
+    const missingProps = [
+      "favoriteEvents",
+      "publishedVenues",
+      "nearbyServiceCards",
+      "serviceProviders",
+      "recommendedEvents",
+      "otherEvents",
+      "nearbyEvents",
+    ].filter((prop) => !page.includes(prop));
+    missing.push(...missingProps.map((p) => `EventsPage prop ${p}`));
   }
-  const missing = DISCOVER_SECTION_TITLES.filter((title) => !view.includes(title));
+
+  const servicesBlob = `${view || ""}\n${page || ""}\n${servicesCarousel || ""}`;
+  if (
+    (view || page) &&
+    !DISCOVER_SERVICES_ANCHORS.some((anchor) => servicesBlob.includes(anchor))
+  ) {
+    missing.push('sección "Servicios cercanos" (FeedServicesCarousel)');
+  }
+
   if (missing.length) {
-    violations.push({ pr, missing: missing.map((t) => `section "${t}"`) });
+    violations.push({ pr, missing });
   }
 }
 
