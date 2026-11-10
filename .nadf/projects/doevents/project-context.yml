@@ -55,7 +55,7 @@ connectors:
       web_qa:   arn:aws:iam::519010577666:role/nadf-doevents-web-deploy-qa
       web_prod: arn:aws:iam::519010577666:role/nadf-doevents-web-deploy-prod   # + cloudtrail:LookupEvents para el preflight
       # Back e IA: se definen cuando se habiliten pedidos sobre esas apps (permisos más amplios).
-    status: pending-roles
+    status: roles-created          # 2026-11-10; simulado: cada rol solo publica en su bucket. Falta el ejecutor nadf-runner-* (fase 3).
 
 apps:
   - id: doevents-web
