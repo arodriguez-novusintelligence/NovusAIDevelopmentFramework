@@ -1,45 +1,53 @@
 # NADF-GUIDE
-# Propósito: Documenta el proyecto DoEvents en NADF (Issues → DEV).
-# Configuración: Secrets CURSOR_API_KEY/GH_PAT; vars AWS_ROLE_ARN en DoEventsWEB.
-# DoEvents — NADF via GitHub Issues
+# Propósito: Documenta DoEvents como empresa cliente del Administrador de IA NADF.
+# Configuración: empresa `doevents` en el portal; conectores GitHub App NADF + AWS; motor Claude.
+# DoEvents — empresa cliente de NADF
+
+DoEvents usa NADF como **empresa propia** en el Administrador de IA (portal.novusintelligencesolutions.com).
+Los repositorios, la nube y los datos son de DoEvents; NADF entra solo con los permisos que DoEvents otorga.
 
 ## Flujo
 
 ```text
-Issue en DoEventsWEB (label `nadf`)
-  → Complexity Routing (WEB / Back / full)
-  → Cloud Agent (solo el alcance del issue)
-  → Build / validate
-  → Deploy DEV (WEB: S3+CloudFront; Back: según labels)
-  → Comentario en el issue
+Funcional de DoEvents pide un ajuste en el centro de mando
+  → Analista (Claude) aclara dudas y arma criterios de aceptación
+  → Desarrollo en rama nadf/req-{id} del repo real (Claude Code)
+  → Lint, build, pruebas y deploy a DEV + evidencias E2E
+  → Informe al funcional (hecho, no hecho, límites, preguntas)
+  → Aprobación de un aprobador de DoEvents (con MFA)
+  → Preflight PROD (PROD == main) → despliegue con consola en vivo → rollback si falla
 ```
 
-## Repos
+## Repos (reales)
 
-| Rol | Repo | Rama NADF |
+| App | Repo | Rama base |
 |-----|------|-----------|
-| WEB | [DoEventsWEB](https://github.com/arodriguez-novusintelligence/DoEventsWEB) | `feature/NovusAIDevelopmentFramework` |
-| Back | [DoEventsBack](https://github.com/arodriguez-novusintelligence/DoEventsBack) | `feature/NovusAIDevelopmentFramework` |
-| Issues | [DoEventsWEB/issues](https://github.com/arodriguez-novusintelligence/DoEventsWEB/issues) | — |
+| WEB | [doeventsrepo/DoEventsWEB](https://github.com/doeventsrepo/DoEventsWEB) | `main` |
+| Back | [doeventsrepo/DoEventsBack](https://github.com/doeventsrepo/DoEventsBack) | `main` |
+| IA | [doeventsrepo/DoEventsIA](https://github.com/doeventsrepo/DoEventsIA) | `main` |
 
-## Principio de aislamiento
+La app móvil (`DoEventsApp/DoEventsFront`) queda **excluida temporalmente**. La prioridad del piloto es la web.
 
-Cada issue ajusta **solo** la funcionalidad pedida. Prohibido eliminar u
-otras features, refactors masivos o deploy a producción.
+Las copias en `arodriguez-novusintelligence/*` y el flujo Issues + Cursor quedan retirados.
 
-## Error reporting
+## Administradores y aprobadores
 
-Si el run falla, el comentario final del issue y la consola de Actions muestran:
+- arodriguez@doeventsapp.com (Admin y Aprobador)
+- admin.developer.platform@doeventsapp.com (Admin y Aprobador)
 
-- `primaryCode` (ej. `REPO_PUSH_DENIED`)
-- `why` (causa)
-- `fixHint` (cómo corregir)
-- Artifact `execution-report.json`
+Una aprobación por despliegue, con MFA. DoEvents Back (pagos, sesiones, datos bancarios) exige además revisión de un Desarrollador.
 
-Ver guía: `NovusAIDevelopmentFramework/docs/md/21-project-context-guide.md`.
+## Reglas que se respetan
 
-## Disparo
+- Un pedido = un cambio acotado (aislamiento por entidad: eventos, lugares, servicios).
+- Sin refactors masivos ni borrado de funciones ajenas.
+- Antes de PROD se compara lo desplegado con `main`: WEB y Back de PROD a veces se despliegan desde código no publicado y un deploy desde `main` revertiría cambios vivos.
 
-1. Crear issue con plantilla `issue-seed.md`.
-2. Añadir label `nadf` (o `nadf:approved`).
-3. Ver Action **NADF DoEvents issue → DEV** en DoEventsWEB.
+## Pendientes para conectar
+
+1. ~~Instalar la GitHub App NADF en `doeventsrepo`~~ — hecho 2026-11-10 (`nadf-novus-intelligence`, DoEventsWEB, DoEventsBack, DoEventsIA).
+2. ~~Roles de despliegue de la web por entorno en AWS~~ — creados 2026-11-10 (`nadf-doevents-web-deploy-{dev,qa,prod}`).
+3. Clave de Claude de NADF en Secrets Manager (`/nadf/platform/claude-api-key`, sa-east-1).
+4. Confirmar comandos de pruebas de WEB y Back y la región DEV de Back.
+
+Ver `project-context.yml` y la guía `docs/md/21-project-context-guide.md`.
