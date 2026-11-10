@@ -53,9 +53,23 @@ reviewer:
 models:
   analysis: claude-sonnet-5-5   # Analista, Planificador, Arquitecto, Seguridad, Revisor
   development: claude-opus-5-5  # Desarrollador (Claude Code)
-  # Ajustes visuales: Sonnet basta (cambio acotado, sin lógica). El resto mantiene Opus para no perder efectividad.
+  # Económico primero: ajustes y evolutivos NO críticos se desarrollan con Sonnet. Lo crítico, lo nuevo y lo
+  # arquitectónico usan Opus. Escalamiento automático a Opus si la compilación falla y en las correcciones (iteración ≥2).
   development_by_naturaleza:
     ajuste_visual: claude-sonnet-5-5
+    evolutivo: claude-sonnet-5-5
+  critical_development: claude-opus-5-5
+  escalation:
+    on_build_failure: claude-opus-5-5   # una sesión corta de corrección con el error de compilación
+    on_iteration: claude-opus-5-5       # «Corregir con la IA» y ajustes pedidos por personas
+    fix_budget_usd: 1.5
+
+# Esfuerzo de razonamiento del Desarrollador (Claude Code --effort): más esfuerzo = más tokens de pensamiento.
+development_effort:
+  ajuste_visual: low
+  evolutivo: medium
+  nueva_funcionalidad: medium
+  cambio_arquitectonico: high
 
 # Presupuesto máximo de Claude Code por ejecución (USD), según naturaleza.
 development_budget_usd:
