@@ -53,6 +53,9 @@ reviewer:
 models:
   analysis: claude-sonnet-5-5   # Analista, Planificador, Arquitecto, Seguridad, Revisor
   development: claude-opus-5-5  # Desarrollador (Claude Code)
+  # Ajustes visuales: Sonnet basta (cambio acotado, sin lógica). El resto mantiene Opus para no perder efectividad.
+  development_by_naturaleza:
+    ajuste_visual: claude-sonnet-5-5
 
 # Presupuesto máximo de Claude Code por ejecución (USD), según naturaleza.
 development_budget_usd:
