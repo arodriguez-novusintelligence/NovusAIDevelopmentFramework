@@ -45,7 +45,7 @@ Una aprobación por despliegue, con MFA. DoEvents Back (pagos, sesiones, datos b
 
 ## Pendientes para conectar
 
-1. Instalar la GitHub App NADF en `doeventsrepo` (DoEventsWEB, DoEventsBack, DoEventsIA).
+1. ~~Instalar la GitHub App NADF en `doeventsrepo`~~ — hecho 2026-11-10 (`nadf-novus-intelligence`, DoEventsWEB, DoEventsBack, DoEventsIA).
 2. Roles de despliegue de la web por entorno en AWS (`nadf-doevents-web-deploy-{dev,qa,prod}`).
 3. Clave de Claude de NADF en Secrets Manager (`/nadf/platform/claude-api-key`, sa-east-1).
 4. Confirmar comandos de pruebas de WEB y Back y la región DEV de Back.

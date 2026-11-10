@@ -36,12 +36,14 @@ connectors:
   code:
     provider: github
     auth: github-app:nadf          # una instalación por cuenta; DoEvents elige los repos que comparte
+    app: nadf-novus-intelligence   # https://github.com/apps/nadf-novus-intelligence (app_id 5698642)
     app_credentials: secrets-manager:sa-east-1:/nadf/platform/github-app
     installations:
       - account: doeventsrepo
+        installation_id: 180570135
         repos: [DoEventsWEB, DoEventsBack, DoEventsIA]
       # DoEventsApp/DoEventsFront (app móvil): excluida temporalmente por decisión de DoEvents (2026-11-10).
-    status: pending-installation
+    status: installed              # verificado 2026-11-10: la app ve y lee los 3 repos
   cloud:
     provider: aws
     account_id: "519010577666"
