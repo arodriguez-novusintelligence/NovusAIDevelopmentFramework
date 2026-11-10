@@ -68,3 +68,11 @@ development_budget_usd:
 context_limits:
   diff_chars: 40000
   repo_file_list: 600
+  repo_map_chars: 24000   # mapa del repo por SHA de main (caché): orienta al Analista y al Desarrollador
+
+# Contexto dirigido: el Analista propone archivos candidatos sobre el mapa del repo y el Desarrollador
+# empieza por ellos (Grep/Glob dirigidos) en lugar de explorar todo el repositorio.
+targeted_context: true
+
+# Revisión combinada: si corren Seguridad y Revisor, van en una sola llamada (el diff se envía una vez).
+combined_review: true
