@@ -1,39 +1,133 @@
 # NADF-GUIDE
-# Propósito: Contexto del proyecto DoEvents (Issues WEB → ajuste WEB/Back → DEV).
-# Configuración: Labels nadf / area:*; rama de trabajo feature/NovusAIDevelopmentFramework.
+# Propósito: Contexto del proyecto DoEvents como EMPRESA CLIENTE del Administrador de IA NADF
+#            (portal.novusintelligencesolutions.com): solicitud del funcional → Claude desarrolla en los
+#            repos reales de DoEvents → pruebas → informe → aprobación humana → despliegue.
+# Configuración: empresa `doevents` en el portal (stack nadf-portal-{stage}); repos reales vía conector
+#                GitHub App NADF (cuentas doeventsrepo y DoEventsApp); motor Claude (Cursor retirado).
+version: "2.0"
+
 project:
   id: doevents
   name: DoEvents
   kind: product
-  environment: [dev]
-  production_deploy: forbidden
+  company_id: doevents            # empresa en el portal NADF (tabla nadf-portal-{stage}, COMPANY#doevents)
+  environment: [dev, qa, prod]
+  production_deploy: approval-required
+
+engine:
+  provider: anthropic
+  runtime: claude-code-headless   # contenedor efímero por ejecución (CodeBuild), ver doc de diseño NADF
+  models:
+    development: claude-opus-5-5
+    analysis_and_reports: claude-sonnet-5-5
+  credentials: secrets-manager:/nadf/doevents/claude   # pendiente: clave exclusiva NADF
+  legacy_cursor: retired          # el flujo Issues → Cursor Cloud Agent queda solo como histórico
 
 source:
-  adapter: github-issue
-  repository: arodriguez-novusintelligence/DoEventsWEB
-  issues_url: https://github.com/arodriguez-novusintelligence/DoEventsWEB/issues
-  required_label: nadf
-  approval_label: "nadf:approved"
-  # Con label `nadf` se dispara el ciclo; `nadf:approved` también vale.
+  adapter: nadf-portal            # el funcional pide desde el centro de mando
+  company_id: doevents
   never_auto_execute_body: true
+  legacy:
+    adapter: github-issue
+    repository: arodriguez-novusintelligence/DoEventsWEB   # copia histórica; no es el repo real
+    status: retired
 
-targets:
-  frontend:
-    repo: https://github.com/arodriguez-novusintelligence/DoEventsWEB.git
-    branch: feature/NovusAIDevelopmentFramework
-    deploy: deploy-devaws
-    region: sa-east-1
-  backend:
-    repo: https://github.com/arodriguez-novusintelligence/DoEventsBack.git
-    branch: feature/NovusAIDevelopmentFramework
-    deploy: serverless-dev-when-labeled
-    region: sa-east-1
+connectors:
+  code:
+    provider: github
+    auth: github-app:nadf          # una instalación por cuenta; DoEvents elige los repos que comparte
+    installations:
+      - account: doeventsrepo
+        repos: [DoEventsWEB, DoEventsBack, DoEventsIA]
+      - account: DoEventsApp
+        repos: [DoEventsFront]
+    status: pending-installation
+  cloud:
+    provider: aws
+    account_id: "519010577666"
+    auth: assume-role-per-environment   # roles de solo despliegue; PROD solo en la etapa aprobada
+    status: pending-roles
+
+apps:
+  - id: doevents-web
+    name: DoEvents WEB
+    repo: https://github.com/doeventsrepo/DoEventsWEB.git
+    default_branch: main
+    stack: React + Vite (npm workspaces shared / mfe-auth / shell)
+    commands:
+      install: npm ci
+      lint: npm run lint
+      build: npm run build
+      unit_tests: por confirmar   # hay *.test.cjs / *.test.ts en packages/shared y shell, sin script `npm test`
+    environments:
+      dev:  { url: https://dev.doeventsapp.com, region: sa-east-1, bucket: doevents-web-dev, cloudfront: E1AIDTCT83PAW5, build: build:devaws, deploy: deploy:devaws }
+      qa:   { url: https://qa.doeventsapp.com, region: us-east-2, bucket: doevents-web-qa, cloudfront: E3UV9NHXADGSAJ, build: build:qa, deploy: deploy:qa }
+      prod: { url: https://web.doeventsapp.com, region: us-west-1, bucket: doevents-web-prod, cloudfront: E1L51KSFEY3YGS, build: build:prod, deploy: deploy:prod }
+    prod_preflight:
+      # Otros despliegan PROD con frecuencia, a veces desde código no publicado: comparar antes de desplegar.
+      - compare_prod_bundle_ui_strings_vs_origin_main
+      - cloudtrail_last_invalidation_actor
+      - abort_if_prod_differs_from_main
+    risk: medium
+
+  - id: doevents-back
+    name: DoEvents Back
+    repo: https://github.com/doeventsrepo/DoEventsBack.git
+    default_branch: main
+    stack: Node.js Lambdas (30 servicios aws-lambda-*, Serverless por servicio)
+    commands:
+      install: npm ci (por servicio)
+      unit_tests: por confirmar   # pruebas *.test.js / *.test.cjs sueltas por servicio
+    environments:
+      dev:  { region: por confirmar, api: https://api-dev.doeventsapp.com }
+      qa:   { region: us-east-2, api: https://api-qa.doeventsapp.com }
+      prod: { region: us-west-1, api: https://api.doeventsapp.com }
+    prod_preflight:
+      # El código de PROD no coincide con main en login, generateotp y manageusers: un deploy desde main revierte cambios vivos.
+      - download_prod_zip_and_diff_vs_branch
+      - deploy_single_function_only
+      - abort_if_prod_differs_from_main
+    risk: high          # pagos (Wompi), sesiones y datos bancarios: requiere revisión de Desarrollador
+
+  - id: doevents-ia
+    name: DoEvents IA (asistente)
+    repo: https://github.com/doeventsrepo/DoEventsIA.git
+    default_branch: main
+    stack: Serverless (Node.js) + Anthropic
+    commands:
+      install: npm ci
+    environments:
+      qa:   { region: us-east-2, deploy: serverless deploy --config serverless.qa.yml --stage qa --region us-east-2 }
+      prod: { region: us-west-1, stack: doevents-agentes-ia-prod, api: https://api.doeventsapp.com/ai }
+    feature_flags: DynamoDB AIAgentConfig (configKey=global), scripts/flags.js
+    risk: medium
+
+  - id: doevents-front
+    name: DoEvents App móvil
+    repo: https://github.com/DoEventsApp/DoEventsFront.git
+    default_branch: Develop
+    stack: React Native (Expo)
+    commands:
+      install: npm ci
+    environments: {}
+    limitations:
+      - Sin despliegue automático a DEV ni pruebas automatizadas; el agente puede proponer cambios y PR, no validarlos en un entorno.
+    risk: medium
+
+approvals:
+  required_approvals: 1
+  approvers:
+    - arodriguez@doeventsapp.com
+    - admin.developer.platform@doeventsapp.com
+  mfa_required: true
+  separation_of_duties: false     # opcional por app; desactivada por defecto (decisión 2026-11-10)
+  high_risk_requires_developer_review: [doevents-back]
 
 scope:
-  # Un issue = un cambio acotado; prohibido refactor masivo u otras features.
-  isolation: single-issue
+  # Un pedido = un cambio acotado; prohibido refactor masivo u otras features.
+  isolation: single-request
   domain_entities: [eventos, lugares, servicios]
-  # Si el issue menciona UNA sola entidad, las otras quedan forbidden + gate de paths.
+  # Si el pedido menciona UNA sola entidad, las otras quedan forbidden + gate de paths.
   path_policies:
     eventos:
       allow:
@@ -59,79 +153,55 @@ scope:
   forbidden:
     - delete_unrelated_features
     - broad_refactors
-    - production_deploy
-  allowed_labels:
-    - nadf
-    - "nadf:approved"
-    - "area:web"
-    - "area:back"
-    - "area:full"
+    - production_deploy_without_approval
+    - secrets_in_code_or_logs
 
 automation:
-  github_workflow: .github/workflows/nadf-issue-dev.yml
-  complexity_routing:
-    enabled: true
-    policy: enterprise-governance/complexity-routing.yml
-    fail_safe: FULL
-  default_branch_work: feature/NovusAIDevelopmentFramework
-  auto_merge_dev: true
+  work_branch_pattern: nadf/req-{requestId}
+  pull_request: draft-until-tests-pass
   auto_deploy_dev: true
-  production_deploy: false
+  auto_deploy_qa: false
+  production_deploy: approval-required
+  rules_sources:
+    # Reglas existentes que se convierten en CLAUDE.md por repo al conectar DoEvents.
+    - DoEventsCICD/Reglas
+    - DoEventsWEB/ReglasAgente
+    - DoEventsWEB/reglasActuacion
   notes:
-    - Auto-merge solo a feature/NovusAIDevelopmentFramework (rama de trabajo DEV).
-    - Deploy automático solo a https://dev.doeventsapp.com (S3/CloudFront DEV).
-    - PROD permanece forbidden.
-    - Scope: si el issue pide solo eventos|lugares|servicios, el gate validate:doevents-scope bloquea PRs que toquen las otras.
-    - UI invariants Descubre: validate:doevents-ui bloquea pérdida de secciones Y de cableado marketplace
-      (fetchNearbyVenues/Services, locationBoundFetched, no enrich bloqueante).
-    - Smoke post-deploy: scripts/smoke-discover-marketplace.mjs debe PASS o el job falla (no “éxito” vacío).
-    - Runtime coding actual: Cursor Cloud (CURSOR_API_KEY). Anthropic/Claude Platform (ANTHROPIC_API_KEY) es solo inferencia hoy; no abre PRs.
-
-runtime:
-  entrypoint: prototypes/m6-cloud-agent
-  scripts:
-    route: route:doevents-issue
-    invoke: invoke:doevents-issue
-    verify: verify:doevents-agent-prs
-    report: report:doevents-execution
-  model_env: NADF_MODEL
+    - El portal NADF es la entrada; el flujo por Issues + Cursor queda retirado.
+    - DEV se despliega solo tras pasar las pruebas; QA y PROD nunca sin aprobación registrada.
+    - Scope: si el pedido es solo eventos|lugares|servicios, el gate de paths bloquea cambios en las otras.
+    - UI invariants Descubre: no perder secciones ni el cableado marketplace (fetchNearbyVenues/Services).
 
 governance:
   human_approval_model: enterprise-governance/human-approval-model.yml
   budget_policy: budget-policy.yml
   agent_selection: agent-selection.yml
   complexity_routing: enterprise-governance/complexity-routing.yml
-  production_deploy: forbidden
+  production_deploy: approval-required
 
 quality_gates:
   - complexity_routed
-  - agent_pr_verified
   - scope_isolation
   - ui_invariants_discover
-  - build_env_assert_devaws
+  - lint_build_unit_tests
+  - deploy_dev
   - discover_marketplace_smoke
-  - build_or_validate
-  - deploy_dev_when_configured
-  # Éxito ≠ merge. Éxito = gates PASS + smoke + build + deploy (si auto_deploy).
-  # Un issue de “solo eventos” NO puede desplegarse si rompe lugares/servicios.
+  - e2e_evidence
+  - prod_preflight_matches_main
+  - human_approval_recorded
+  # Éxito = gates PASS + smoke + evidencias + aprobación humana para PROD.
 
 error_reporting:
   taxonomy: doevents
-  issue_comment: true
-  actions_console: true
+  portal_report: true
   artifact: execution-report.json
   codes:
     - REPO_PUSH_DENIED
     - PR_NOT_CREATED
-    - PR_MERGE_FAILED
     - BUILD_ENV_MISMATCH
-    - DEPLOY_OIDC_FAILED
+    - DEPLOY_ROLE_DENIED
     - SMOKE_FAILED
     - GATE_WIRING_FAILED
-
-postconditions:
-  agent_pass: true
-  pr_opened_or_noop: true
-  merged_to_work_branch: true
-  deployed_dev: true
-  gates_pass: true
+    - PROD_DIFFERS_FROM_MAIN
+    - APPROVAL_MISSING
