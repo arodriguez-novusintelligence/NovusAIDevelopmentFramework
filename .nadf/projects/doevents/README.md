@@ -25,14 +25,15 @@ Funcional de DoEvents pide un ajuste en el centro de mando
 | WEB | [doeventsrepo/DoEventsWEB](https://github.com/doeventsrepo/DoEventsWEB) | `main` |
 | Back | [doeventsrepo/DoEventsBack](https://github.com/doeventsrepo/DoEventsBack) | `main` |
 | IA | [doeventsrepo/DoEventsIA](https://github.com/doeventsrepo/DoEventsIA) | `main` |
-| App móvil | [DoEventsApp/DoEventsFront](https://github.com/DoEventsApp/DoEventsFront) | `Develop` |
+
+La app móvil (`DoEventsApp/DoEventsFront`) queda **excluida temporalmente**. La prioridad del piloto es la web.
 
 Las copias en `arodriguez-novusintelligence/*` y el flujo Issues + Cursor quedan retirados.
 
-## Aprobadores
+## Administradores y aprobadores
 
-- arodriguez@doeventsapp.com
-- admin.developer.platform@doeventsapp.com
+- arodriguez@doeventsapp.com (Admin y Aprobador)
+- admin.developer.platform@doeventsapp.com (Admin y Aprobador)
 
 Una aprobación por despliegue, con MFA. DoEvents Back (pagos, sesiones, datos bancarios) exige además revisión de un Desarrollador.
 
@@ -44,9 +45,9 @@ Una aprobación por despliegue, con MFA. DoEvents Back (pagos, sesiones, datos b
 
 ## Pendientes para conectar
 
-1. Instalar la GitHub App NADF en `doeventsrepo` y `DoEventsApp`.
-2. Roles de despliegue por entorno en AWS.
-3. Clave de Claude exclusiva de NADF.
+1. Instalar la GitHub App NADF en `doeventsrepo` (DoEventsWEB, DoEventsBack, DoEventsIA).
+2. Roles de despliegue de la web por entorno en AWS (`nadf-doevents-web-deploy-{dev,qa,prod}`).
+3. Clave de Claude de NADF en Secrets Manager (`/nadf/platform/claude-api-key`, sa-east-1).
 4. Confirmar comandos de pruebas de WEB y Back y la región DEV de Back.
 
 Ver `project-context.yml` y la guía `docs/md/21-project-context-guide.md`.

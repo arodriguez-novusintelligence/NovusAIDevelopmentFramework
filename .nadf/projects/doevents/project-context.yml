@@ -19,8 +19,8 @@ engine:
   runtime: claude-code-headless   # contenedor efímero por ejecución (CodeBuild), ver doc de diseño NADF
   models:
     development: claude-opus-5-5
-    analysis_and_reports: claude-sonnet-5-5
-  credentials: secrets-manager:/nadf/doevents/claude   # pendiente: clave exclusiva NADF
+    analysis_and_reports: claude-opus-5-5   # puede bajarse a claude-sonnet-5-5 si Novus lo decide por costo
+  credentials: secrets-manager:sa-east-1:/nadf/platform/claude-api-key   # clave de la plataforma NADF (workspace propio en la Claude Console)
   legacy_cursor: retired          # el flujo Issues → Cursor Cloud Agent queda solo como histórico
 
 source:
@@ -36,16 +36,23 @@ connectors:
   code:
     provider: github
     auth: github-app:nadf          # una instalación por cuenta; DoEvents elige los repos que comparte
+    app_credentials: secrets-manager:sa-east-1:/nadf/platform/github-app
     installations:
       - account: doeventsrepo
         repos: [DoEventsWEB, DoEventsBack, DoEventsIA]
-      - account: DoEventsApp
-        repos: [DoEventsFront]
+      # DoEventsApp/DoEventsFront (app móvil): excluida temporalmente por decisión de DoEvents (2026-11-10).
     status: pending-installation
   cloud:
     provider: aws
     account_id: "519010577666"
     auth: assume-role-per-environment   # roles de solo despliegue; PROD solo en la etapa aprobada
+    external_id: nadf-doevents
+    roles:
+      # Solo asumibles por roles nadf-runner-* (ejecutores NADF). Alcance: bucket + distribución de cada entorno.
+      web_dev:  arn:aws:iam::519010577666:role/nadf-doevents-web-deploy-dev
+      web_qa:   arn:aws:iam::519010577666:role/nadf-doevents-web-deploy-qa
+      web_prod: arn:aws:iam::519010577666:role/nadf-doevents-web-deploy-prod   # + cloudtrail:LookupEvents para el preflight
+      # Back e IA: se definen cuando se habiliten pedidos sobre esas apps (permisos más amplios).
     status: pending-roles
 
 apps:
@@ -60,9 +67,9 @@ apps:
       build: npm run build
       unit_tests: por confirmar   # hay *.test.cjs / *.test.ts en packages/shared y shell, sin script `npm test`
     environments:
-      dev:  { url: https://dev.doeventsapp.com, region: sa-east-1, bucket: doevents-web-dev, cloudfront: E1AIDTCT83PAW5, build: build:devaws, deploy: deploy:devaws }
-      qa:   { url: https://qa.doeventsapp.com, region: us-east-2, bucket: doevents-web-qa, cloudfront: E3UV9NHXADGSAJ, build: build:qa, deploy: deploy:qa }
-      prod: { url: https://web.doeventsapp.com, region: us-west-1, bucket: doevents-web-prod, cloudfront: E1L51KSFEY3YGS, build: build:prod, deploy: deploy:prod }
+      dev:  { url: https://dev.doeventsapp.com, region: sa-east-1, bucket: doevents-web-dev, cloudfront: E1AIDTCT83PAW5, build: "build:devaws", deploy: "deploy:devaws" }
+      qa:   { url: https://qa.doeventsapp.com, region: us-east-2, bucket: doevents-web-qa, cloudfront: E3UV9NHXADGSAJ, build: "build:qa", deploy: "deploy:qa" }
+      prod: { url: https://web.doeventsapp.com, region: us-west-1, bucket: doevents-web-prod, cloudfront: E1L51KSFEY3YGS, build: "build:prod", deploy: "deploy:prod" }
     prod_preflight:
       # Otros despliegan PROD con frecuencia, a veces desde código no publicado: comparar antes de desplegar.
       - compare_prod_bundle_ui_strings_vs_origin_main
@@ -102,17 +109,12 @@ apps:
     feature_flags: DynamoDB AIAgentConfig (configKey=global), scripts/flags.js
     risk: medium
 
-  - id: doevents-front
-    name: DoEvents App móvil
-    repo: https://github.com/DoEventsApp/DoEventsFront.git
-    default_branch: Develop
-    stack: React Native (Expo)
-    commands:
-      install: npm ci
-    environments: {}
-    limitations:
-      - Sin despliegue automático a DEV ni pruebas automatizadas; el agente puede proponer cambios y PR, no validarlos en un entorno.
-    risk: medium
+  # App móvil (DoEventsApp/DoEventsFront, rama Develop, Expo): EXCLUIDA TEMPORALMENTE (decisión 2026-11-10).
+  # Al reincorporarla: instalar la GitHub App en DoEventsApp; no tiene despliegue a DEV ni pruebas automatizadas.
+
+priorities:
+  # La web es la prioridad: los primeros pedidos del piloto apuntan a doevents-web.
+  first: doevents-web
 
 approvals:
   required_approvals: 1
