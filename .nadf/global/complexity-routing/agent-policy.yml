@@ -1,0 +1,67 @@
+# NADF-GUIDE
+# Propósito: Política de agentes por NATURALEZA del cambio (Minimum Sufficient Execution con ahorro de tokens).
+#            Complementa execution-profiles.yml: el Complexity Router sigue decidiendo nivel y bloqueos;
+#            esta política decide qué agentes opcionales corren, con qué modelo y con qué presupuesto.
+# Configuración: el Analista (requirement-classification-agent) entrega `naturaleza`, `ambito_critico`
+#                y `tamano`; el orquestador del portal aplica esta tabla. Un flujo de empresa explícito la reemplaza.
+version: "1.0"
+principle: minimum_sufficient_execution
+
+# Qué significa cada naturaleza (el Analista elige una).
+naturalezas:
+  ajuste_visual: Cambio de presentación sin lógica (color, texto, imagen, espaciado, tipografía).
+  evolutivo: Mejora o ampliación de una funcionalidad existente reutilizando su diseño (campos, validaciones, reglas acotadas).
+  nueva_funcionalidad: Capacidad que no existe hoy (pantallas, flujos o entidades nuevas).
+  cambio_arquitectonico: Cambia la estructura técnica (nuevas dependencias o servicios, contratos entre capas, modelo de datos, patrones).
+
+# Agentes opcionales por naturaleza. La base (Solicitud, Analista, Desarrollador, QA, Resultado) y los
+# controles de la plataforma (Guardián PROD, guardas de seguridad, aprobación humana, release, verificación) siempre corren.
+agents:
+  ajuste_visual: []
+  evolutivo: [reviewer-agent]
+  nueva_funcionalidad:
+    pequena: [reviewer-agent]
+    grande: [planner-agent, reviewer-agent]
+  cambio_arquitectonico: [planner-agent, architect-agent, reviewer-agent]
+
+# Criticidad: suma revisión de seguridad; NO suma arquitectura ni planificación.
+# Ámbito crítico = autenticación/sesiones, pagos/cobros, datos personales, secretos, permisos o migración de datos.
+critical:
+  add: [security-agent]
+
+# ADR: solo cuando corre el Arquitecto (cambio arquitectónico). En evolutivos y ajustes no se exige ni se bloquea por ADR.
+adr:
+  required_when: [cambio_arquitectonico]
+
+# Un pedido que necesita capas que la aplicación conectada no expone se detiene en el PLAN (antes de gastar tokens),
+# con opciones: reformular solo la parte disponible o conectar el repositorio que falta.
+cross_layer:
+  stop_at_plan: true
+
+# Revisor: bloquea solo por defectos reales del cambio; lo no verificable o la documentación faltante son observaciones.
+reviewer:
+  block_only_for:
+    - El cambio rompe una funcionalidad existente o deja una función inoperante en producción.
+    - Incumple una regla obligatoria (secretos, archivos protegidos, alcance).
+    - No implementa lo pedido.
+  observations_not_blocking:
+    - Criterios que dependen de otros sistemas o no son verificables en el diff.
+    - Pruebas o documentación adicionales sugeridas.
+    - ADR en cambios que no son arquitectónicos.
+
+# Modelos: el razonamiento de análisis y revisión usa un modelo más económico; el desarrollo, el más capaz.
+models:
+  analysis: claude-sonnet-5-5   # Analista, Planificador, Arquitecto, Seguridad, Revisor
+  development: claude-opus-5-5  # Desarrollador (Claude Code)
+
+# Presupuesto máximo de Claude Code por ejecución (USD), según naturaleza.
+development_budget_usd:
+  ajuste_visual: 3
+  evolutivo: 8
+  nueva_funcionalidad: 15
+  cambio_arquitectonico: 25
+
+# Contexto enviado a los agentes de revisión (recorte para ahorrar tokens).
+context_limits:
+  diff_chars: 40000
+  repo_file_list: 600
